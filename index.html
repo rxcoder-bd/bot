@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Money 🚀 - Earn Money Watching Ads</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --dark: #1e293b;
+            --darker: #0f172a;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --card-border: rgba(255, 255, 255, 0.2);
+            --gradient: linear-gradient(135deg, #4361ee, #3a0ca3, #7209b7);
+            --gradient-light: linear-gradient(135deg, #4cc9f0, #4361ee);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: var(--dark);
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Header Styles */
+        header {
+            background: var(--gradient);
+            padding: 25px 20px;
+            text-align: center;
+            border-radius: 0 0 25px 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff10"><polygon points="1000,100 1000,0 0,100"></polygon></svg>');
+            background-size: cover;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo i {
+            font-size: 28px;
+            margin-right: 10px;
+            background: var(--light);
+            color: var(--primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid var(--card-border);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--light);
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-details {
+            text-align: left;
+            flex: 1;
+        }
+        
+        .username {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .balance {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 5px;
+            background: linear-gradient(90deg, #fff, #4cc9f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Content Styles */
+        .content {
+            padding: 20px;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            color: var(--accent);
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            background: rgba(0, 0, 0, 0.3);
+            transform: scale(1.03);
+        }
+        
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--gradient-light);
+            border-radius: 10px;
+            width: 30%;
+            transition: width 1s ease;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--gradient);
+            color: var(--light);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        /* Tasks Section */
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+            margin: 0 -10px;
+        }
+        
+        .task-info {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .task-desc {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        .task-reward {
+            background: var(--success);
+            color: var(--light);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .ad-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px dashed var(--card-border);
+        }
+        
+        .ad-placeholder {
+            height: 150px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light);
+            font-weight: bold;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ad-placeholder::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0.1), rgba(255,255,255,0));
+            transform: rotate(30deg);
+        }
+        
+        /* Wallet Section */
+        .balance-large {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 700;
+            margin: 20px 0;
+            background: linear-gradient(90deg, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .payment-methods {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            gap: 10px;
+        }
+        
+        .payment-method {
+            flex: 1;
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .payment-method.selected {
+            border-color: var(--accent);
+            background: rgba(76, 201, 240, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .payment-icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            font-size: 16px;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(76, 201, 240, 0.2);
+        }
+        
+        .info-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .info-box i {
+            color: var(--warning);
+            margin-right: 8px;
+        }
+        
+        /* Refer Section */
+        .referral-code {
+            background: var(--gradient);
+            padding: 25px 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .referral-code::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23ffffff10"><circle cx="50" cy="50" r="2"></circle></svg>');
+        }
+        
+        .code {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--light);
+            margin: 15px 0;
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        .copy-btn {
+            background: var(--light);
+            color: var(--primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .referral-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .referral-stat {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .referral-stat:hover {
+            background: rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px);
+        }
+        
+        .referral-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        /* Support Section */
+        .support-link {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-decoration: none;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        
+        .support-link:hover {
+            background: rgba(76, 201, 240, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .support-link i {
+            font-size: 20px;
+            margin-right: 15px;
+            color: var(--accent);
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+        
+        .faq-answer {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            background: var(--dark);
+            border-top: 1px solid var(--card-border);
+            padding: 12px 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            color: var(--gray);
+            position: relative;
+        }
+        
+        .nav-item.active {
+            color: var(--accent);
+            background: rgba(76, 201, 240, 0.1);
+        }
+        
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            width: 5px;
+            height: 5px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+        
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .nav-item span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: var(--success);
+            color: var(--light);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            animation: slideDown 0.3s ease forwards;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        
+        /* Loading Animation */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Pulse Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            top: 0;
+            opacity: 0;
+            z-index: 999;
+        }
+        
+        @keyframes confettiFall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(1000px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-rocket"></i>
+                <h1>Space Money</h1>
+            </div>
+            <p>@SpaceEranMoneyBot</p>
+            
+            <div class="user-info">
+                <div class="avatar">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <div class="user-details">
+                    <div class="username">@SpaceExplorer</div>
+                    <div class="balance">৳ 1,250.00</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="content">
+            <!-- Home Section -->
+            <div class="section active" id="home">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        Today's Progress
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Ads Watched</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">৳ 120</div>
+                            <div class="stat-label">Earned Today</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Daily Progress</span>
+                            <span>12/100</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 12%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-history"></i>
+                        Lifetime Stats
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">342</div>
+                            <div class="stat-label">Total Ads</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">৳ 3,420</div>
+                            <div class="stat-label">Total Earned</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">৳ 1,750</div>
+                            <div class="stat-label">Withdrawn</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Referrals</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn pulse" onclick="showSection('tasks')">
+                    <i class="fas fa-play-circle"></i> Start Earning Now
+                </button>
+            </div>
+            
+            <!-- Tasks Section -->
+            <div class="section" id="tasks">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-ad"></i>
+                        Watch Ads & Earn Money
+                    </div>
+                    <p>Watch ads and earn ৳10 per ad. You can watch up to 100 ads daily. Resets at 12:00 AM.</p>
+                    
+                    <div class="ad-container">
+                        <h3>Watch Ad & Earn ৳10</h3>
+                        <div class="ad-placeholder">
+                            <i class="fas fa-play-circle" style="font-size: 40px;"></i>
+                        </div>
+                        <button class="btn" id="watchAdBtn">
+                            <i class="fas fa-play"></i> Watch Ad & Earn
+                        </button>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Daily Progress</span>
+                            <span>12/100</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 12%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-users"></i>
+                        Join Channels & Earn
+                    </div>
+                    <p>Join our channels and earn ৳50 per channel. Total ৳150 for all channels.</p>
+                    
+                    <div class="task-item">
+                        <div class="task-info">
+                            <div class="task-title">Space Money Channel</div>
+                            <div class="task-desc">https://t.me/SpaceEranMoney</div>
+                        </div>
+                        <div class="task-reward">৳50</div>
+                    </div>
+                    
+                    <div class="task-item">
+                        <div class="task-info">
+                            <div class="task-title">Payment Channel</div>
+                            <div class="task-desc">https://t.me/SpaceBotPayment</div>
+                        </div>
+                        <div class="task-reward">৳50</div>
+                    </div>
+                    
+                    <div class="task-item">
+                        <div class="task-info">
+                            <div class="task-title">Sponsored Channel</div>
+                            <div class="task-desc">https://t.me/RxCoderBD_7</div>
+                        </div>
+                        <div class="task-reward">৳50</div>
+                    </div>
+                    
+                    <button class="btn">
+                        <i class="fas fa-check-circle"></i> Verify Joining
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Wallet Section -->
+            <div class="section" id="wallet">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-wallet"></i>
+                        Your Wallet
+                    </div>
+                    <div class="balance-large">৳ 1,250.00</div>
+                    
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i> 
+                        You need at least 7 referrals to withdraw. Minimum withdrawal: ৳1750
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <div class="payment-method" data-method="bkash">
+                            <div class="payment-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div>Bkash</div>
+                        </div>
+                        <div class="payment-method" data-method="nagad">
+                            <div class="payment-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div>Nagad</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="text" id="phone" placeholder="Enter your phone number">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="amount">Amount (৳)</label>
+                        <input type="number" id="amount" placeholder="Enter amount (min: 1750)">
+                    </div>
+                    
+                    <button class="btn" id="withdrawBtn">
+                        <i class="fas fa-paper-plane"></i> Withdraw Funds
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Support Section -->
+            <div class="section" id="support">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-headset"></i>
+                        Support & Channels
+                    </div>
+                    
+                    <a href="https://t.me/SpaceBotPayment" class="support-link" target="_blank">
+                        <i class="fab fa-telegram"></i>
+                        <div>
+                            <div style="font-weight: 600;">Payment Channel</div>
+                            <div style="font-size: 12px; opacity: 0.7;">https://t.me/SpaceBotPayment</div>
+                        </div>
+                    </a>
+                    
+                    <a href="https://t.me/SpaceEranMoney" class="support-link" target="_blank">
+                        <i class="fab fa-telegram"></i>
+                        <div>
+                            <div style="font-weight: 600;">Main Channel</div>
+                            <div style="font-size: 12px; opacity: 0.7;">https://t.me/SpaceEranMoney</div>
+                        </div>
+                    </a>
+                    
+                    <a href="https://t.me/RxCoderBD_7" class="support-link" target="_blank">
+                        <i class="fab fa-telegram"></i>
+                        <div>
+                            <div style="font-weight: 600;">Sponsored Channel</div>
+                            <div style="font-size: 12px; opacity: 0.7;">https://t.me/RxCoderBD_7</div>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-question-circle"></i>
+                        Frequently Asked Questions
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">How much can I earn per day?</div>
+                        <div class="faq-answer">You can earn up to ৳1000 per day by watching 100 ads (৳10 per ad).</div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">When does the daily limit reset?</div>
+                        <div class="faq-answer">The daily limit resets at 12:00 AM (Bangladesh Time).</div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">What is the minimum withdrawal?</div>
+                        <div class="faq-answer">Minimum withdrawal is ৳1750 for both Bkash and Nagad.</div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">How many referrals do I need to withdraw?</div>
+                        <div class="faq-answer">You need at least 7 referrals to be eligible for withdrawal.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Refer Section -->
+            <div class="section" id="refer">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-user-plus"></i>
+                        Refer & Earn Bonus
+                    </div>
+                    
+                    <div class="referral-code">
+                        <div>Your Unique Referral Code</div>
+                        <div class="code">SPACE7X9B</div>
+                        <button class="copy-btn" onclick="copyReferralCode()">
+                            <i class="fas fa-copy"></i> Copy Code
+                        </button>
+                    </div>
+                    
+                    <div class="referral-stats">
+                        <div class="referral-stat">
+                            <div class="referral-value">৳50</div>
+                            <div class="stat-label">You Get</div>
+                        </div>
+                        <div class="referral-stat">
+                            <div class="referral-value">৳70</div>
+                            <div class="stat-label">Friend Gets</div>
+                        </div>
+                    </div>
+                    
+                    <p style="text-align: center; margin: 20px 0;">
+                        Share your referral code with friends. When they sign up using your code, you both get bonuses!
+                    </p>
+                    
+                    <button class="btn">
+                        <i class="fas fa-share-alt"></i> Share Referral Link
+                    </button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-trophy"></i>
+                        Your Referral Stats
+                    </div>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Total Referrals</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">৳250</div>
+                            <div class="stat-label">Earned from Referrals</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Referrals Progress</span>
+                            <span>5/7</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 71%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" data-target="home">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" data-target="tasks">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </div>
+            <div class="nav-item" data-target="wallet">
+                <i class="fas fa-wallet"></i>
+                <span>Wallet</span>
+            </div>
+            <div class="nav-item" data-target="support">
+                <i class="fas fa-headset"></i>
+                <span>Support</span>
+            </div>
+            <div class="nav-item" data-target="refer">
+                <i class="fas fa-users"></i>
+                <span>Refer</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        Notification message here
+    </div>
+    
+    <!-- Monetag Ads Code -->
+    <script src='//libtl.com/sdk.js' data-zone='10151608' data-sdk='show_10151608'></script>
+    
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const target = this.getAttribute('data-target');
+                showSection(target);
+            });
+        });
+        
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show target section
+            document.getElementById(sectionId).classList.add('active');
+        }
+        
+        // Payment method selection
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                // Remove selected class from all methods
+                document.querySelectorAll('.payment-method').forEach(m => {
+                    m.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked method
+                this.classList.add('selected');
+            });
+        });
+        
+        // Watch Ads button
+        document.getElementById('watchAdBtn').addEventListener('click', function() {
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            // Show loading state
+            btn.innerHTML = '<span class="loader"></span> Loading Ad...';
+            btn.disabled = true;
+            
+            showNotification('Loading advertisement... Please wait.');
+            
+            // Simulate ad loading and completion
+            setTimeout(() => {
+                // Show success state
+                btn.innerHTML = '<i class="fas fa-check"></i> Ad Completed!';
+                btn.style.background = 'var(--success)';
+                
+                showNotification('Ad completed! ৳10 has been added to your balance.');
+                createConfetti();
+                
+                // Reset button after delay
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.style.background = '';
+                }, 2000);
+            }, 3000);
+        });
+        
+        // Withdraw button
+        document.getElementById('withdrawBtn').addEventListener('click', function() {
+            const method = document.querySelector('.payment-method.selected');
+            const phone = document.getElementById('phone').value;
+            const amount = document.getElementById('amount').value;
+            
+            if (!method) {
+                showNotification('Please select a payment method (Bkash or Nagad).', 'error');
+                return;
+            }
+            
+            if (!phone) {
+                showNotification('Please enter your phone number.', 'error');
+                return;
+            }
+            
+            if (!amount || amount < 1750) {
+                showNotification('Minimum withdrawal amount is ৳1750.', 'error');
+                return;
+            }
+            
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            // Show processing state
+            btn.innerHTML = '<span class="loader"></span> Processing...';
+            btn.disabled = true;
+            
+            showNotification('Processing your withdrawal request...');
+            
+            // Simulate withdrawal processing
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                btn.style.background = 'var(--success)';
+                
+                showNotification('Your withdrawal is successful. Please wait 2 hours 🕒');
+                createConfetti();
+                
+                // Reset button after delay
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.style.background = '';
+                    document.getElementById('phone').value = '';
+                    document.getElementById('amount').value = '';
+                    document.querySelectorAll('.payment-method').forEach(m => {
+                        m.classList.remove('selected');
+                    });
+                }, 3000);
+            }, 3000);
+        });
+        
+        // Copy referral code
+        function copyReferralCode() {
+            const code = document.querySelector('.code').textContent;
+            navigator.clipboard.writeText(code)
+                .then(() => {
+                    showNotification('Referral code copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showNotification('Failed to copy code. Please try again.', 'error');
+                });
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            
+            // Set color based on type
+            if (type === 'error') {
+                notification.style.background = 'var(--error)';
+            } else if (type === 'warning') {
+                notification.style.background = 'var(--warning)';
+            } else {
+                notification.style.background = 'var(--success)';
+            }
+            
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+        
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#4361ee', '#3a0ca3', '#4cc9f0', '#7209b7', '#f72585'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.animation = `confettiFall ${Math.random() * 3 + 2}s linear forwards`;
+                document.body.appendChild(confetti);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+        
+        // Simulate user data (in a real app, this would come from Telegram)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set random user data for demo
+            const usernames = ['SpaceExplorer', 'MoonWalker', 'StarGazer', 'CosmicTraveler', 'GalaxyHunter'];
+            const randomUsername = usernames[Math.floor(Math.random() * usernames.length)];
+            
+            document.querySelector('.username').textContent = '@' + randomUsername;
+            document.querySelector('.code').textContent = 'SPACE' + Math.floor(1000 + Math.random() * 9000);
+            
+            // Add some interactive animations
+            document.querySelectorAll('.stat-item, .task-item, .referral-stat').forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
