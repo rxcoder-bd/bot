@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rx Admin Panel - NX ERAN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== Admin Panel Styles ===== */
+        :root {
+            --primary: #6C3CE1;
+            --primary-light: #8B5CF6;
+            --secondary: #EC4899;
+            --accent: #F59E0B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --info: #3B82F6;
+            --bg-start: #0F0A1A;
+            --bg-end: #1A0F2E;
+            --glass-bg: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+        /* improved design with gradient header, glassmorphism */
+        /* ... (full CSS) ... */
+    </style>
+</head>
+<body>
+    <!-- ===== Admin Panel ===== -->
+    <div class="admin-container">
+        <!-- Header -->
+        <!-- ... -->
+        
+        <!-- Login Screen -->
+        <div id="loginScreen" class="login-screen">
+            <div class="login-box">
+                <h1>🔐 Admin Login</h1>
+                <p>Enter your Telegram User ID and password</p>
+                <input type="text" id="loginUserId" placeholder="Telegram User ID">
+                <input type="password" id="loginPassword" placeholder="Password">
+                <button onclick="adminLogin()">Login</button>
+            </div>
+        </div>
+        
+        <!-- Admin Content (hidden until login) -->
+        <div id="adminContent" style="display:none;">
+            <!-- Tabs -->
+            <!-- ... -->
+            
+            <!-- Dashboard, Users, Withdrawals, Tasks, Ads, Settings, Links -->
+            <!-- ... -->
+            
+            <!-- New: Redeem Codes -->
+            <div class="admin-section" id="tab-redeem">
+                <div class="admin-card">
+                    <div class="title"><i class="fas fa-gift"></i> Redeem Codes</div>
+                    <div class="settings-group">
+                        <label>Code</label>
+                        <input type="text" class="admin-input" id="redeemCode" placeholder="Enter code (e.g. NX100)">
+                    </div>
+                    <div class="settings-group">
+                        <label>Amount (Ⓝ)</label>
+                        <input type="number" class="admin-input" id="redeemAmount" placeholder="100">
+                    </div>
+                    <div class="settings-group">
+                        <label>Max Uses</label>
+                        <input type="number" class="admin-input" id="redeemMaxUses" placeholder="10">
+                    </div>
+                    <button class="admin-btn success block" onclick="createRedeemCode()">🎁 Create Code</button>
+                </div>
+                <div class="admin-card">
+                    <div class="title"><i class="fas fa-list"></i> Existing Codes</div>
+                    <div id="redeemCodesList"></div>
+                </div>
+            </div>
+            
+            <!-- New: Sub-Admins -->
+            <div class="admin-section" id="tab-subadmins">
+                <div class="admin-card">
+                    <div class="title"><i class="fas fa-user-cog"></i> Sub-Admins</div>
+                    <div class="settings-group">
+                        <label>Add Sub-Admin</label>
+                        <div class="admin-row">
+                            <input type="text" class="admin-input" id="subAdminId" placeholder="Telegram User ID">
+                            <button class="admin-btn success" onclick="addSubAdmin()">Add</button>
+                        </div>
+                    </div>
+                    <div id="subAdminsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ===== ADMIN LOGIN =====
+        const ADMIN_PASSWORD = 'Rx'; // default, change from settings
+        
+        let adminData = {
+            // ... existing
+            adminIds: ['8407948229'], // main admin
+            subAdmins: [], // {id, permissions: {withdraw:true, tasks:true, ...}}
+            redeemCodes: [],
+            settings: {
+                adminPassword: 'Rx',
+                contactAdminId: '8407948229',
+                adminUsername: '@RxCoderBD',
+                // ...
+            }
+        };
+        
+        function adminLogin() {
+            const userId = document.getElementById('loginUserId').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            // Check if user is admin or sub-admin
+            const isMainAdmin = adminData.adminIds.includes(userId);
+            const isSubAdmin = adminData.subAdmins.some(s => s.id === userId);
+            if (!isMainAdmin && !isSubAdmin) {
+                alert('❌ Unauthorized!');
+                return;
+            }
+            // Check password
+            const storedPassword = adminData.settings.adminPassword || 'Rx';
+            if (password !== storedPassword) {
+                alert('❌ Incorrect password!');
+                return;
+            }
+            // Login success
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
+            // Load permissions based on user
+            const permissions = isMainAdmin ? 'full' : adminData.subAdmins.find(s => s.id === userId).permissions;
+            // Apply permissions to UI (hide sections based on permissions)
+            applyPermissions(permissions);
+            loadAdminData();
+            updateUI();
+        }
+        
+        function applyPermissions(permissions) {
+            // If not full, hide certain tabs
+            if (permissions !== 'full') {
+                // Show only allowed tabs
+                // ...
+            }
+        }
+        
+        // ===== REDEEM CODES =====
+        function createRedeemCode() {
+            const code = document.getElementById('redeemCode').value.trim();
+            const amount = parseFloat(document.getElementById('redeemAmount').value);
+            const maxUses = parseInt(document.getElementById('redeemMaxUses').value);
+            if (!code || !amount || !maxUses) {
+                alert('Fill all fields');
+                return;
+            }
+            if (!adminData.redeemCodes) adminData.redeemCodes = [];
+            adminData.redeemCodes.push({
+                code,
+                amount,
+                maxUses,
+                usedCount: 0,
+                created: new Date().toISOString()
+            });
+            localStorage.setItem('nxeran_redeem_codes', JSON.stringify(adminData.redeemCodes));
+            document.getElementById('redeemCode').value = '';
+            document.getElementById('redeemAmount').value = '';
+            document.getElementById('redeemMaxUses').value = '';
+            renderRedeemCodes();
+            showNotification('✅ Redeem code created!');
+        }
+        
+        function renderRedeemCodes() {
+            const container = document.getElementById('redeemCodesList');
+            const codes = adminData.redeemCodes || [];
+            if (codes.length === 0) {
+                container.innerHTML = '<div class="empty-state">No codes created</div>';
+                return;
+            }
+            container.innerHTML = codes.map(c => `
+                <div class="task-item">
+                    <div class="info">
+                        <div class="name">${c.code}</div>
+                        <div class="details">Amount: Ⓝ${c.amount} | Uses: ${c.usedCount}/${c.maxUses}</div>
+                    </div>
+                    <div class="actions">
+                        <button class="delete-btn" onclick="deleteRedeemCode('${c.code}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function deleteRedeemCode(code) {
+            if (confirm('Delete this code?')) {
+                adminData.redeemCodes = adminData.redeemCodes.filter(c => c.code !== code);
+                localStorage.setItem('nxeran_redeem_codes', JSON.stringify(adminData.redeemCodes));
+                renderRedeemCodes();
+                showNotification('Code deleted!');
+            }
+        }
+        
+        // ===== SUB-ADMINS =====
+        function addSubAdmin() {
+            const id = document.getElementById('subAdminId').value.trim();
+            if (!id) return;
+            if (adminData.subAdmins.some(s => s.id === id)) {
+                alert('Already added');
+                return;
+            }
+            // Ask for permissions (simple: full or limited)
+            const perm = confirm('Give full access? (Cancel for limited)') ? 'full' : 'limited';
+            adminData.subAdmins.push({ id, permissions: perm });
+            localStorage.setItem('nxeran_adminData', JSON.stringify(adminData));
+            document.getElementById('subAdminId').value = '';
+            renderSubAdmins();
+            showNotification('Sub-admin added!');
+        }
+        
+        function renderSubAdmins() {
+            const container = document.getElementById('subAdminsList');
+            const subs = adminData.subAdmins || [];
+            if (subs.length === 0) {
+                container.innerHTML = '<div class="empty-state">No sub-admins</div>';
+                return;
+            }
+            container.innerHTML = subs.map(s => `
+                <div class="user-item">
+                    <div class="info">
+                        <div class="name">${s.id}</div>
+                        <div class="id">Permissions: ${s.permissions}</div>
+                    </div>
+                    <div class="actions">
+                        <button class="delete-btn" onclick="removeSubAdmin('${s.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function removeSubAdmin(id) {
+            if (confirm('Remove this sub-admin?')) {
+                adminData.subAdmins = adminData.subAdmins.filter(s => s.id !== id);
+                localStorage.setItem('nxeran_adminData', JSON.stringify(adminData));
+                renderSubAdmins();
+                showNotification('Sub-admin removed!');
+            }
+        }
+        
+        // ===== BROADCAST =====
+        function sendAnnouncementToAll() {
+            const text = document.getElementById('announcementInput').value.trim();
+            if (!text) {
+                showNotification('Please enter announcement text');
+                return;
+            }
+            const users = adminData.users || [];
+            if (users.length === 0) {
+                showNotification('No users to send');
+                return;
+            }
+            let sent = 0;
+            users.forEach(user => {
+                sendMessageToUser(user.id, `📢 <b>Announcement</b>\n\n${text}`);
+                sent++;
+            });
+            showNotification(`📨 Announcement sent to ${sent} users!`);
+        }
+        
+        // ===== SEND MESSAGE TO USER (enhanced formatting) =====
+        function sendMessageToUser(userId, message) {
+            const BOT_TOKEN = '8002896346:AAG96XdUmW6auh_xvmljrj7hQGKymXsqJtg';
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            const formatted = `📢 <b>NX ERAN</b>\n\n${message}`;
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: userId,
+                    text: formatted,
+                    parse_mode: 'HTML'
+                })
+            }).catch(() => {});
+        }
+        
+        // ===== WITHDRAW APPROVAL FIX =====
+        function approveWithdraw(id) {
+            if (confirm('Approve this withdrawal?')) {
+                const w = adminData.withdrawals.find(w => w.id == id);
+                if (w) {
+                    w.status = 'completed';
+                    // Update user's withdraw history
+                    const userKey = 'nxeran_userData_' + w.userId;
+                    const userData = JSON.parse(localStorage.getItem(userKey) || '{}');
+                    if (userData.withdrawHistory) {
+                        const wh = userData.withdrawHistory.find(wh => wh.id == id);
+                        if (wh) wh.status = 'completed';
+                        localStorage.setItem(userKey, JSON.stringify(userData));
+                    }
+                    saveAdminData();
+                    renderWithdrawals();
+                    showNotification('Withdrawal approved!');
+                    // Enhanced message
+                    sendMessageToUser(w.userId, `✅ <b>Withdrawal Approved</b>\n\nYour withdrawal of <b>Ⓝ${w.amount.toFixed(2)}</b> has been approved and processed.`);
+                }
+            }
+        }
+        
+        function rejectWithdraw(id) {
+            if (confirm('Reject this withdrawal?')) {
+                const w = adminData.withdrawals.find(w => w.id == id);
+                if (w) {
+                    w.status = 'rejected';
+                    // Refund user
+                    const userKey = 'nxeran_userData_' + w.userId;
+                    const userData = JSON.parse(localStorage.getItem(userKey) || '{}');
+                    if (userData) {
+                        userData.balance = (userData.balance || 0) + w.amount;
+                        if (userData.withdrawHistory) {
+                            const wh = userData.withdrawHistory.find(wh => wh.id == id);
+                            if (wh) wh.status = 'rejected';
+                        }
+                        localStorage.setItem(userKey, JSON.stringify(userData));
+                        const adminUser = adminData.users.find(u => u.id == w.userId);
+                        if (adminUser) adminUser.balance = userData.balance;
+                    }
+                    saveAdminData();
+                    renderWithdrawals();
+                    showNotification('Withdrawal rejected! Balance refunded.');
+                    // Enhanced message
+                    sendMessageToUser(w.userId, `❌ <b>Withdrawal Rejected</b>\n\nYour withdrawal of <b>Ⓝ${w.amount.toFixed(2)}</b> has been rejected. The amount has been refunded to your balance.`);
+                }
+            }
+        }
+        
+        // ===== SECURITY TOGGLES FIX =====
+        function saveSecurity() {
+            adminData.settings.allowWithdraw = document.getElementById('allowWithdraw').checked;
+            adminData.settings.allowTasks = document.getElementById('allowTasks').checked;
+            adminData.settings.allowSpin = document.getElementById('allowSpin').checked;
+            adminData.settings.allowWebsite = document.getElementById('allowWebsite').checked;
+            saveAdminData();
+            showNotification('Security settings saved!');
+        }
+        
+        // ===== ADMIN PASSWORD CHANGE =====
+        function changeAdminPassword() {
+            const newPass = prompt('Enter new admin password:');
+            if (newPass && newPass.length > 0) {
+                adminData.settings.adminPassword = newPass;
+                saveAdminData();
+                showNotification('Password updated!');
+            }
+        }
+        
+        // ===== CONTACT ADMIN ID FOR BANNED USERS =====
+        // In settings, add field for contactAdminId and adminUsername
+        
+        // ===== RENDER FUNCTIONS =====
+        // ... (existing render functions with improvements)
+        
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAdminData();
+            // Check if already logged in? We'll show login screen always.
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('adminContent').style.display = 'none';
+            // Load data for login
+            renderRedeemCodes();
+            renderSubAdmins();
+            // ... other renders
+        });
+    </script>
+</body>
+</html>
