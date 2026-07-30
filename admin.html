@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rx Admin Panel - NX ERAN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== Admin Panel Styles ===== */
+        :root {
+            --primary: #6C3CE1;
+            --primary-light: #8B5CF6;
+            --secondary: #EC4899;
+            --accent: #F59E0B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --info: #3B82F6;
+            --bg-start: #0F0A1A;
+            --bg-end: #1A0F2E;
+            --glass-bg: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .admin-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 20px;
+        }
+
+        .admin-header h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .admin-header p {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .admin-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .admin-card .title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-card .title i {
+            color: var(--primary-light);
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: white;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .admin-input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+        }
+
+        .admin-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+        }
+
+        .admin-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .admin-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .admin-btn.success {
+            background: linear-gradient(135deg, var(--success), #059669);
+        }
+
+        .admin-btn.danger {
+            background: linear-gradient(135deg, var(--danger), #DC2626);
+        }
+
+        .admin-btn.warning {
+            background: linear-gradient(135deg, var(--accent), #D97706);
+        }
+
+        .admin-btn.info {
+            background: linear-gradient(135deg, var(--info), #2563EB);
+        }
+
+        .admin-btn.secondary {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+        }
+
+        .admin-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .admin-btn.block {
+            width: 100%;
+            margin-bottom: 6px;
+        }
+
+        .admin-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .admin-row .admin-input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .admin-row .admin-btn {
+            flex-shrink: 0;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            flex-wrap: nowrap;
+        }
+
+        .admin-tab {
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .admin-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .admin-tab:hover {
+            background: var(--glass-bg);
+        }
+
+        .admin-section {
+            display: none;
+        }
+
+        .admin-section.active {
+            display: block;
+            animation: fadeScale 0.3s ease;
+        }
+
+        @keyframes fadeScale {
+            0% { opacity: 0; transform: scale(0.97); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-item .info .name {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .user-item .info .id {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .user-item .info .balance {
+            font-size: 12px;
+            color: var(--accent);
+        }
+
+        .user-item .actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .user-item .actions button {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .user-item .actions .edit-btn {
+            background: var(--info);
+        }
+
+        .user-item .actions .ban-btn {
+            background: var(--danger);
+        }
+
+        .user-item .actions .unban-btn {
+            background: var(--success);
+        }
+
+        .status-badge {
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-badge.banned {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent);
+        }
+
+        .status-badge.completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-badge.rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .withdraw-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .withdraw-item:last-child {
+            border-bottom: none;
+        }
+
+        .withdraw-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .withdraw-item .info .user {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .withdraw-item .info .details {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .withdraw-item .info .amount {
+            font-size: 13px;
+            color: var(--accent);
+        }
+
+        .withdraw-item .actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .withdraw-item .actions button {
+            padding: 4px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .withdraw-item .actions .approve-btn {
+            background: var(--success);
+        }
+
+        .withdraw-item .actions .reject-btn {
+            background: var(--danger);
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-item .info .name {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .task-item .info .details {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .task-item .actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .task-item .actions button {
+            padding: 4px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .task-item .actions .approve-btn {
+            background: var(--success);
+        }
+
+        .task-item .actions .reject-btn {
+            background: var(--danger);
+        }
+
+        .task-item .actions .delete-btn {
+            background: var(--danger);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 4px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .link-group {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+            align-items: center;
+        }
+
+        .link-group .admin-input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .link-group .admin-btn {
+            flex-shrink: 0;
+        }
+
+        .settings-group {
+            margin-bottom: 12px;
+        }
+
+        .settings-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .admin-stat {
+            text-align: center;
+            padding: 12px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border);
+        }
+
+        .admin-stat .number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .admin-stat .label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            z-index: 999;
+            font-size: 13px;
+            font-weight: 500;
+            max-width: 90%;
+            text-align: center;
+            animation: fadeScale 0.3s ease;
+        }
+
+        .search-result {
+            margin-top: 10px;
+        }
+
+        @media (max-width: 400px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .admin-row {
+                flex-direction: column;
+            }
+            .admin-row .admin-input {
+                margin-bottom: 4px;
+            }
+            .user-item {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .user-item .actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .withdraw-item {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .withdraw-item .actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .task-item {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .task-item .actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .admin-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 20px;
+        }
+
+        .admin-tab .badge {
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            padding: 1px 6px;
+            font-size: 10px;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <!-- Header -->
+    <div class="admin-header">
+        <h1>🔧 Rx Admin Panel</h1>
+        <p>Manage NX ERAN Bot - @RxAdminPanelBot</p>
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Connected to @NxEranBot</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="dashboard">📊 Dashboard</button>
+        <button class="admin-tab" data-tab="users">👥 Users</button>
+        <button class="admin-tab" data-tab="withdrawals">💸 Withdrawals</button>
+        <button class="admin-tab" data-tab="tasks">📋 Tasks</button>
+        <button class="admin-tab" data-tab="settings">⚙️ Settings</button>
+        <button class="admin-tab" data-tab="links">🔗 Links</button>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="admin-section active" id="tab-dashboard">
+        <div class="grid-2">
+            <div class="admin-stat">
+                <div class="number" id="totalUsers">0</div>
+                <div class="label">Total Users</div>
+            </div>
+            <div class="admin-stat">
+                <div class="number" id="totalWithdrawals">0</div>
+                <div class="label">Pending Withdrawals</div>
+            </div>
+            <div class="admin-stat">
+                <div class="number" id="totalEarnings">Ⓝ0</div>
+                <div class="label">Total Earnings</div>
+            </div>
+            <div class="admin-stat">
+                <div class="number" id="todayUsers">0</div>
+                <div class="label">Active Today</div>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-bullhorn"></i> Announcement</div>
+            <input type="text" class="admin-input" id="announcementInput" placeholder="Enter announcement text...">
+            <div class="admin-row">
+                <input type="text" class="admin-input" id="announcementTime" placeholder="Time (e.g. Today)" value="Today">
+                <button class="admin-btn primary" onclick="updateAnnouncement()">Update</button>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-sync"></i> Sync Users</div>
+            <button class="admin-btn info block" onclick="syncUsers()">🔄 Sync All Users</button>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Syncs user data from User Panel to Admin Panel</p>
+        </div>
+
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-database"></i> Export Data</div>
+            <button class="admin-btn primary block" onclick="exportData()">📥 Export All Data (JSON)</button>
+            <button class="admin-btn secondary block" onclick="importData()">📤 Import Data (JSON)</button>
+            <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+        </div>
+    </div>
+
+    <!-- ===== USERS ===== -->
+    <div class="admin-section" id="tab-users">
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-search"></i> Find User</div>
+            <div class="admin-row">
+                <input type="text" class="admin-input" id="searchUser" placeholder="Enter User ID or Username">
+                <button class="admin-btn info" onclick="searchUser()">Search</button>
+            </div>
+            <div id="searchResult" class="search-result"></div>
+        </div>
+
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-users"></i> All Users <span id="userCount" style="color:var(--text-muted); font-size:12px;"></span></div>
+            <div id="userList">
+                <div class="empty-state">No users found</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== WITHDRAWALS ===== -->
+    <div class="admin-section" id="tab-withdrawals">
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-clock"></i> Pending Withdrawals <span id="pendingCount" style="color:var(--text-muted); font-size:12px;"></span></div>
+            <div id="pendingWithdrawals">
+                <div class="empty-state">No pending withdrawals</div>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-history"></i> Withdrawal History</div>
+            <div id="withdrawHistory">
+                <div class="empty-state">No withdrawal history</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TASKS ===== -->
+    <div class="admin-section" id="tab-tasks">
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-plus"></i> Add New Task</div>
+            <div class="admin-row">
+                <input type="text" class="admin-input" id="taskName" placeholder="Task Name">
+            </div>
+            <div class="admin-row">
+                <input type="text" class="admin-input" id="taskReward" placeholder="Reward (e.g. Ⓝ5)">
+                <input type="text" class="admin-input" id="taskType" placeholder="Type (telegram/youtube/facebook)">
+                <input type="text" class="admin-input" id="taskTime" placeholder="Time (e.g. 2 min)">
+            </div>
+            <button class="admin-btn success block" onclick="addTask()">➕ Add Task</button>
+        </div>
+
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-list"></i> All Tasks</div>
+            <div id="taskList">
+                <div class="empty-state">No tasks added</div>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-clock"></i> Pending Task Submissions</div>
+            <div id="pendingTasks">
+                <div class="empty-state">No pending submissions</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div class="admin-section" id="tab-settings">
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-sliders-h"></i> General Settings</div>
+            
+            <div class="settings-group">
+                <label>Daily Video Ads Limit</label>
+                <input type="number" class="admin-input" id="videoLimit" value="30">
+            </div>
+            
+            <div class="settings-group">
+                <label>Daily Spin Limit</label>
+                <input type="number" class="admin-input" id="spinLimit" value="10">
+            </div>
+            
+            <div class="settings-group">
+                <label>Daily Website Visit Limit</label>
+                <input type="number" class="admin-input" id="websiteLimit" value="15">
+            </div>
+            
+            <div class="settings-group">
+                <label>Minimum Withdraw Amount (Ⓝ)</label>
+                <input type="number" class="admin-input" id="minWithdraw" value="20">
+            </div>
+            
+            <div class="settings-group">
+                <label>Withdraw Fee (Ⓝ)</label>
+                <input type="number" class="admin-input" id="withdrawFee" value="0.05" step="0.01">
+            </div>
+            
+            <div class="settings-group">
+                <label>Reward Per Ad (Ⓝ)</label>
+                <input type="number" class="admin-input" id="adReward" value="1">
+            </div>
+            
+            <button class="admin-btn primary block" onclick="saveSettings()">💾 Save Settings</button>
+        </div>
+
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-shield-alt"></i> Security</div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="allowWithdraw" checked>
+                <label for="allowWithdraw">Allow Withdrawals</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="allowTasks" checked>
+                <label for="allowTasks">Allow Tasks</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="allowSpin" checked>
+                <label for="allowSpin">Allow Lucky Spin</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="allowWebsite" checked>
+                <label for="allowWebsite">Allow Website Visits</label>
+            </div>
+            <button class="admin-btn warning block" style="margin-top:8px;" onclick="saveSecurity()">🔒 Save Security Settings</button>
+        </div>
+    </div>
+
+    <!-- ===== LINKS ===== -->
+    <div class="admin-section" id="tab-links">
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-link"></i> Official Links</div>
+            
+            <div class="settings-group">
+                <label>🌐 Website</label>
+                <div class="link-group">
+                    <input type="text" class="admin-input" id="linkWebsite" value="https://nxona.online">
+                    <button class="admin-btn info" onclick="saveLink('website')">Save</button>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <label>💬 Telegram Group</label>
+                <div class="link-group">
+                    <input type="text" class="admin-input" id="linkGroup" value="https://t.me/NxEranGroup">
+                    <button class="admin-btn info" onclick="saveLink('group')">Save</button>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <label>📢 Telegram Channel</label>
+                <div class="link-group">
+                    <input type="text" class="admin-input" id="linkChannel" value="https://t.me/NxEranChannel">
+                    <button class="admin-btn info" onclick="saveLink('channel')">Save</button>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <label>👥 Support</label>
+                <div class="link-group">
+                    <input type="text" class="admin-input" id="linkSupport" value="https://t.me/NxEranSupport">
+                    <button class="admin-btn info" onclick="saveLink('support')">Save</button>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <label>📘 Facebook</label>
+                <div class="link-group">
+                    <input type="text" class="admin-input" id="linkFacebook" value="https://facebook.com/nxona">
+                    <button class="admin-btn info" onclick="saveLink('facebook')">Save</button>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <label>▶️ YouTube</label>
+                <div class="link-group">
+                    <input type="text" class="admin-input" id="linkYoutube" value="https://youtube.com/nxona">
+                    <button class="admin-btn info" onclick="saveLink('youtube')">Save</button>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <label>📸 Instagram</label>
+                <div class="link-group">
+                    <input type="text" class="admin-input" id="linkInstagram" value="https://instagram.com/nxona">
+                    <button class="admin-btn info" onclick="saveLink('instagram')">Save</button>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <label>❌ X (Twitter)</label>
+                <div class="link-group">
+                    <input type="text" class="admin-input" id="linkTwitter" value="https://twitter.com/nxona">
+                    <button class="admin-btn info" onclick="saveLink('twitter')">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <div class="title"><i class="fas fa-globe"></i> Visit Website Links</div>
+            <div id="visitLinksList">
+                <!-- Dynamically loaded -->
+            </div>
+            <div class="admin-row">
+                <input type="text" class="admin-input" id="newVisitLink" placeholder="New visit link">
+                <button class="admin-btn success" onclick="addVisitLink()">➕ Add</button>
+            </div>
+            <button class="admin-btn primary block" style="margin-top:8px;" onclick="saveVisitLinks()">💾 Save All Visit Links</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== ADMIN STATE =====
+    let adminData = {
+        users: [],
+        withdrawals: [],
+        tasks: [],
+        pendingTasks: [],
+        visitLinks: [],
+        settings: {
+            videoLimit: 30,
+            spinLimit: 10,
+            websiteLimit: 15,
+            minWithdraw: 20,
+            withdrawFee: 0.05,
+            adReward: 1,
+            allowWithdraw: true,
+            allowTasks: true,
+            allowSpin: true,
+            allowWebsite: true
+        },
+        links: {
+            website: 'https://nxona.online',
+            group: 'https://t.me/NxEranGroup',
+            channel: 'https://t.me/NxEranChannel',
+            support: 'https://t.me/NxEranSupport',
+            facebook: 'https://facebook.com/nxona',
+            youtube: 'https://youtube.com/nxona',
+            instagram: 'https://instagram.com/nxona',
+            twitter: 'https://twitter.com/nxona'
+        },
+        announcement: {
+            text: '🎉 Welcome to NX ERAN! Start earning now!',
+            time: 'Today'
+        }
+    };
+
+    // ===== DEFAULT VISIT LINKS =====
+    const DEFAULT_VISIT_LINKS = [
+        'https://omg10.com/4/11457359',
+        'https://omg10.com/4/11457361',
+        'https://omg10.com/4/9898635',
+        'https://omg10.com/4/11457363',
+        'https://omg10.com/4/11457365'
+    ];
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', function() {
+        loadAdminData();
+        updateUI();
+        loadAnnouncement();
+        renderVisitLinks();
+        
+        // Auto-sync users from user panel
+        syncUsers();
+    });
+
+    // ===== LOAD ADMIN DATA =====
+    function loadAdminData() {
+        const saved = localStorage.getItem('nxeran_adminData');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                Object.assign(adminData, parsed);
+            } catch(e) {}
+        }
+        
+        // Load settings into inputs
+        document.getElementById('videoLimit').value = adminData.settings.videoLimit || 30;
+        document.getElementById('spinLimit').value = adminData.settings.spinLimit || 10;
+        document.getElementById('websiteLimit').value = adminData.settings.websiteLimit || 15;
+        document.getElementById('minWithdraw').value = adminData.settings.minWithdraw || 20;
+        document.getElementById('withdrawFee').value = adminData.settings.withdrawFee || 0.05;
+        document.getElementById('adReward').value = adminData.settings.adReward || 1;
+        
+        document.getElementById('allowWithdraw').checked = adminData.settings.allowWithdraw !== false;
+        document.getElementById('allowTasks').checked = adminData.settings.allowTasks !== false;
+        document.getElementById('allowSpin').checked = adminData.settings.allowSpin !== false;
+        document.getElementById('allowWebsite').checked = adminData.settings.allowWebsite !== false;
+        
+        // Load links
+        if (adminData.links) {
+            document.getElementById('linkWebsite').value = adminData.links.website || '';
+            document.getElementById('linkGroup').value = adminData.links.group || '';
+            document.getElementById('linkChannel').value = adminData.links.channel || '';
+            document.getElementById('linkSupport').value = adminData.links.support || '';
+            document.getElementById('linkFacebook').value = adminData.links.facebook || '';
+            document.getElementById('linkYoutube').value = adminData.links.youtube || '';
+            document.getElementById('linkInstagram').value = adminData.links.instagram || '';
+            document.getElementById('linkTwitter').value = adminData.links.twitter || '';
+        }
+        
+        // Load visit links
+        if (!adminData.visitLinks || adminData.visitLinks.length === 0) {
+            adminData.visitLinks = [...DEFAULT_VISIT_LINKS];
+        }
+    }
+
+    // ===== SAVE ADMIN DATA =====
+    function saveAdminData() {
+        localStorage.setItem('nxeran_adminData', JSON.stringify(adminData));
+        // Also save visit links separately for user panel
+        localStorage.setItem('nxeran_visitLinks', JSON.stringify(adminData.visitLinks));
+        // Save announcement separately for user panel
+        localStorage.setItem('nxeran_announcement', JSON.stringify(adminData.announcement));
+    }
+
+    // ===== SYNC USERS =====
+    function syncUsers() {
+        const allKeys = Object.keys(localStorage);
+        const userKeys = allKeys.filter(k => k.startsWith('nxeran_userData_'));
+        let synced = 0;
+        
+        userKeys.forEach(key => {
+            try {
+                const data = JSON.parse(localStorage.getItem(key));
+                const userId = key.replace('nxeran_userData_', '');
+                if (userId && userId !== 'default') {
+                    const existing = adminData.users.find(u => u.id == userId);
+                    if (existing) {
+                        existing.balance = data.balance || 0;
+                        existing.totalEarn = data.totalEarn || 0;
+                        existing.todayAds = data.todayAds || 0;
+                        existing.totalAds = data.totalAds || 0;
+                        existing.referrals = data.referrals ? data.referrals.length : 0;
+                        existing.level = data.level || 'Bronze';
+                        existing.name = data.firstName || 'User';
+                        existing.username = data.username || 'user';
+                    } else {
+                        adminData.users.push({
+                            id: userId,
+                            name: data.firstName || 'User',
+                            username: data.username || 'user',
+                            balance: data.balance || 0,
+                            totalEarn: data.totalEarn || 0,
+                            todayAds: data.todayAds || 0,
+                            totalAds: data.totalAds || 0,
+                            referrals: data.referrals ? data.referrals.length : 0,
+                            level: data.level || 'Bronze',
+                            status: data.isBanned ? 'banned' : 'active',
+                            joined: new Date().toLocaleDateString()
+                        });
+                    }
+                    synced++;
+                }
+            } catch(e) {}
+        });
+        
+        saveAdminData();
+        updateUI();
+        showNotification(`✅ Synced ${synced} users successfully!`);
+    }
+
+    // ===== TABS =====
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+            if (this.dataset.tab === 'dashboard') updateDashboard();
+            if (this.dataset.tab === 'users') renderUsers();
+            if (this.dataset.tab === 'withdrawals') renderWithdrawals();
+            if (this.dataset.tab === 'tasks') renderTasks();
+        });
+    });
+
+    // ===== UPDATE UI =====
+    function updateUI() {
+        updateDashboard();
+        renderUsers();
+        renderWithdrawals();
+        renderTasks();
+    }
+
+    // ===== DASHBOARD =====
+    function updateDashboard() {
+        document.getElementById('totalUsers').textContent = adminData.users.length;
+        const pending = adminData.withdrawals ? adminData.withdrawals.filter(w => w.status === 'pending').length : 0;
+        document.getElementById('totalWithdrawals').textContent = pending;
+        const totalEarn = adminData.users.reduce((sum, u) => sum + (u.totalEarn || 0), 0);
+        document.getElementById('totalEarnings').textContent = 'Ⓝ' + totalEarn.toFixed(2);
+        const today = new Date().toDateString();
+        const todayUsers = adminData.users.filter(u => u.todayAds > 0);
+        document.getElementById('todayUsers').textContent = todayUsers.length;
+    }
+
+    // ===== USERS =====
+    function renderUsers() {
+        const container = document.getElementById('userList');
+        document.getElementById('userCount').textContent = `(${adminData.users.length})`;
+        
+        if (adminData.users.length === 0) {
+            container.innerHTML = '<div class="empty-state">No users found</div>';
+            return;
+        }
+        
+        container.innerHTML = adminData.users.map(user => `
+            <div class="user-item">
+                <div class="info">
+                    <div class="name">${user.name} <span class="status-badge ${user.status}">${user.status}</span></div>
+                    <div class="id">ID: ${user.id} | @${user.username}</div>
+                    <div class="balance">Ⓝ ${(user.balance || 0).toFixed(2)} | Level: ${user.level} | Ads: ${user.totalAds || 0}</div>
+                </div>
+                <div class="actions">
+                    <button class="edit-btn" onclick="editUserBalance('${user.id}')"><i class="fas fa-edit"></i></button>
+                    ${user.status === 'active' ? 
+                        `<button class="ban-btn" onclick="banUser('${user.id}')"><i class="fas fa-ban"></i></button>` :
+                        `<button class="unban-btn" onclick="unbanUser('${user.id}')"><i class="fas fa-check"></i></button>`
+                    }
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function searchUser() {
+        const query = document.getElementById('searchUser').value.toLowerCase().trim();
+        const container = document.getElementById('searchResult');
+        
+        if (!query) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        const results = adminData.users.filter(u => 
+            u.id.toString().includes(query) || 
+            u.username.toLowerCase().includes(query) ||
+            u.name.toLowerCase().includes(query)
+        );
+        
+        if (results.length === 0) {
+            container.innerHTML = '<div class="empty-state" style="padding:10px;">No users found</div>';
+            return;
+        }
+        
+        container.innerHTML = results.map(user => `
+            <div class="user-item">
+                <div class="info">
+                    <div class="name">${user.name} <span class="status-badge ${user.status}">${user.status}</span></div>
+                    <div class="id">ID: ${user.id} | @${user.username}</div>
+                    <div class="balance">Ⓝ ${(user.balance || 0).toFixed(2)} | Level: ${user.level}</div>
+                </div>
+                <div class="actions">
+                    <button class="edit-btn" onclick="editUserBalance('${user.id}')"><i class="fas fa-edit"></i></button>
+                    ${user.status === 'active' ? 
+                        `<button class="ban-btn" onclick="banUser('${user.id}')"><i class="fas fa-ban"></i></button>` :
+                        `<button class="unban-btn" onclick="unbanUser('${user.id}')"><i class="fas fa-check"></i></button>`
+                    }
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function editUserBalance(userId) {
+        const amount = prompt('Enter new balance amount (Ⓝ):');
+        if (amount !== null) {
+            const user = adminData.users.find(u => u.id == userId);
+            if (user) {
+                user.balance = parseFloat(amount) || 0;
+                // Also update user data in localStorage
+                const userKey = 'nxeran_userData_' + userId;
+                const userData = JSON.parse(localStorage.getItem(userKey) || '{}');
+                userData.balance = user.balance;
+                localStorage.setItem(userKey, JSON.stringify(userData));
+                saveAdminData();
+                renderUsers();
+                showNotification('Balance updated!');
+            }
+        }
+    }
+
+    function banUser(userId) {
+        if (confirm('Ban this user?')) {
+            const user = adminData.users.find(u => u.id == userId);
+            if (user) {
+                user.status = 'banned';
+                // Update user data
+                const userKey = 'nxeran_userData_' + userId;
+                const userData = JSON.parse(localStorage.getItem(userKey) || '{}');
+                userData.isBanned = true;
+                localStorage.setItem(userKey, JSON.stringify(userData));
+                saveAdminData();
+                renderUsers();
+                showNotification('User banned!');
+            }
+        }
+    }
+
+    function unbanUser(userId) {
+        const user = adminData.users.find(u => u.id == userId);
+        if (user) {
+            user.status = 'active';
+            const userKey = 'nxeran_userData_' + userId;
+            const userData = JSON.parse(localStorage.getItem(userKey) || '{}');
+            userData.isBanned = false;
+            localStorage.setItem(userKey, JSON.stringify(userData));
+            saveAdminData();
+            renderUsers();
+            showNotification('User unbanned!');
+        }
+    }
+
+    // ===== WITHDRAWALS =====
+    function renderWithdrawals() {
+        // Pending
+        const pendingContainer = document.getElementById('pendingWithdrawals');
+        const pending = adminData.withdrawals ? adminData.withdrawals.filter(w => w.status === 'pending') : [];
+        document.getElementById('pendingCount').textContent = `(${pending.length})`;
+        
+        if (pending.length === 0) {
+            pendingContainer.innerHTML = '<div class="empty-state">No pending withdrawals</div>';
+        } else {
+            pendingContainer.innerHTML = pending.map(w => `
+                <div class="withdraw-item">
+                    <div class="info">
+                        <div class="user">${w.userName || 'User'} (${w.userId})</div>
+                        <div class="details">${w.method} - ${w.account}</div>
+                        <div class="amount">Ⓝ ${w.amount.toFixed(2)}</div>
+                        <div style="font-size:10px; color:var(--text-muted);">${w.date}</div>
+                    </div>
+                    <div class="actions">
+                        <button class="approve-btn" onclick="approveWithdraw('${w.id}')">✅ Approve</button>
+                        <button class="reject-btn" onclick="rejectWithdraw('${w.id}')">❌ Reject</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // History
+        const historyContainer = document.getElementById('withdrawHistory');
+        const history = adminData.withdrawals ? adminData.withdrawals.filter(w => w.status !== 'pending') : [];
+        if (history.length === 0) {
+            historyContainer.innerHTML = '<div class="empty-state">No withdrawal history</div>';
+        } else {
+            historyContainer.innerHTML = history.map(w => `
+                <div class="withdraw-item">
+                    <div class="info">
+                        <div class="user">${w.userName || 'User'} (${w.userId})</div>
+                        <div class="details">${w.method} - ${w.account}</div>
+                        <div class="amount">Ⓝ ${w.amount.toFixed(2)}</div>
+                        <div style="font-size:10px; color:var(--text-muted);">${w.date} · <span class="status-badge ${w.status}">${w.status}</span></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function approveWithdraw(id) {
+        if (confirm('Approve this withdrawal?')) {
+            const w = adminData.withdrawals.find(w => w.id == id);
+            if (w) {
+                w.status = 'completed';
+                // Update user's withdraw history
+                const userKey = 'nxeran_userData_' + w.userId;
+                const userData = JSON.parse(localStorage.getItem(userKey) || '{}');
+                if (userData.withdrawHistory) {
+                    const wh = userData.withdrawHistory.find(wh => wh.id == id);
+                    if (wh) wh.status = 'completed';
+                    localStorage.setItem(userKey, JSON.stringify(userData));
+                }
+                saveAdminData();
+                renderWithdrawals();
+                showNotification('Withdrawal approved!');
+            }
+        }
+    }
+
+    function rejectWithdraw(id) {
+        if (confirm('Reject this withdrawal?')) {
+            const w = adminData.withdrawals.find(w => w.id == id);
+            if (w) {
+                w.status = 'rejected';
+                // Refund user
+                const userKey = 'nxeran_userData_' + w.userId;
+                const userData = JSON.parse(localStorage.getItem(userKey) || '{}');
+                if (userData) {
+                    userData.balance = (userData.balance || 0) + w.amount;
+                    if (userData.withdrawHistory) {
+                        const wh = userData.withdrawHistory.find(wh => wh.id == id);
+                        if (wh) wh.status = 'rejected';
+                    }
+                    localStorage.setItem(userKey, JSON.stringify(userData));
+                    // Update admin user
+                    const adminUser = adminData.users.find(u => u.id == w.userId);
+                    if (adminUser) adminUser.balance = userData.balance;
+                }
+                saveAdminData();
+                renderWithdrawals();
+                showNotification('Withdrawal rejected! Balance refunded.');
+            }
+        }
+    }
+
+    // ===== TASKS =====
+    function renderTasks() {
+        // All tasks
+        const container = document.getElementById('taskList');
+        if (!adminData.tasks || adminData.tasks.length === 0) {
+            container.innerHTML = '<div class="empty-state">No tasks added</div>';
+        } else {
+            container.innerHTML = adminData.tasks.map((task, index) => `
+                <div class="task-item">
+                    <div class="info">
+                        <div class="name">${task.name}</div>
+                        <div class="details">Reward: ${task.reward} | Type: ${task.type} | Time: ${task.time || '2 min'}</div>
+                    </div>
+                    <div class="actions">
+                        <button class="delete-btn" onclick="deleteTask(${index})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Pending submissions
+        const pendingContainer = document.getElementById('pendingTasks');
+        if (!adminData.pendingTasks || adminData.pendingTasks.length === 0) {
+            pendingContainer.innerHTML = '<div class="empty-state">No pending submissions</div>';
+        } else {
+            pendingContainer.innerHTML = adminData.pendingTasks.map((task, index) => `
+                <div class="task-item">
+                    <div class="info">
+                        <div class="name">${task.userName} - ${task.taskName}</div>
+                        <div class="details">${task.username || task.details || ''} | ${task.date}</div>
+                    </div>
+                    <div class="actions">
+                        <button class="approve-btn" onclick="approveTask(${index})">✅ Approve</button>
+                        <button class="reject-btn" onclick="rejectTask(${index})">❌ Reject</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function addTask() {
+        const name = document.getElementById('taskName').value.trim();
+        const reward = document.getElementById('taskReward').value.trim();
+        const type = document.getElementById('taskType').value.trim();
+        const time = document.getElementById('taskTime').value.trim() || '2 min';
+        
+        if (!name || !reward || !type) {
+            showNotification('Please fill all required fields');
+            return;
+        }
+        if (!adminData.tasks) adminData.tasks = [];
+        adminData.tasks.push({ name, reward, type, time });
+        saveAdminData();
+        document.getElementById('taskName').value = '';
+        document.getElementById('taskReward').value = '';
+        document.getElementById('taskType').value = '';
+        document.getElementById('taskTime').value = '';
+        renderTasks();
+        showNotification('Task added!');
+    }
+
+    function deleteTask(index) {
+        if (confirm('Delete this task?')) {
+            adminData.tasks.splice(index, 1);
+            saveAdminData();
+            renderTasks();
+            showNotification('Task deleted!');
+        }
+    }
+
+    function approveTask(index) {
+        const task = adminData.pendingTasks[index];
+        if (task) {
+            const reward = parseFloat(task.reward) || 5;
+            const userKey = 'nxeran_userData_' + task.userId;
+            const userData = JSON.parse(localStorage.getItem(userKey) || '{}');
+            if (userData) {
+                userData.balance = (userData.balance || 0) + reward;
+                userData.totalEarn = (userData.totalEarn || 0) + reward;
+                localStorage.setItem(userKey, JSON.stringify(userData));
+                // Update admin user
+                const adminUser = adminData.users.find(u => u.id == task.userId);
+                if (adminUser) {
+                    adminUser.balance = userData.balance;
+                    adminUser.totalEarn = userData.totalEarn;
+                }
+            }
+            adminData.pendingTasks.splice(index, 1);
+            saveAdminData();
+            renderTasks();
+            showNotification(`Task approved! +Ⓝ${reward} given.`);
+        }
+    }
+
+    function rejectTask(index) {
+        adminData.pendingTasks.splice(index, 1);
+        saveAdminData();
+        renderTasks();
+        showNotification('Task rejected!');
+    }
+
+    // ===== SETTINGS =====
+    function saveSettings() {
+        adminData.settings.videoLimit = parseInt(document.getElementById('videoLimit').value) || 30;
+        adminData.settings.spinLimit = parseInt(document.getElementById('spinLimit').value) || 10;
+        adminData.settings.websiteLimit = parseInt(document.getElementById('websiteLimit').value) || 15;
+        adminData.settings.minWithdraw = parseFloat(document.getElementById('minWithdraw').value) || 20;
+        adminData.settings.withdrawFee = parseFloat(document.getElementById('withdrawFee').value) || 0.05;
+        adminData.settings.adReward = parseFloat(document.getElementById('adReward').value) || 1;
+        saveAdminData();
+        showNotification('Settings saved!');
+    }
+
+    function saveSecurity() {
+        adminData.settings.allowWithdraw = document.getElementById('allowWithdraw').checked;
+        adminData.settings.allowTasks = document.getElementById('allowTasks').checked;
+        adminData.settings.allowSpin = document.getElementById('allowSpin').checked;
+        adminData.settings.allowWebsite = document.getElementById('allowWebsite').checked;
+        saveAdminData();
+        showNotification('Security settings saved!');
+    }
+
+    // ===== LINKS =====
+    function saveLink(type) {
+        const inputMap = {
+            website: 'linkWebsite',
+            group: 'linkGroup',
+            channel: 'linkChannel',
+            support: 'linkSupport',
+            facebook: 'linkFacebook',
+            youtube: 'linkYoutube',
+            instagram: 'linkInstagram',
+            twitter: 'linkTwitter'
+        };
+        const value = document.getElementById(inputMap[type]).value.trim();
+        if (value) {
+            adminData.links[type] = value;
+            saveAdminData();
+            showNotification('Link saved!');
+        }
+    }
+
+    // ===== VISIT LINKS =====
+    function renderVisitLinks() {
+        const container = document.getElementById('visitLinksList');
+        if (!adminData.visitLinks || adminData.visitLinks.length === 0) {
+            adminData.visitLinks = [...DEFAULT_VISIT_LINKS];
+        }
+        container.innerHTML = adminData.visitLinks.map((link, index) => `
+            <div class="link-group">
+                <input type="text" class="admin-input" id="visitLink${index}" value="${link}">
+                <button class="admin-btn danger" onclick="removeVisitLink(${index})">✕</button>
+            </div>
+        `).join('');
+    }
+
+    function addVisitLink() {
+        const input = document.getElementById('newVisitLink');
+        const link = input.value.trim();
+        if (link) {
+            if (!adminData.visitLinks) adminData.visitLinks = [];
+            adminData.visitLinks.push(link);
+            input.value = '';
+            saveAdminData();
+            renderVisitLinks();
+            showNotification('Visit link added!');
+        }
+    }
+
+    function removeVisitLink(index) {
+        if (confirm('Remove this link?')) {
+            adminData.visitLinks.splice(index, 1);
+            saveAdminData();
+            renderVisitLinks();
+            showNotification('Link removed!');
+        }
+    }
+
+    function saveVisitLinks() {
+        const links = [];
+        document.querySelectorAll('#visitLinksList .link-group input').forEach(input => {
+            if (input.value.trim()) {
+                links.push(input.value.trim());
+            }
+        });
+        adminData.visitLinks = links;
+        saveAdminData();
+        showNotification('Visit links saved!');
+    }
+
+    // ===== ANNOUNCEMENT =====
+    function loadAnnouncement() {
+        const announcement = JSON.parse(localStorage.getItem('nxeran_announcement') || '{"text":"🎉 Welcome to NX ERAN! Start earning now!","time":"Today"}');
+        document.getElementById('announcementInput').value = announcement.text || '🎉 Welcome to NX ERAN! Start earning now!';
+        document.getElementById('announcementTime').value = announcement.time || 'Today';
+    }
+
+    function updateAnnouncement() {
+        const text = document.getElementById('announcementInput').value.trim();
+        const time = document.getElementById('announcementTime').value.trim();
+        if (text) {
+            adminData.announcement = { text, time };
+            saveAdminData();
+            showNotification('Announcement updated!');
+        }
+    }
+
+    // ===== EXPORT/IMPORT =====
+    function exportData() {
+        const data = JSON.stringify(adminData, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'nxeran_admin_data.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        showNotification('Data exported!');
+    }
+
+    function importData() {
+        document.getElementById('importFile').click();
+    }
+
+    function handleImport(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                Object.assign(adminData, data);
+                saveAdminData();
+                loadAdminData();
+                updateUI();
+                renderVisitLinks();
+                showNotification('Data imported successfully!');
+            } catch(err) {
+                showNotification('Invalid JSON file!');
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    // ===== NOTIFICATION =====
+    function showNotification(message) {
+        const existing = document.querySelector('.toast-notification');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    console.log('🔧 Rx Admin Panel Loaded!');
+    console.log('📊 Total Users:', adminData.users.length);
+    console.log('💸 Pending Withdrawals:', adminData.withdrawals ? adminData.withdrawals.filter(w => w.status === 'pending').length : 0);
+</script>
+</body>
+</html>
