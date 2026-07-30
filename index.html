@@ -6,6 +6,7 @@
     <title>NX ERAN - Earn Money</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
     
     <!-- RichAds Script (Passive) -->
     <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
@@ -19,495 +20,515 @@
     
     <!-- AdsGram SDK -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    
-    <style>
-        /* ===== CSS Variables (Light Mode Default) ===== */
-        :root {
-            --primary: #6C3CE1;
-            --primary-light: #8B5CF6;
-            --primary-dark: #5B2BCB;
-            --secondary: #EC4899;
-            --accent: #F59E0B;
-            --success: #10B981;
-            --danger: #EF4444;
-            --warning: #F59E0B;
-            --info: #3B82F6;
-            
-            --bg-start: #F5F3FF;
-            --bg-end: #EDE9FE;
-            --glass-bg: rgba(255, 255, 255, 0.4);
-            --glass-border: rgba(0, 0, 0, 0.08);
-            --glass-shadow: rgba(0, 0, 0, 0.1);
-            
-            --text-primary: #1A0F2E;
-            --text-secondary: #4B3A6B;
-            --text-muted: #8B7AAA;
-            
-            --card-bg: rgba(255, 255, 255, 0.3);
-            --card-border: rgba(0, 0, 0, 0.06);
-            
-            --radius: 16px;
-            --radius-sm: 10px;
-            --radius-lg: 24px;
-            
-            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        
-        /* Dark Mode */
-        body.dark-mode {
-            --bg-start: #0F0A1A;
-            --bg-end: #1A0F2E;
-            --text-primary: #FFFFFF;
-            --text-secondary: rgba(255, 255, 255, 0.8);
-            --text-muted: rgba(255, 255, 255, 0.5);
-            --glass-bg: rgba(255, 255, 255, 0.06);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --card-bg: rgba(255, 255, 255, 0.05);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: var(--font);
-            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: background 0.3s, color 0.3s;
-        }
-        
-        /* ==== باقی CSS আগের মতোই থাকবে, কিন্তু Color Variables আপডেটেড ==== */
-        /* (পুরো CSS এখানে দেওয়া সম্ভব নয়, তবে আমরা মূল অংশ দিচ্ছি) */
-        
-        /* সংক্ষেপে বাকি CSS আগের মতোই, তবে রঙ পরিবর্তন হয়েছে Light Mode default */
-        
-        /* ... (বাকি CSS পূর্বের মতো) ... */
-    </style>
 </head>
 <body>
-    <!-- ===== Loading Screen ===== -->
-    <!-- ... -->
-    
-    <!-- ===== App Container ===== -->
-    <div class="app-container" id="app">
-        <!-- Header -->
-        <!-- ... -->
-        
-        <!-- Content -->
-        <div class="content">
-            <!-- Home Section -->
-            <!-- ... -->
-            
-            <!-- Tasks Section -->
-            <!-- ... -->
-            
-            <!-- Refer Section -->
-            <!-- ... -->
-            
-            <!-- Wallet Section -->
-            <!-- ... -->
-            
-            <!-- Profile Section -->
-            <!-- ... -->
-        </div>
-        
-        <!-- Bottom Nav -->
-        <!-- ... -->
+
+<!-- ===== LOADING SCREEN ===== -->
+<div id="loading-screen">
+    <div class="orbit-loader">
+        <div class="orbit orbit-1"></div>
+        <div class="orbit orbit-2"></div>
+        <div class="orbit orbit-3"></div>
+        <div class="core"></div>
     </div>
-    
-    <!-- ===== Modals ===== -->
-    <!-- Spin Modal, Withdraw Modal, Task Modal, Visit Modal -->
-    <!-- ... -->
-    
-    <!-- ===== Scripts ===== -->
-    <script>
-        // ===== CONFIGURATION =====
-        const CONFIG = {
-            botApiToken: '8002896346:AAG96XdUmW6auh_xvmljrj7hQGKymXsqJtg',
-            botUsername: 'NxEranBot',
-            currency: 'Ⓝ',
-            currencyRate: 100,
-            adminId: '8407948229',
-            adminUsername: '@RxCoderBD',
-            rewardUrl: 'https://rxcoder-bd.github.io/bot/reward.html'
-        };
+    <div class="loading-text">NX ERAN</div>
+</div>
 
-        // ===== VISIT LINKS =====
-        let visitLinks = [];
-        
-        // ===== STATE =====
-        let userData = {
-            id: 'Loading...',
-            username: 'User',
-            firstName: 'User',
-            balance: 0,
-            todayEarnings: 0,
-            todayAds: 0,
-            totalAds: 0,
-            referrals: [],
-            level: 'Bronze',
-            levelXP: 0,
-            rank: 0,
-            totalEarn: 0,
-            totalWithdraw: 0,
-            gigaRemaining: 30,
-            monetagRemaining: 30,
-            adsgramRemaining: 30,
-            spinRemaining: 30,
-            websiteRemaining: 30, // added limit
-            completedTasks: [],
-            referralLink: 'Loading...',
-            joinedDate: new Date().toLocaleDateString(),
-            transactions: [],
-            withdrawHistory: [],
-            achievements: [],
-            isBanned: false,
-            settings: {
-                darkMode: false, // default light mode
-                notifications: true,
-                sound: true
-            },
-            redeemedCodes: []
-        };
+<!-- ===== APP CONTAINER ===== -->
+<div class="app-container" id="app">
 
-        let isAdRunning = false;
-        let isWebsiteTaskRunning = false;
-        let visitTimerInterval = null;
-        let adminSettings = {};
-        let adminLinks = {};
-        let adminTasks = [];
-        let leaderboardData = [];
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-top">
+            <div class="header-brand">
+                <span class="bot-name">NX ERAN</span>
+                <span class="verified"><i class="fas fa-badge-check"></i></span>
+            </div>
+            <div class="header-balance">
+                <span class="currency">Ⓝ</span>
+                <span id="headerBalance">0.00</span>
+            </div>
+        </div>
+        <div class="header-user">
+            <div class="header-avatar" id="headerAvatar">
+                <img src="https://via.placeholder.com/36" alt="Avatar" id="avatarImg">
+            </div>
+            <div class="header-user-info">
+                <span class="header-username" id="headerUsername">User</span>
+                <span class="header-userid" id="headerUserId">ID: Loading...</span>
+            </div>
+        </div>
+    </header>
 
-        // ===== LOADING SCREEN =====
-        // ... (same as before)
-        
-        // ===== INIT APP =====
-        function initApp() {
-            initTelegram();
-            loadUserData();
-            loadAdminData();
-            loadSettings();
-            updateUI();
-            initReferralLink();
-            loadAnnouncement();
-            renderRecentActivity();
-            renderWithdrawHistory();
-            renderAchievements();
-            renderOfficialLinks();
-            renderShortTasks();
-            initAdsGramInterstitial();
-            checkDailyReset();
-            loadLeaderboard();
-            updateLevel();
-            loadVisitLinks();
-        }
+    <!-- ===== CONTENT ===== -->
+    <div class="content">
 
-        // ===== LOAD VISIT LINKS =====
-        function loadVisitLinks() {
-            const saved = localStorage.getItem('nxeran_visitLinks');
-            if (saved) {
-                try {
-                    visitLinks = JSON.parse(saved);
-                } catch(e) {
-                    visitLinks = DEFAULT_VISIT_LINKS;
-                }
-            } else {
-                visitLinks = DEFAULT_VISIT_LINKS;
-            }
-        }
-
-        // ===== UPDATE LEVEL =====
-        function updateLevel() {
-            const xp = userData.totalAds + (userData.totalEarn * 10) + (userData.referrals ? userData.referrals.length * 50 : 0);
-            userData.levelXP = xp;
-            let level = 'Bronze';
-            if (xp >= 10000) level = 'Master';
-            else if (xp >= 5000) level = 'Diamond';
-            else if (xp >= 2000) level = 'Platinum';
-            else if (xp >= 1000) level = 'Gold';
-            else if (xp >= 500) level = 'Silver';
-            userData.level = level;
-            saveUserData();
-        }
-
-        // ===== LEADERBOARD =====
-        function loadLeaderboard() {
-            const saved = localStorage.getItem('nxeran_leaderboard');
-            if (saved) {
-                try {
-                    leaderboardData = JSON.parse(saved);
-                } catch(e) {
-                    leaderboardData = [];
-                }
-            }
-            // If empty, generate from users
-            if (leaderboardData.length === 0) {
-                syncLeaderboard();
-            }
-            renderLeaderboard();
-        }
-
-        function syncLeaderboard() {
-            const adminData = JSON.parse(localStorage.getItem('nxeran_adminData') || '{}');
-            const users = adminData.users || [];
-            leaderboardData = users.map(u => ({
-                id: u.id,
-                name: u.name,
-                username: u.username,
-                balance: u.balance || 0,
-                totalEarn: u.totalEarn || 0,
-                level: u.level || 'Bronze',
-                totalAds: u.totalAds || 0
-            }));
-            // Sort by totalEarn descending
-            leaderboardData.sort((a, b) => b.totalEarn - a.totalEarn);
-            // Assign ranks
-            leaderboardData.forEach((user, index) => {
-                user.rank = index + 1;
-            });
-            localStorage.setItem('nxeran_leaderboard', JSON.stringify(leaderboardData));
-            // Update current user's rank
-            const current = leaderboardData.find(u => u.id == userData.id);
-            if (current) {
-                userData.rank = current.rank;
-                saveUserData();
-            }
-        }
-
-        function renderLeaderboard() {
-            // Display in leaderboard section (you need to add a leaderboard section in HTML)
-            // For now we'll add a card in home or separate section
-            // We'll add a leaderboard section in the nav later
-        }
-
-        // ===== REDEEM CODE =====
-        function redeemCode(code) {
-            if (userData.isBanned) {
-                showNotification('⛔ Your account is banned!');
-                return;
-            }
-            const codes = JSON.parse(localStorage.getItem('nxeran_redeem_codes') || '[]');
-            const found = codes.find(c => c.code === code && c.usedCount < c.maxUses);
-            if (!found) {
-                showNotification('❌ Invalid or expired code!');
-                return;
-            }
-            // Check if user already redeemed this code
-            if (userData.redeemedCodes && userData.redeemedCodes.includes(code)) {
-                showNotification('❌ You already redeemed this code!');
-                return;
-            }
-            // Apply reward
-            userData.balance += found.amount;
-            userData.totalEarn += found.amount;
-            found.usedCount += 1;
-            if (!userData.redeemedCodes) userData.redeemedCodes = [];
-            userData.redeemedCodes.push(code);
-            localStorage.setItem('nxeran_redeem_codes', JSON.stringify(codes));
-            saveUserData();
-            updateUI();
-            showNotification(`✅ Redeemed Ⓝ${found.amount}!`);
-        }
-
-        // ===== VISIT WEBSITE (with limit & random links) =====
-        function startWebsiteVisit() {
-            if (isWebsiteTaskRunning) return;
-            if (userData.isBanned) {
-                showNotification('⛔ Your account is banned!');
-                return;
-            }
-            if (userData.websiteRemaining <= 0) {
-                showNotification('Daily website visit limit reached!');
-                return;
-            }
-            document.getElementById('visitModal').classList.add('active');
-            const duration = 12 + Math.floor(Math.random() * 11);
-            document.getElementById('visitTimer').textContent = duration;
-        }
-
-        function openVisitLink() {
-            if (isWebsiteTaskRunning) return;
-            if (userData.websiteRemaining <= 0) {
-                showNotification('Daily limit reached!');
-                return;
-            }
+        <!-- ===== HOME SECTION ===== -->
+        <div class="section active" id="section-home">
             
-            isWebsiteTaskRunning = true;
-            const btn = document.getElementById('visitStartBtn');
-            btn.disabled = true;
-            btn.textContent = '⏳ Watching...';
-
-            const link = visitLinks[Math.floor(Math.random() * visitLinks.length)];
-            if (link) window.open(link, '_blank');
-
-            const timerDisplay = document.getElementById('visitTimer');
-            let seconds = parseInt(timerDisplay.textContent);
-            
-            visitTimerInterval = setInterval(() => {
-                seconds--;
-                timerDisplay.textContent = seconds;
-                if (seconds <= 0) {
-                    clearInterval(visitTimerInterval);
-                    userData.balance += 1;
-                    userData.todayEarnings += 1;
-                    userData.totalEarn += 1;
-                    userData.totalAds += 1;
-                    userData.websiteRemaining -= 1;
-                    
-                    userData.transactions.unshift({
-                        type: 'website',
-                        title: 'Website Visit Reward',
-                        amount: 1,
-                        date: new Date().toLocaleString(),
-                        icon: 'fa-globe'
-                    });
-                    
-                    isWebsiteTaskRunning = false;
-                    btn.disabled = false;
-                    btn.textContent = '🌐 Visit Now';
-                    updateUI();
-                    renderRecentActivity();
-                    closeModal('visitModal');
-                    showNotification('+Ⓝ1 earned!');
-                }
-            }, 1000);
-        }
-
-        // ===== TASK VERIFICATION (Telegram join check) =====
-        // For Telegram tasks, we'll simulate check via bot API (in real scenario you'd use bot API to check member)
-        // We'll add a function that calls the bot API to check if user is member of channel.
-        async function checkTelegramMembership(userId, channelUsername) {
-            // This requires bot token and method getChatMember
-            // For demo, we'll assume joined if not banned
-            // In production, implement actual check
-            try {
-                const url = `https://api.telegram.org/bot${CONFIG.botApiToken}/getChatMember?chat_id=@${channelUsername}&user_id=${userId}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                if (data.ok) {
-                    const status = data.result.status;
-                    return status === 'member' || status === 'administrator' || status === 'creator';
-                }
-                return false;
-            } catch(e) {
-                return false;
-            }
-        }
-
-        // Modify verifyTask to check membership for Telegram tasks
-        async function verifyTask(taskId) {
-            const task = adminTasks.find(t => t.id == taskId);
-            if (!task) {
-                showNotification('Task not found!');
-                return;
-            }
-            if (userData.completedTasks && userData.completedTasks.includes(taskId)) {
-                showNotification('You already completed this task!');
-                return;
-            }
-            if (task.type === 'telegram' && task.link) {
-                // Extract channel username from link
-                const match = task.link.match(/t\.me\/([^\/\?]+)/);
-                if (match) {
-                    const channel = match[1];
-                    const isMember = await checkTelegramMembership(userData.id, channel);
-                    if (!isMember) {
-                        showNotification('❌ You are not a member of the channel!');
-                        return;
-                    }
-                }
-            }
-            // Reward
-            const rewardAmount = parseFloat(task.reward.replace('Ⓝ', '')) || 5;
-            userData.balance += rewardAmount;
-            userData.totalEarn += rewardAmount;
-            userData.todayEarnings += rewardAmount;
-            if (!userData.completedTasks) userData.completedTasks = [];
-            userData.completedTasks.push(taskId);
-            userData.transactions.unshift({
-                type: 'task',
-                title: `Task Reward: ${task.name}`,
-                amount: rewardAmount,
-                date: new Date().toLocaleString(),
-                icon: 'fa-check'
-            });
-            updateUI();
-            renderRecentActivity();
-            renderShortTasks();
-            closeModal('taskModal');
-            showNotification(`✅ Task completed! +Ⓝ${rewardAmount} earned!`);
-            // No message to admin
-        }
-
-        // ===== BANNED USER =====
-        function showBannedMessage() {
-            const adminId = adminSettings.contactAdminId || CONFIG.adminId;
-            const msg = `⛔ Your account has been banned. Please contact admin: @${adminSettings.adminUsername || 'RxCoderBD'} (ID: ${adminId})`;
-            showNotification(msg);
-            // Also show in a modal
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay active';
-            modal.innerHTML = `
-                <div class="modal" style="text-align:center; padding:30px;">
-                    <div style="font-size:48px;">⛔</div>
-                    <h2 style="margin:16px 0;">Account Banned</h2>
-                    <p style="color:var(--text-secondary);">Your account has been suspended.</p>
-                    <p style="color:var(--text-muted); margin-top:8px;">Contact admin for assistance.</p>
-                    <button onclick="this.parentElement.parentElement.remove()" class="spin-btn" style="margin-top:16px;">OK</button>
+            <div class="card">
+                <div class="balance-big">
+                    <div class="label">Total Balance</div>
+                    <div class="amount">
+                        <span class="currency">Ⓝ</span>
+                        <span id="homeBalance">0.00</span>
+                    </div>
                 </div>
-            `;
-            document.body.appendChild(modal);
-        }
+            </div>
 
-        // ===== BROADCAST / ANNOUNCEMENT =====
-        // We already have loadAnnouncement and updateAnnouncement, but we need to send bot messages to all users.
-        // In admin panel we have sendAnnouncementToAll() that uses sendMessageToUser.
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value green" id="todayIncome">+Ⓝ0.00</div>
+                    <div class="stat-label">Today's Income</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value gold" id="todayAds">0</div>
+                    <div class="stat-label">Ads Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value purple" id="totalAds">0</div>
+                    <div class="stat-label">Total Ads</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value pink" id="totalReferrals">0</div>
+                    <div class="stat-label">Referrals</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value blue" id="userLevel">Bronze</div>
+                    <div class="stat-label">Level</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="userRank">#--</div>
+                    <div class="stat-label">Rank</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value gold" id="totalEarn">Ⓝ0.00</div>
+                    <div class="stat-label">Total Earn</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value red" id="totalWithdraw">Ⓝ0.00</div>
+                    <div class="stat-label">Total Withdraw</div>
+                </div>
+            </div>
 
-        // ===== ADMIN LOGIN (in admin panel) =====
-        // This is handled in admin.html
+            <div class="announcement" id="announcementBox">
+                <i class="fas fa-bullhorn"></i>
+                <span class="text" id="announcementText">🎉 Welcome to NX ERAN! Start earning now!</span>
+                <span class="time" id="announcementTime">Today</span>
+            </div>
 
-        // ===== MULTIPLE ADMIN IDS =====
-        // We'll store in adminData.adminIds array.
+            <div class="card">
+                <div class="card-title"><i class="fas fa-bolt"></i> Quick Actions</div>
+                <div class="quick-actions">
+                    <div class="quick-btn gradient-1" onclick="navigateTo('tasks')">
+                        <i class="fas fa-video"></i>
+                        <span class="label">Watch Ads</span>
+                    </div>
+                    <div class="quick-btn gradient-2" onclick="openSpin()">
+                        <i class="fas fa-spinner"></i>
+                        <span class="label">Lucky Spin</span>
+                    </div>
+                    <div class="quick-btn gradient-3" onclick="navigateTo('tasks')">
+                        <i class="fas fa-tasks"></i>
+                        <span class="label">Tasks</span>
+                    </div>
+                    <div class="quick-btn gradient-4" onclick="startWebsiteVisit()">
+                        <i class="fas fa-globe"></i>
+                        <span class="label">Visit Website</span>
+                    </div>
+                </div>
+            </div>
 
-        // ===== REDEEM CODE SYSTEM =====
-        // Already added redeemCode function.
+            <div class="card">
+                <div class="card-title"><i class="fas fa-clock"></i> Recent Activity</div>
+                <div id="recentActivity">
+                    <div class="activity-item">
+                        <div class="left">
+                            <div class="icon"><i class="fas fa-info"></i></div>
+                            <div class="info">
+                                <div class="title">No activity yet</div>
+                                <div class="time">Start earning now!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        // ===== LEADERBOARD & LEVELS =====
-        // Already added.
+            <div class="adsgram-task-container" id="adsgramInterstitial1"></div>
+            
+        </div>
 
-        // ===== SECURITY TOGGLES =====
-        // Fix: ensure toggles work properly in settings.
+        <!-- ===== TASKS SECTION ===== -->
+        <div class="section" id="section-tasks">
+            
+            <div class="card">
+                <div class="card-title"><i class="fas fa-play"></i> Watch Ads</div>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                    Choose an ad network. Each ad gives Ⓝ1 reward. 30 ads per network daily.
+                </p>
+                
+                <div class="ad-network-grid">
+                    <button class="ad-network-btn giga" onclick="watchAd('gigapub')" id="gigaBtn">
+                        <i class="fas fa-bolt"></i>
+                        GigaPub
+                        <span class="limit"><span id="gigaRemaining">30</span>/30</span>
+                    </button>
+                    <button class="ad-network-btn monetag" onclick="watchAd('monetag')" id="monetagBtn">
+                        <i class="fas fa-fire"></i>
+                        Monetag
+                        <span class="limit"><span id="monetagRemaining">30</span>/30</span>
+                    </button>
+                    <button class="ad-network-btn adsgram" onclick="watchAd('adsgram')" id="adsgramBtn">
+                        <i class="fas fa-star"></i>
+                        AdsGram
+                        <span class="limit"><span id="adsgramRemaining">30</span>/30</span>
+                    </button>
+                </div>
+            </div>
 
-        // ===== UI IMPROVEMENTS =====
-        // Light mode default, color enhancements.
+            <div class="card">
+                <div class="card-title"><i class="fas fa-spinner"></i> Lucky Spin</div>
+                <div class="task-card">
+                    <div class="task-icon" style="background: linear-gradient(135deg, #F59E0B, #EC4899);"><i class="fas fa-gem"></i></div>
+                    <div class="task-info">
+                        <div class="name">Lucky Spin</div>
+                        <div class="details">
+                            <span><i class="fas fa-coins"></i> Up to Ⓝ3</span>
+                            <span><i class="fas fa-layer-group"></i> <span id="spinRemaining">30</span>/30</span>
+                        </div>
+                    </div>
+                    <button class="task-btn" onclick="openSpin()" style="background: linear-gradient(135deg, #F59E0B, #EC4899);">Spin</button>
+                </div>
+            </div>
 
-        // ===== NOTIFICATION FORMATTING =====
-        // Enhanced messages with emojis and bold.
+            <div class="card">
+                <div class="card-title"><i class="fas fa-tasks"></i> Short Tasks</div>
+                <div id="shortTasks">
+                    <div class="task-card">
+                        <div class="task-icon" style="background: linear-gradient(135deg, #6C3CE1, #EC4899);"><i class="fas fa-plus"></i></div>
+                        <div class="task-info">
+                            <div class="name">No tasks available</div>
+                            <div class="details">Check back later for new tasks</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        // ===== ADMIN PANEL DESIGN =====
-        // Improved colors and layout.
+            <div class="card">
+                <div class="card-title"><i class="fas fa-globe"></i> Visit Website</div>
+                <div class="task-card">
+                    <div class="task-icon" style="background: linear-gradient(135deg, #10B981, #059669);"><i class="fas fa-globe"></i></div>
+                    <div class="task-info">
+                        <div class="name">Visit Website</div>
+                        <div class="details">
+                            <span><i class="fas fa-coins"></i> Ⓝ1</span>
+                            <span><i class="fas fa-clock"></i> 12-22s</span>
+                            <span><i class="fas fa-layer-group"></i> <span id="websiteRemaining">30</span>/30</span>
+                        </div>
+                    </div>
+                    <button class="task-btn" onclick="startWebsiteVisit()" id="websiteBtn">▶ Start</button>
+                </div>
+            </div>
 
-        // ===== ADDITIONAL FEATURES =====
-        // We'll add a Redeem Code section in profile or home.
+            <div class="adsgram-task-container" id="adsgramInterstitial2"></div>
+            
+        </div>
 
-        // ... (rest of the JavaScript)
+        <!-- ===== REFER SECTION ===== -->
+        <div class="section" id="section-refer">
+            <div class="card">
+                <div class="card-title"><i class="fas fa-share-alt"></i> Refer & Earn</div>
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 12px;">
+                    Invite friends and earn <strong style="color: var(--accent);">10%</strong> of their earnings!
+                </p>
+                <div style="background: var(--glass-bg); border-radius: var(--radius-sm); padding: 12px; text-align: center; border: 1px solid var(--glass-border);">
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Your Referral Link</div>
+                    <div style="font-size: 12px; font-weight: 600; word-break: break-all; color: var(--primary-light);" id="referralLink">Loading...</div>
+                    <button class="spin-btn" style="margin-top: 8px; padding: 8px; font-size: 13px;" onclick="copyReferral()">
+                        <i class="fas fa-copy"></i> Copy Link
+                    </button>
+                </div>
+            </div>
 
-        // Make sure to call initApp after DOM loaded.
-        document.addEventListener('DOMContentLoaded', function() {
-            // Loading screen
-            setTimeout(() => {
-                document.getElementById('loading-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('loading-screen').style.display = 'none';
-                    document.getElementById('app').classList.add('visible');
-                    initApp();
-                }, 500);
-            }, 1500);
-        });
-    </script>
+            <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                <div class="stat-item">
+                    <div class="stat-value gold" id="refCount">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value green" id="refToday">0</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value purple" id="refPending">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value pink" id="refEarnings">Ⓝ0</div>
+                    <div class="stat-label">Earned</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-users"></i> Your Referrals</div>
+                <div id="referralList">
+                    <div class="activity-item">
+                        <div class="left">
+                            <div class="icon"><i class="fas fa-user"></i></div>
+                            <div class="info">
+                                <div class="title">No referrals yet</div>
+                                <div class="time">Start inviting friends!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="adsgram-task-container" id="adsgramInterstitial3"></div>
+            
+        </div>
+
+        <!-- ===== WALLET SECTION ===== -->
+        <div class="section" id="section-wallet">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value gold" id="walletBalance">Ⓝ0.00</div>
+                    <div class="stat-label">Balance</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value green" id="walletToday">+Ⓝ0.00</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value purple" id="walletTotal">Ⓝ0.00</div>
+                    <div class="stat-label">Total Earn</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value blue" id="walletPending">Ⓝ0.00</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-credit-card"></i> Withdraw Methods</div>
+                <div class="withdraw-option" onclick="showWithdraw('bkash')">
+                    <i class="fas fa-mobile-alt" style="color:var(--primary-light);"></i>
+                    <div class="info"><strong>bKash</strong><br><span>Min: Ⓝ<span id="minWithdrawDisplay">20</span></span></div>
+                    <i class="fas fa-chevron-right" style="color:var(--text-muted); font-size:12px;"></i>
+                </div>
+                <div class="withdraw-option" onclick="showWithdraw('nagad')">
+                    <i class="fas fa-university" style="color:var(--secondary);"></i>
+                    <div class="info"><strong>Nagad</strong><br><span>Min: Ⓝ<span id="minWithdrawDisplay2">20</span></span></div>
+                    <i class="fas fa-chevron-right" style="color:var(--text-muted); font-size:12px;"></i>
+                </div>
+                <div class="withdraw-option" onclick="showWithdraw('binance')">
+                    <i class="fab fa-bitcoin" style="color:var(--accent);"></i>
+                    <div class="info"><strong>Binance</strong><br><span>No Fee</span></div>
+                    <i class="fas fa-chevron-right" style="color:var(--text-muted); font-size:12px;"></i>
+                </div>
+                <div class="withdraw-option" onclick="showWithdraw('nxonapay')">
+                    <i class="fas fa-coins" style="color:#10B981;"></i>
+                    <div class="info"><strong>NxonaPay</strong><br><span>Min: Ⓝ10</span></div>
+                    <i class="fas fa-chevron-right" style="color:var(--text-muted); font-size:12px;"></i>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-history"></i> Withdraw History</div>
+                <div id="withdrawHistory">
+                    <div class="activity-item">
+                        <div class="left">
+                            <div class="icon"><i class="fas fa-clock"></i></div>
+                            <div class="info">
+                                <div class="title">No withdraw requests</div>
+                                <div class="time">Your history will appear here</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="adsgram-task-container" id="adsgramInterstitial4"></div>
+            
+        </div>
+
+        <!-- ===== PROFILE SECTION ===== -->
+        <div class="section" id="section-profile">
+            <div class="card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <img src="https://via.placeholder.com/56" alt="Profile" id="profileAvatarImg">
+                    </div>
+                    <div>
+                        <div class="profile-name" id="profileName">User</div>
+                        <div class="profile-username" id="profileUsername">@username</div>
+                        <span class="profile-badge" id="profileBadge">🌟 New Member</span>
+                    </div>
+                </div>
+                <div class="profile-info-grid">
+                    <div><span>User ID:</span> <span id="profileUserId">Loading...</span></div>
+                    <div><span>Joined:</span> <span id="profileJoined">Loading...</span></div>
+                    <div><span>Level:</span> <span id="profileLevel">Bronze</span></div>
+                    <div><span>Status:</span> <span id="profileStatus" style="color:var(--success);">● Active</span></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-trophy"></i> Achievements</div>
+                <div id="achievementsList"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-link"></i> Official Links</div>
+                <div class="links-grid" id="officialLinks"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-cog"></i> Settings</div>
+                <div class="setting-item">
+                    <div class="left">
+                        <i class="fas fa-moon"></i>
+                        <span class="label">Dark Mode</span>
+                    </div>
+                    <div class="toggle active" id="darkModeToggle" onclick="toggleDarkMode()">
+                        <div class="thumb"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="left">
+                        <i class="fas fa-bell"></i>
+                        <span class="label">Notifications</span>
+                    </div>
+                    <div class="toggle active" id="notificationToggle" onclick="toggleNotification()">
+                        <div class="thumb"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="left">
+                        <i class="fas fa-volume-up"></i>
+                        <span class="label">Sound</span>
+                    </div>
+                    <div class="toggle active" id="soundToggle" onclick="toggleSound()">
+                        <div class="thumb"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align:center; padding:8px; color:var(--text-muted); font-size:11px;" id="versionDisplay">
+                Version 3.0.0 | NX ERAN Ⓝ
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-gift"></i> Redeem Code</div>
+                <div class="admin-row" style="display:flex; gap:8px;">
+                    <input type="text" class="admin-input" id="redeemInput" placeholder="Enter code" style="flex:1; background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:8px; padding:10px; color:var(--text-primary);">
+                    <button class="spin-btn" onclick="redeemCode(document.getElementById('redeemInput').value.trim().toUpperCase())" style="padding:10px 20px; font-size:13px; flex-shrink:0;">Redeem</button>
+                </div>
+            </div>
+
+            <div class="adsgram-task-container" id="adsgramInterstitial5"></div>
+            
+        </div>
+
+    </div>
+
+    <!-- ===== BOTTOM NAVIGATION ===== -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-section="home" onclick="navigateTo('home')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-item" data-section="tasks" onclick="navigateTo('tasks')">
+            <i class="fas fa-tasks"></i>
+            <span>Tasks</span>
+        </button>
+        <button class="nav-item" data-section="refer" onclick="navigateTo('refer')">
+            <i class="fas fa-users"></i>
+            <span>Refer</span>
+            <span class="badge" id="referBadge">0</span>
+        </button>
+        <button class="nav-item" data-section="wallet" onclick="navigateTo('wallet')">
+            <i class="fas fa-wallet"></i>
+            <span>Wallet</span>
+        </button>
+        <button class="nav-item" data-section="profile" onclick="navigateTo('profile')">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+
+</div>
+
+<!-- ===== MODALS ===== -->
+<div class="modal-overlay" id="spinModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('spinModal')">&times;</button>
+        <div class="modal-title">🎡 Lucky Spin</div>
+        <div style="font-size:12px; color:var(--text-secondary); text-align:center; margin-bottom:12px;">
+            Watch a short ad to spin. Rewards: Ⓝ0.5 - Ⓝ3
+        </div>
+        <div class="spin-container">
+            <div class="spin-wheel" id="spinWheel">
+                <div class="pointer"><i class="fas fa-caret-down"></i></div>
+                <div class="spin-center">SPIN</div>
+            </div>
+        </div>
+        <button class="spin-btn" onclick="spinWheel()" id="spinBtn">🎰 Spin Now</button>
+        <div style="text-align:center; margin-top:10px; font-size:12px; color:var(--text-muted);">
+            <span id="spinRemainingModal">30</span> spins remaining today
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="withdrawModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('withdrawModal')">&times;</button>
+        <div class="modal-title" id="withdrawTitle">Withdraw to bKash</div>
+        <div style="margin-bottom:10px;">
+            <label style="font-size:12px; color:var(--text-secondary); display:block; margin-bottom:3px;">Amount (Ⓝ)</label>
+            <input type="number" id="withdrawAmount" placeholder="Enter amount" style="width:100%; padding:10px; border-radius:var(--radius-sm); border:1px solid var(--glass-border); background:var(--glass-bg); color:white; font-size:15px;">
+        </div>
+        <div style="margin-bottom:12px;">
+            <label style="font-size:12px; color:var(--text-secondary); display:block; margin-bottom:3px;" id="withdrawLabel">bKash Number</label>
+            <input type="text" id="withdrawAccount" placeholder="Enter account" style="width:100%; padding:10px; border-radius:var(--radius-sm); border:1px solid var(--glass-border); background:var(--glass-bg); color:white; font-size:15px;">
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); text-align:center; margin-bottom:10px;">
+            Fee: <span id="withdrawFee">Ⓝ0</span> | Min: <span id="withdrawMin">Ⓝ20</span>
+        </div>
+        <button class="spin-btn" onclick="submitWithdraw()" style="background: linear-gradient(135deg, #10B981, #059669);">Confirm Withdraw</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="taskModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('taskModal')">&times;</button>
+        <div class="modal-title" id="taskModalTitle">Complete Task</div>
+        <div id="taskModalContent">
+            <p style="color:var(--text-secondary); text-align:center; margin-bottom:12px;">Follow the instructions below to earn rewards.</p>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="visitModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('visitModal')">&times;</button>
+        <div class="modal-title">🌐 Visit Website</div>
+        <div id="visitContent" style="text-align:center;">
+            <p style="color:var(--text-secondary); margin-bottom:12px; font-size:13px;">
+                Click the button below to visit the website.<br>
+                Stay for <strong id="visitTimer">15</strong> seconds to earn Ⓝ1
+            </p>
+            <button class="spin-btn" onclick="openVisitLink()" id="visitStartBtn" style="background: linear-gradient(135deg, #10B981, #059669);">
+                🌐 Visit Now
+            </button>
+            <div style="margin-top:10px; font-size:12px; color:var(--text-muted);">
+                <span id="visitRemaining">30</span> visits remaining today
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="script.js"></script>
 </body>
 </html>
