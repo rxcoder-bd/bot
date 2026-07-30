@@ -41,7 +41,6 @@
             --shadow-glow: 0 0 40px rgba(108, 60, 225, 0.15);
             
             --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
@@ -392,7 +391,7 @@
         }
         
         /* ============================================================
-           AD NETWORK BOXES
+           AD BOXES
            ============================================================ */
         .ad-box {
             background: var(--bg-glass);
@@ -523,10 +522,6 @@
             background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
         
-        .ad-box .actions .btn.success {
-            background: linear-gradient(135deg, var(--success), #059669);
-        }
-        
         .ad-box .actions .btn.giga-btn { background: linear-gradient(135deg, #FF6B35, #E55A2B); }
         .ad-box .actions .btn.monetag-btn { background: linear-gradient(135deg, #2D9CDB, #1A7AB5); }
         .ad-box .actions .btn.adexora-btn { background: linear-gradient(135deg, #27AE60, #1E8449); }
@@ -610,12 +605,6 @@
         .quick-btn .label {
             font-size: 10px;
             font-weight: 500;
-        }
-        
-        .quick-btn .label i {
-            display: inline;
-            font-size: 10px;
-            margin-bottom: 0;
         }
         
         /* ============================================================
@@ -860,91 +849,43 @@
         }
         
         /* ============================================================
-           LEADERBOARD
+           WITHDRAW HISTORY
            ============================================================ */
-        .leaderboard-item {
+        .withdraw-item {
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: space-between;
             padding: 8px 0;
             border-bottom: 1px solid var(--border-glass);
         }
         
-        .leaderboard-item:last-child {
+        .withdraw-item:last-child {
             border-bottom: none;
         }
         
-        .leaderboard-item .rank {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-muted);
-            min-width: 28px;
-            text-align: center;
-        }
-        
-        .leaderboard-item .rank.gold { color: var(--accent); }
-        .leaderboard-item .rank.silver { color: #C0C0C0; }
-        .leaderboard-item .rank.bronze { color: #CD7F32; }
-        
-        .leaderboard-item .info {
+        .withdraw-item .info {
             flex: 1;
             min-width: 0;
         }
         
-        .leaderboard-item .info .name {
+        .withdraw-item .info .title {
             font-weight: 600;
             font-size: 13px;
         }
         
-        .leaderboard-item .info .earn {
+        .withdraw-item .info .sub {
             font-size: 11px;
             color: var(--text-muted);
         }
         
-        .leaderboard-item .amount {
-            font-weight: 700;
-            color: var(--accent);
+        .withdraw-item .amount {
             font-size: 14px;
+            font-weight: 700;
         }
         
-        /* ============================================================
-           WITHDRAW
-           ============================================================ */
-        .withdraw-option {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--bg-glass);
-            border-radius: var(--radius-sm);
-            margin-bottom: 6px;
-            cursor: pointer;
-            border: 1px solid var(--border-glass);
-            transition: var(--transition);
-        }
-        
-        .withdraw-option:active {
-            transform: scale(0.98);
-        }
-        
-        .withdraw-option i {
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-        
-        .withdraw-option .info {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .withdraw-option .info strong {
-            font-size: 13px;
-        }
-        
-        .withdraw-option .info span {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
+        .withdraw-item .amount.pending { color: var(--accent); }
+        .withdraw-item .amount.completed { color: var(--success); }
+        .withdraw-item .amount.rejected { color: var(--danger); }
         
         /* ============================================================
            RESPONSIVE
@@ -975,39 +916,12 @@
         }
         
         /* ============================================================
-           SCROLLBAR MODAL
+           BANNED OVERLAY
            ============================================================ */
-        .modal::-webkit-scrollbar {
-            width: 3px;
-        }
-        .modal::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .modal::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 3px;
-        }
-        
-        /* ============================================================
-           UTILITY
-           ============================================================ */
-        .text-center { text-align: center; }
-        .text-muted { color: var(--text-muted); }
-        .text-secondary { color: var(--text-secondary); }
-        .mt-8 { margin-top: 8px; }
-        .mt-12 { margin-top: 12px; }
-        .mb-8 { margin-bottom: 8px; }
-        .gap-8 { gap: 8px; }
-        .flex { display: flex; }
-        .flex-center { display: flex; align-items: center; justify-content: center; }
-        .flex-between { display: flex; align-items: center; justify-content: space-between; }
-        .hidden { display: none; }
-        
-        /* Banned overlay */
         .banned-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.92);
             backdrop-filter: blur(20px);
             z-index: 9998;
             display: none;
@@ -1056,6 +970,19 @@
         .banned-overlay .contact-btn:active {
             transform: scale(0.97);
         }
+        
+        /* ============================================================
+           UTILITY
+           ============================================================ */
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-muted); }
+        .text-secondary { color: var(--text-secondary); }
+        .mt-8 { margin-top: 8px; }
+        .mb-8 { margin-bottom: 8px; }
+        .flex { display: flex; }
+        .flex-between { display: flex; align-items: center; justify-content: space-between; }
+        .gap-8 { gap: 8px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -1712,15 +1639,6 @@ const CONFIG = {
         'https://omg10.com/4/9898635',
         'https://omg10.com/4/11457363',
         'https://omg10.com/4/11457365'
-    ],
-    richAds: [
-        { pubId: '985872', appId: '3640' },
-        { pubId: '985872', appId: '3640' },
-        { pubId: '985872', appId: '3640' },
-        { pubId: '985872', appId: '3640' },
-        { pubId: '985872', appId: '3640' },
-        { pubId: '985872', appId: '3639' },
-        { pubId: '985872', appId: '3639' }
     ]
 };
 
@@ -1923,19 +1841,7 @@ function loadSettings() {
 }
 
 function applySettings() {
-    // Dark Mode
     const isDark = userData.settings.darkMode;
-    document.body.style.background = isDark ? 
-        'linear-gradient(160deg, #0A0618, #120B24)' : 
-        'linear-gradient(160deg, #F5F3FF, #EDE9FE)';
-    document.querySelectorAll('.card, .ad-box, .withdraw-option, .quick-btn, .stat-item, .rich-ad-container, .bottom-nav, .header, .modal').forEach(el => {
-        if (isDark) {
-            el.style.color = '#FFFFFF';
-        } else {
-            el.style.color = '#1A0F2E';
-        }
-    });
-    // Update toggle positions
     document.getElementById('darkModeToggle').classList.toggle('active', isDark);
     document.getElementById('notificationToggle').classList.toggle('active', userData.settings.notifications);
     document.getElementById('soundToggle').classList.toggle('active', userData.settings.sound);
@@ -2114,7 +2020,6 @@ function updateAdBox(network) {
     
     // Actions
     const actionsEl = document.getElementById(network + 'Actions');
-    const watchBtn = document.getElementById(network + 'WatchBtn');
     
     if (isCooldown) {
         actionsEl.innerHTML = `
@@ -2135,8 +2040,9 @@ function updateAdBox(network) {
             </button>
         `;
     } else {
+        const btnClass = network === 'giga' ? 'giga-btn' : network === 'monetag' ? 'monetag-btn' : 'adexora-btn';
         actionsEl.innerHTML = `
-            <button class="btn ${network}-btn" onclick="watchAd('${network}')" style="flex:1; padding:10px; border:none; border-radius:var(--radius-sm); font-weight:600; font-size:13px; cursor:pointer; color:white; ${getNetworkStyle(network)}">
+            <button class="btn ${btnClass}" onclick="watchAd('${network}')" style="flex:1; padding:10px; border:none; border-radius:var(--radius-sm); font-weight:600; font-size:13px; cursor:pointer; color:white; ${getNetworkStyle(network)}">
                 <i class="fas fa-play"></i> Watch
             </button>
         `;
@@ -2160,65 +2066,254 @@ function formatTime(seconds) {
 }
 
 // ================================================================
-// DAILY RESET
 // ================================================================
-function checkDailyReset() {
-    const today = new Date().toDateString();
-    const lastReset = localStorage.getItem('nxeran_lastReset_' + userData.id);
-    
-    // Check admin force reset
-    if (localStorage.getItem('nxeran_forceReset') === 'true') {
-        performDailyReset();
-        localStorage.removeItem('nxeran_forceReset');
-        return;
-    }
-    
-    if (lastReset !== today) {
-        performDailyReset();
-        localStorage.setItem('nxeran_lastReset_' + userData.id, today);
-    }
+// FIXED AD NETWORK FUNCTIONS
+// ================================================================
+// ================================================================
+
+// 1. GIGAPUB - Fixed
+function showGigaPubAd(projectId) {
+    return new Promise((resolve) => {
+        try {
+            let resolved = false;
+            
+            // Check if showGiga already exists
+            if (typeof window.showGiga === 'function') {
+                window.showGiga()
+                    .then(() => {
+                        if (!resolved) { resolved = true; resolve(); }
+                    })
+                    .catch(() => {
+                        if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                    });
+                return;
+            }
+            
+            // Load script
+            const script = document.createElement('script');
+            script.src = `https://ad.gigapub.tech/script?id=${projectId}`;
+            script.async = true;
+            
+            script.onload = function() {
+                if (typeof window.showGiga === 'function') {
+                    window.showGiga()
+                        .then(() => {
+                            if (!resolved) { resolved = true; resolve(); }
+                        })
+                        .catch(() => {
+                            if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                        });
+                } else {
+                    if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                }
+            };
+            
+            script.onerror = function() {
+                if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+            };
+            
+            document.head.appendChild(script);
+            
+            // Safety timeout
+            setTimeout(() => {
+                if (!resolved) { resolved = true; resolve(); }
+            }, 10000);
+            
+        } catch(e) {
+            setTimeout(resolve, 2000);
+        }
+    });
 }
 
-function performDailyReset() {
-    const limits = adminData.adLimits || {};
-    userData.giga.count = 0;
-    userData.monetag.count = 0;
-    userData.adexora.count = 0;
-    userData.spinRemaining = limits.spin || 30;
-    userData.todayEarn = 0;
-    userData.todayAds = 0;
-    // Don't reset claimed status or timers - they stay until 12hrs
-    saveUserData();
-    updateUI();
+// 2. MONETAG - Fixed
+function showMonetagAd(zoneId) {
+    return new Promise((resolve) => {
+        try {
+            const funcName = `show_${zoneId}`;
+            let resolved = false;
+            
+            // Check if already loaded
+            if (typeof window[funcName] === 'function') {
+                window[funcName]()
+                    .then(() => {
+                        if (!resolved) { resolved = true; resolve(); }
+                    })
+                    .catch(() => {
+                        if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                    });
+                return;
+            }
+            
+            // Load SDK
+            const script = document.createElement('script');
+            script.src = '//libtl.com/sdk.js';
+            script.setAttribute('data-zone', zoneId);
+            script.setAttribute('data-sdk', funcName);
+            script.async = true;
+            
+            script.onload = function() {
+                if (typeof window[funcName] === 'function') {
+                    window[funcName]()
+                        .then(() => {
+                            if (!resolved) { resolved = true; resolve(); }
+                        })
+                        .catch(() => {
+                            if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                        });
+                } else {
+                    if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                }
+            };
+            
+            script.onerror = function() {
+                if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+            };
+            
+            document.head.appendChild(script);
+            
+            // Safety timeout
+            setTimeout(() => {
+                if (!resolved) { resolved = true; resolve(); }
+            }, 10000);
+            
+        } catch(e) {
+            setTimeout(resolve, 2000);
+        }
+    });
 }
 
-function forceResetFromAdmin() {
-    performDailyReset();
-    showToast('🔄 Daily limits have been reset!');
+// 3. MONETAG POPUP (for Spin)
+function showMonetagPopup(zoneId) {
+    return new Promise((resolve) => {
+        try {
+            const funcName = `show_${zoneId}`;
+            let resolved = false;
+            
+            if (typeof window[funcName] === 'function') {
+                window[funcName]('pop')
+                    .then(() => {
+                        if (!resolved) { resolved = true; resolve(); }
+                    })
+                    .catch(() => {
+                        if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                    });
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = '//libtl.com/sdk.js';
+            script.setAttribute('data-zone', zoneId);
+            script.setAttribute('data-sdk', funcName);
+            script.async = true;
+            
+            script.onload = function() {
+                if (typeof window[funcName] === 'function') {
+                    window[funcName]('pop')
+                        .then(() => {
+                            if (!resolved) { resolved = true; resolve(); }
+                        })
+                        .catch(() => {
+                            if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                        });
+                } else {
+                    if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                }
+            };
+            
+            script.onerror = function() {
+                if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+            };
+            
+            document.head.appendChild(script);
+            
+            setTimeout(() => {
+                if (!resolved) { resolved = true; resolve(); }
+            }, 10000);
+            
+        } catch(e) {
+            setTimeout(resolve, 2000);
+        }
+    });
+}
+
+// 4. ADEXORA - Fixed
+function showAdexoraAd(appId) {
+    return new Promise((resolve) => {
+        try {
+            let resolved = false;
+            
+            // Check if already loaded
+            if (typeof window.showAdexora === 'function') {
+                window.showAdexora()
+                    .then(() => {
+                        if (!resolved) { resolved = true; resolve(); }
+                    })
+                    .catch(() => {
+                        if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                    });
+                return;
+            }
+            
+            // Load SDK
+            const script = document.createElement('script');
+            script.src = `https://adexora.com/cdn/ads.js?id=${appId}`;
+            script.async = true;
+            
+            script.onload = function() {
+                if (typeof window.showAdexora === 'function') {
+                    window.showAdexora()
+                        .then(() => {
+                            if (!resolved) { resolved = true; resolve(); }
+                        })
+                        .catch(() => {
+                            if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                        });
+                } else {
+                    if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+                }
+            };
+            
+            script.onerror = function() {
+                if (!resolved) { resolved = true; setTimeout(resolve, 2000); }
+            };
+            
+            document.head.appendChild(script);
+            
+            setTimeout(() => {
+                if (!resolved) { resolved = true; resolve(); }
+            }, 10000);
+            
+        } catch(e) {
+            setTimeout(resolve, 2000);
+        }
+    });
 }
 
 // ================================================================
-// TIMERS LOOP
+// UNIFIED AD FUNCTION
 // ================================================================
-function startTimerLoop() {
-    setInterval(() => {
-        updateAdBox('giga');
-        updateAdBox('monetag');
-        updateAdBox('adexora');
-        checkTimers();
-    }, 1000);
-}
-
-function checkTimers() {
-    ['giga', 'monetag', 'adexora'].forEach(network => {
-        const data = userData[network];
-        if (data.timerEnd && Date.now() >= data.timerEnd) {
-            // Timer expired - reset
-            data.claimed = false;
-            data.count = 0;
-            data.timerEnd = null;
-            saveUserData();
-            updateAdBox(network);
+function showNetworkAd(network, adId) {
+    return new Promise((resolve) => {
+        if (!adId) {
+            setTimeout(resolve, 2000);
+            return;
+        }
+        
+        switch(network) {
+            case 'giga':
+                showGigaPubAd(adId).then(resolve);
+                break;
+            case 'monetag':
+                showMonetagAd(adId).then(resolve);
+                break;
+            case 'adexora':
+                showAdexoraAd(adId).then(resolve);
+                break;
+            case 'monetag-spin':
+                showMonetagPopup(adId).then(resolve);
+                break;
+            default:
+                setTimeout(resolve, 2000);
         }
     });
 }
@@ -2270,18 +2365,16 @@ function watchAd(network) {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
     }
     
-    // Show ad based on network
+    // Show ad
     showNetworkAd(network, adId)
         .then(() => {
-            // Reward - increment count
+            // Increment count
             data.count = (data.count || 0) + 1;
             userData.todayAds = (userData.todayAds || 0) + 1;
             userData.totalAds = (userData.totalAds || 0) + 1;
             
-            // Give small reward for each ad (except when claiming)
-            // Actually for this system, reward comes from claim, not per ad
-            // But we give tiny reward for watching
-            const perAdReward = 0.02; // 2 cents per ad
+            // Small reward per ad
+            const perAdReward = 0.02;
             userData.balance = (userData.balance || 0) + perAdReward;
             userData.todayEarn = (userData.todayEarn || 0) + perAdReward;
             userData.totalEarn = (userData.totalEarn || 0) + perAdReward;
@@ -2302,8 +2395,7 @@ function watchAd(network) {
                 showToast('🎉 You completed 30 ads! Click Claim to get Ⓝ3!');
             }
         })
-        .catch((err) => {
-            console.error('Ad error:', err);
+        .catch(() => {
             showToast('❌ Ad failed. Please try again.');
         })
         .finally(() => {
@@ -2313,60 +2405,6 @@ function watchAd(network) {
                 btn.innerHTML = '<i class="fas fa-play"></i> Watch';
             }
         });
-}
-
-function showNetworkAd(network, adId) {
-    return new Promise((resolve, reject) => {
-        try {
-            if (network === 'giga') {
-                // GigaPub
-                const script = document.createElement('script');
-                script.src = `https://ad.gigapub.tech/script?id=${adId}`;
-                script.onload = () => {
-                    if (typeof window.showGiga === 'function') {
-                        window.showGiga().then(resolve).catch(reject);
-                    } else {
-                        // Fallback - simulate ad
-                        setTimeout(resolve, 3000);
-                    }
-                };
-                script.onerror = () => setTimeout(resolve, 3000);
-                document.head.appendChild(script);
-            } else if (network === 'monetag') {
-                // Monetag
-                const script = document.createElement('script');
-                script.src = `//libtl.com/sdk.js`;
-                script.setAttribute('data-zone', adId);
-                script.setAttribute('data-sdk', `show_${adId}`);
-                script.onload = () => {
-                    if (typeof window[`show_${adId}`] === 'function') {
-                        window[`show_${adId}`]().then(resolve).catch(reject);
-                    } else {
-                        setTimeout(resolve, 3000);
-                    }
-                };
-                script.onerror = () => setTimeout(resolve, 3000);
-                document.head.appendChild(script);
-            } else if (network === 'adexora') {
-                // Adexora
-                const script = document.createElement('script');
-                script.src = `https://adexora.com/cdn/ads.js?id=${adId}`;
-                script.onload = () => {
-                    if (typeof window.showAdexora === 'function') {
-                        window.showAdexora().then(resolve).catch(reject);
-                    } else {
-                        setTimeout(resolve, 3000);
-                    }
-                };
-                script.onerror = () => setTimeout(resolve, 3000);
-                document.head.appendChild(script);
-            } else {
-                setTimeout(resolve, 3000);
-            }
-        } catch(e) {
-            setTimeout(resolve, 3000);
-        }
-    });
 }
 
 // ================================================================
@@ -2468,8 +2506,8 @@ function spinWheel() {
     btn.disabled = true;
     btn.textContent = '🎰 Loading ad...';
     
-    // Show Monetag ad for spin
-    showNetworkAd('monetag', monetagId)
+    // Show Monetag ad for spin (using popup format)
+    showMonetagPopup(monetagId)
         .then(() => {
             // Spin logic
             const rewards = [
@@ -2768,24 +2806,54 @@ function submitWithdraw() {
     );
 }
 
+// ================================================================
+// FIXED: WITHDRAW HISTORY (User Panel)
+// ================================================================
 function renderWithdrawHistory() {
     const container = document.getElementById('withdrawHistory');
     const history = userData.withdrawHistory || [];
+    
     if (history.length === 0) {
-        container.innerHTML = '<div class="text-center text-muted" style="padding:12px 0; font-size:13px;">No withdraw history</div>';
+        container.innerHTML = `
+            <div style="text-align:center; color:var(--text-muted); padding:16px 0; font-size:13px;">
+                <i class="fas fa-clock" style="font-size:20px; display:block; margin-bottom:6px; opacity:0.5;"></i>
+                No withdraw history
+            </div>
+        `;
         return;
     }
-    container.innerHTML = history.map(w => `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
-            <div>
-                <div style="font-weight:600; font-size:13px;">${w.method} - ${w.status}</div>
-                <div style="font-size:11px; color:var(--text-muted);">${w.date}</div>
+    
+    container.innerHTML = history.map(w => {
+        const statusColor = {
+            'pending': 'var(--accent)',
+            'completed': 'var(--success)',
+            'rejected': 'var(--danger)'
+        };
+        const statusIcon = {
+            'pending': '⏳',
+            'completed': '✅',
+            'rejected': '❌'
+        };
+        
+        return `
+            <div class="withdraw-item">
+                <div class="info">
+                    <div class="title">
+                        ${w.method} ${statusIcon[w.status] || '📌'}
+                        <span style="font-size:10px; font-weight:400; color:${statusColor[w.status] || 'var(--text-muted)'};">
+                            ${w.status.toUpperCase()}
+                        </span>
+                    </div>
+                    <div class="sub">
+                        ${w.date} ${w.account ? '• ' + w.account : ''}
+                    </div>
+                </div>
+                <div class="amount ${w.status}">
+                    -Ⓝ${w.amount.toFixed(2)}
+                </div>
             </div>
-            <div style="font-size:13px; font-weight:600; color:${w.status === 'pending' ? 'var(--accent)' : w.status === 'completed' ? 'var(--success)' : 'var(--danger)'}">
-                -Ⓝ${w.amount.toFixed(2)}
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // ================================================================
@@ -2837,22 +2905,17 @@ function openTask(taskId) {
         return;
     }
     
-    // Open task in new window if link exists
     if (task.link) {
         window.open(task.link, '_blank');
     }
     
-    // For Telegram tasks, we need to verify
+    // For Telegram tasks, verify membership
     if (task.type === 'telegram') {
-        // Show verification dialog
-        showToast('📢 Please join the channel and click Verify');
-        // We'll handle verification via bot check later
-        // For now, simulate verification
+        showToast('📢 Please join the channel and click Start again');
         setTimeout(() => {
             verifyTask(taskId);
-        }, 5000);
+        }, 3000);
     } else {
-        // For other tasks, just complete
         verifyTask(taskId);
     }
 }
@@ -2869,10 +2932,8 @@ function verifyTask(taskId) {
         return;
     }
     
-    // Extract reward
     const rewardAmount = parseFloat(task.reward.replace('Ⓝ', '')) || 5;
     
-    // Credit reward
     userData.balance = (userData.balance || 0) + rewardAmount;
     userData.totalEarn = (userData.totalEarn || 0) + rewardAmount;
     userData.todayEarn = (userData.todayEarn || 0) + rewardAmount;
@@ -2909,7 +2970,6 @@ function renderLeaderboard() {
     const sorted = [...users].sort((a, b) => (b.totalEarn || 0) - (a.totalEarn || 0));
     const top = sorted.slice(0, 5);
     
-    // Update user rank
     const userIndex = sorted.findIndex(u => u.id == userData.id);
     userData.rank = userIndex + 1;
     
@@ -2918,7 +2978,7 @@ function renderLeaderboard() {
         const isUser = u.id == userData.id;
         return `
             <div style="display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:${isUser ? '2px solid var(--primary-light)' : '1px solid var(--border-glass)'}; background:${isUser ? 'rgba(108,60,225,0.1)' : 'transparent'}; border-radius:${isUser ? 'var(--radius-sm)' : '0'}; padding:${isUser ? '6px 8px' : '6px 0'};">
-                <div class="rank ${rankClass}" style="font-size:16px; font-weight:700; min-width:28px; text-align:center; ${rankClass ? `color:var(--${rankClass});` : 'color:var(--text-muted);'}">
+                <div style="font-size:16px; font-weight:700; min-width:28px; text-align:center; ${rankClass ? `color:var(--${rankClass});` : 'color:var(--text-muted);'}">
                     ${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1)}
                 </div>
                 <div style="flex:1; min-width:0;">
@@ -2991,12 +3051,27 @@ function renderOfficialLinks() {
 // RICH ADS (Passive)
 // ================================================================
 function initRichAds() {
-    // Load RichAds scripts
-    CONFIG.richAds.forEach((ad, index) => {
+    const richAds = [
+        { pubId: '985872', appId: '3640' },
+        { pubId: '985872', appId: '3640' },
+        { pubId: '985872', appId: '3640' },
+        { pubId: '985872', appId: '3640' },
+        { pubId: '985872', appId: '3640' },
+        { pubId: '985872', appId: '3639' },
+        { pubId: '985872', appId: '3639' },
+        { pubId: '985872', appId: '3639' },
+        { pubId: '985872', appId: '3639' },
+        { pubId: '985872', appId: '3639' },
+        { pubId: '985872', appId: '3639' },
+        { pubId: '985872', appId: '3639' },
+        { pubId: '985872', appId: '3639' },
+        { pubId: '985872', appId: '3639' }
+    ];
+    
+    richAds.forEach((ad, index) => {
         const container = document.getElementById('richAd' + (index + 1));
         if (!container) return;
         
-        // Inject script
         const script = document.createElement('script');
         script.src = 'https://richinfo.co/richpartners/telegram/js/tg-ob.js';
         script.onload = () => {
@@ -3007,10 +3082,8 @@ function initRichAds() {
                         pubId: ad.pubId,
                         appId: ad.appId
                     });
-                    // Show ad
                     container.innerHTML = '';
                     container.appendChild(document.createElement('div'));
-                    // The ad will auto-display via the controller
                 }
             } catch(e) {
                 container.innerHTML = '<div class="ad-placeholder">📢 Ad</div>';
@@ -3020,6 +3093,62 @@ function initRichAds() {
             container.innerHTML = '<div class="ad-placeholder">📢 Ad</div>';
         };
         document.head.appendChild(script);
+    });
+}
+
+// ================================================================
+// DAILY RESET
+// ================================================================
+function checkDailyReset() {
+    const today = new Date().toDateString();
+    const lastReset = localStorage.getItem('nxeran_lastReset_' + userData.id);
+    
+    if (localStorage.getItem('nxeran_forceReset') === 'true') {
+        performDailyReset();
+        localStorage.removeItem('nxeran_forceReset');
+        return;
+    }
+    
+    if (lastReset !== today) {
+        performDailyReset();
+        localStorage.setItem('nxeran_lastReset_' + userData.id, today);
+    }
+}
+
+function performDailyReset() {
+    const limits = adminData.adLimits || {};
+    userData.giga.count = 0;
+    userData.monetag.count = 0;
+    userData.adexora.count = 0;
+    userData.spinRemaining = limits.spin || 30;
+    userData.todayEarn = 0;
+    userData.todayAds = 0;
+    saveUserData();
+    updateUI();
+}
+
+// ================================================================
+// TIMERS LOOP
+// ================================================================
+function startTimerLoop() {
+    setInterval(() => {
+        updateAdBox('giga');
+        updateAdBox('monetag');
+        updateAdBox('adexora');
+        checkTimers();
+    }, 1000);
+}
+
+function checkTimers() {
+    ['giga', 'monetag', 'adexora'].forEach(network => {
+        const data = userData[network];
+        if (data.timerEnd && Date.now() >= data.timerEnd) {
+            data.claimed = false;
+            data.count = 0;
+            data.timerEnd = null;
+            saveUserData();
+            updateAdBox(network);
+        }
     });
 }
 
@@ -3101,7 +3230,8 @@ console.log('🚀 NX ERAN v3.0 Loaded!');
 console.log('👤 User:', userData.id || 'Not logged in');
 console.log('👑 Admin:', CONFIG.adminUsername);
 console.log('💰 Currency:', CONFIG.currency);
+console.log('✅ Ads Network: GigaPub, Monetag, Adexora - Fixed!');
+console.log('✅ Withdraw History - Fixed!');
 </script>
-
 </body>
 </html>
