@@ -702,6 +702,15 @@
             font-size: 11px;
             color: var(--text-muted);
         }
+
+        /* Delete button special style */
+        .admin-btn.delete {
+            background: linear-gradient(135deg, #DC2626, #991B1B);
+        }
+        .admin-btn.delete:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -1089,6 +1098,10 @@
                     <label for="permRedeem">Generate Redeem Codes</label>
                 </div>
                 <div class="toggle-wrap">
+                    <input type="checkbox" id="permDelete" checked>
+                    <label for="permDelete">Delete Users</label>
+                </div>
+                <div class="toggle-wrap">
                     <input type="checkbox" id="permSettings" checked>
                     <label for="permSettings">Change Settings</label>
                 </div>
@@ -1203,6 +1216,7 @@ function loadAdminData() {
                 tasks: true,
                 broadcast: true,
                 redeem: true,
+                delete: true,
                 settings: true
             },
             isMain: true,
@@ -1364,6 +1378,7 @@ function renderUsers() {
                     `<button class="admin-btn success sm" onclick="unbanUser('${u.id}')"><i class="fas fa-check"></i></button>` :
                     `<button class="admin-btn danger sm" onclick="banUser('${u.id}')"><i class="fas fa-ban"></i></button>`
                 }
+                <button class="admin-btn delete sm" onclick="deleteUser('${u.id}')" title="Delete User (All data will be removed)"><i class="fas fa-trash-alt"></i></button>
             </div>
         </div>
     `).join('');
@@ -1407,6 +1422,7 @@ function searchUser() {
                     `<button class="admin-btn success sm" onclick="unbanUser('${u.id}')"><i class="fas fa-check"></i></button>` :
                     `<button class="admin-btn danger sm" onclick="banUser('${u.id}')"><i class="fas fa-ban"></i></button>`
                 }
+                <button class="admin-btn delete sm" onclick="deleteUser('${u.id}')" title="Delete User (All data will be removed)"><i class="fas fa-trash-alt"></i></button>
             </div>
         </div>
     `).join('');
@@ -1484,6 +1500,71 @@ function unbanUser(userId) {
         `✅ <b>Account Unbanned</b>\n\n` +
         `Your account has been unbanned by admin.`
     );
+}
+
+// ================================================================
+// DELETE USER - NEW FEATURE
+// ================================================================
+function deleteUser(userId) {
+    // Double confirmation for safety
+    if (!confirm('⚠️ Are you sure you want to DELETE this user?\n\nAll data including balance, history, and tasks will be permanently removed!\n\nThis action CANNOT be undone!')) return;
+    
+    if (!confirm('⚠️ FINAL WARNING: This will delete ALL data for this user. Are you absolutely sure?')) return;
+    
+    // Find user for notification
+    const user = adminData.users.find(u => u.id == userId);
+    const userName = user ? user.name : 'User';
+    
+    // Remove from admin users list
+    const userIndex = adminData.users.findIndex(u => u.id == userId);
+    if (userIndex !== -1) {
+        adminData.users.splice(userIndex, 1);
+    }
+    
+    // Remove from withdrawals
+    adminData.withdrawals = adminData.withdrawals.filter(w => w.userId != userId);
+    
+    // Remove from pending tasks
+    adminData.pendingTasks = adminData.pendingTasks.filter(t => t.userId != userId);
+    
+    // Remove from redeem codes usage
+    adminData.redeemCodes = adminData.redeemCodes.map(c => {
+        c.usedBy = c.usedBy.filter(id => id != userId);
+        return c;
+    });
+    
+    // Delete user's localStorage data
+    const userKey = 'nxeran_userData_' + userId;
+    localStorage.removeItem(userKey);
+    
+    // Remove from any other storage
+    const resetKey = 'nxeran_lastReset_' + userId;
+    localStorage.removeItem(resetKey);
+    
+    saveAdminData();
+    renderUsers();
+    showToast(`🗑️ User ${userName} (${userId}) has been deleted successfully!`);
+    
+    // Send notification to user (if they still have session)
+    sendBotMessage(userId, 
+        `🗑️ <b>Account Deleted</b>\n\n` +
+        `Your account has been deleted by admin.\n` +
+        `All data has been permanently removed.\n\n` +
+        `You can create a new account by starting the bot again:\n` +
+        `https://t.me/${CONFIG.botUsername}`
+    );
+    
+    // Also notify all admins
+    adminData.admins.forEach(admin => {
+        if (admin.id != CONFIG.mainAdminId) {
+            sendBotMessage(admin.id,
+                `🗑️ <b>User Deleted</b>\n\n` +
+                `Admin ${CONFIG.mainAdminUsername} deleted user:\n` +
+                `ID: ${userId}\n` +
+                `Name: ${userName}`
+            );
+        }
+    });
 }
 
 // ================================================================
@@ -1933,6 +2014,7 @@ function renderAdmins() {
                     ${a.permissions?.tasks ? '📋' : ''}
                     ${a.permissions?.broadcast ? '📢' : ''}
                     ${a.permissions?.redeem ? '🎟️' : ''}
+                    ${a.permissions?.delete ? '🗑️' : ''}
                     ${a.permissions?.settings ? '⚙️' : ''}
                 </div>
             </div>
@@ -1967,6 +2049,7 @@ function addAdmin() {
             tasks: document.getElementById('permTasks').checked,
             broadcast: document.getElementById('permBroadcast').checked,
             redeem: document.getElementById('permRedeem').checked,
+            delete: document.getElementById('permDelete').checked,
             settings: document.getElementById('permSettings').checked
         },
         isMain: false,
@@ -2250,6 +2333,7 @@ console.log('🔧 NX ERAN Admin Panel v3.0');
 console.log('👑 Main Admin:', CONFIG.mainAdminUsername);
 console.log('📊 Total Users:', adminData.users.length);
 console.log('💸 Pending Withdrawals:', (adminData.withdrawals || []).filter(w => w.status === 'pending').length);
+console.log('🗑️ Delete User feature added!');
 </script>
 </body>
 </html>
