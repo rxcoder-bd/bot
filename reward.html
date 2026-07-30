@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reward - NX ERAN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0F0A1A, #1A0F2E);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .reward-container {
+            max-width: 380px;
+            width: 100%;
+            padding: 30px 20px;
+            text-align: center;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+        }
+        .reward-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        .reward-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #8B5CF6, #EC4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .reward-amount {
+            font-size: 48px;
+            font-weight: 800;
+            color: #F59E0B;
+            margin: 16px 0;
+        }
+        .reward-status {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 8px;
+        }
+        .reward-user {
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+        }
+        .reward-success {
+            color: #10B981;
+        }
+        .reward-error {
+            color: #EF4444;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #8B5CF6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 16px auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #6C3CE1, #EC4899);
+            color: white;
+            margin-top: 12px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="reward-container" id="rewardContainer">
+        <div class="reward-icon" id="rewardIcon">🔄</div>
+        <div class="reward-title" id="rewardTitle">Processing Reward</div>
+        <div class="spinner" id="spinner"></div>
+        <div class="reward-amount" id="rewardAmount">+Ⓝ0.00</div>
+        <div class="reward-status" id="rewardStatus">Please wait...</div>
+        <div class="reward-user" id="rewardUser">User ID: Loading...</div>
+        <a href="https://t.me/NxEranBot" class="btn" id="backBtn" style="display:none;">← Back to Bot</a>
+    </div>
+
+    <script>
+        // ===== CONFIG =====
+        const BOT_USERNAME = 'NxEranBot';
+
+        // ===== PROCESS REWARD =====
+        function processReward() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('userid') || urlParams.get('reward') || urlParams.get('userId');
+            const amount = parseFloat(urlParams.get('amount') || urlParams.get('rewardAmount') || 1);
+            const adType = urlParams.get('adType') || 'ad';
+            const transactionId = urlParams.get('transactionId') || Date.now().toString();
+
+            const icon = document.getElementById('rewardIcon');
+            const title = document.getElementById('rewardTitle');
+            const spinner = document.getElementById('spinner');
+            const amountDisplay = document.getElementById('rewardAmount');
+            const status = document.getElementById('rewardStatus');
+            const userDisplay = document.getElementById('rewardUser');
+            const backBtn = document.getElementById('backBtn');
+
+            userDisplay.textContent = `User ID: ${userId || 'Unknown'}`;
+            amountDisplay.textContent = `+Ⓝ${amount.toFixed(2)}`;
+
+            if (!userId) {
+                icon.textContent = '❌';
+                title.textContent = 'Invalid Request';
+                status.textContent = 'No user ID provided';
+                status.style.color = '#EF4444';
+                spinner.style.display = 'none';
+                backBtn.style.display = 'inline-block';
+                return;
+            }
+
+            // Credit the reward
+            try {
+                const userKey = `nxeran_userData_${userId}`;
+                let userData = JSON.parse(localStorage.getItem(userKey) || '{}');
+
+                if (!userData || Object.keys(userData).length === 0) {
+                    userData = {
+                        id: userId,
+                        firstName: 'User',
+                        username: 'user',
+                        balance: 0,
+                        totalEarn: 0,
+                        totalAds: 0,
+                        transactions: [],
+                        gigaRemaining: 30,
+                        monetagRemaining: 30,
+                        adsgramRemaining: 30,
+                        spinRemaining: 30
+                    };
+                }
+
+                // Credit
+                userData.balance = (userData.balance || 0) + amount;
+                userData.totalEarn = (userData.totalEarn || 0) + amount;
+                userData.totalAds = (userData.totalAds || 0) + 1;
+                userData.todayEarnings = (userData.todayEarnings || 0) + amount;
+
+                // Transaction
+                if (!userData.transactions) userData.transactions = [];
+                userData.transactions.unshift({
+                    type: 'ad_callback',
+                    title: `Ad Reward (${adType})`,
+                    amount: amount,
+                    date: new Date().toLocaleString(),
+                    icon: 'fa-check-circle',
+                    transactionId: transactionId,
+                    source: 'callback'
+                });
+
+                localStorage.setItem(userKey, JSON.stringify(userData));
+
+                // Update admin data
+                const adminData = JSON.parse(localStorage.getItem('nxeran_adminData') || '{}');
+                if (!adminData.users) adminData.users = [];
+                const existing = adminData.users.find(u => u.id == userId);
+                if (existing) {
+                    existing.balance = userData.balance;
+                    existing.totalEarn = userData.totalEarn;
+                    existing.totalAds = userData.totalAds;
+                } else {
+                    adminData.users.push({
+                        id: userId,
+                        name: userData.firstName || 'User',
+                        username: userData.username || 'user',
+                        balance: userData.balance,
+                        totalEarn: userData.totalEarn,
+                        totalAds: userData.totalAds,
+                        status: 'active',
+                        joined: new Date().toLocaleDateString()
+                    });
+                }
+                localStorage.setItem('nxeran_adminData', JSON.stringify(adminData));
+
+                // Success
+                icon.textContent = '✅';
+                title.textContent = 'Reward Credited!';
+                status.textContent = '🎉 Your reward has been added to your balance!';
+                status.style.color = '#10B981';
+                spinner.style.display = 'none';
+                amountDisplay.style.color = '#F59E0B';
+                backBtn.style.display = 'inline-block';
+
+                // Send notification to user via bot
+                sendBotMessage(userId, `💰 You earned Ⓝ${amount.toFixed(2)} from watching an ad!`);
+
+            } catch (error) {
+                icon.textContent = '⚠️';
+                title.textContent = 'Error';
+                status.textContent = 'Failed to credit reward';
+                status.style.color = '#EF4444';
+                spinner.style.display = 'none';
+                backBtn.style.display = 'inline-block';
+                console.error('Reward error:', error);
+            }
+        }
+
+        // ===== SEND BOT MESSAGE =====
+        function sendBotMessage(userId, message) {
+            try {
+                const BOT_TOKEN = '8002896346:AAG96XdUmW6auh_xvmljrj7hQGKymXsqJtg';
+                const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: userId,
+                        text: `📢 <b>NX ERAN</b>\n\n${message}`,
+                        parse_mode: 'HTML'
+                    })
+                }).catch(() => {});
+            } catch(e) {}
+        }
+
+        // ===== AUTO CLOSE =====
+        setTimeout(() => {
+            // Auto close after 5 seconds if not interacted
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn.style.display !== 'inline-block') {
+                backBtn.style.display = 'inline-block';
+                backBtn.textContent = '⏳ Redirecting...';
+                setTimeout(() => {
+                    window.location.href = `https://t.me/${BOT_USERNAME}`;
+                }, 2000);
+            }
+        }, 5000);
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', processReward);
+
+        console.log('🎯 Reward Handler Loaded');
+        console.log('📱 Bot: @' + BOT_USERNAME);
+    </script>
+</body>
+</html>
