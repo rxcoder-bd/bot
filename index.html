@@ -20,10 +20,81 @@
     <!-- Ad Network SDKs -->
     <!-- LibTL (Monetag) -->
     <script src="//libtl.com/sdk.js" data-zone="9388728" data-sdk="show_9388728"></script>
-    <!-- Adexora -->
-    <script src="https://adexora.com/cdn/ads.js?id=363"></script>
     <!-- GigaPub -->
     <script src="https://ad.gigapub.tech/script?id=1476"></script>
+    
+    <!-- Adexora SDK - with onload/onerror handlers -->
+    <script>
+        // Pre-initialize Adexora tracking
+        window.__adexoraLoadStatus = {
+            scriptRequested: false,
+            scriptLoaded: false,
+            scriptError: null,
+            sdkInitialized: false,
+            loadAttempts: 0,
+            networkChecked: false,
+            networkAvailable: null
+        };
+        
+        console.log('[Adexora Pre-init] Setting up load tracking');
+    </script>
+    <script 
+        id="adexora-sdk-script"
+        src="https://adexora.com/cdn/ads.js?id=363"
+        onload="window.__adexoraLoadStatus.scriptLoaded = true; window.__adexoraLoadStatus.scriptRequested = true; console.log('[Adexora onload] Script loaded successfully'); adexoraScriptOnLoad();"
+        onerror="window.__adexoraLoadStatus.scriptError = 'Script failed to load'; window.__adexoraLoadStatus.scriptRequested = true; console.error('[Adexora onerror] Script failed to load'); adexoraScriptOnError();"
+    ></script>
+    
+    <script>
+        // Track script load status
+        window.__adexoraLoadStatus.scriptRequested = true;
+        
+        function adexoraScriptOnLoad() {
+            console.log('[Adexora onload handler] Fired at:', new Date().toISOString());
+            window.__adexoraLoadStatus.scriptLoaded = true;
+            
+            // Check if SDK initialized properly
+            setTimeout(() => {
+                checkAdexoraSdkInit();
+            }, 500);
+            
+            setTimeout(() => {
+                checkAdexoraSdkInit();
+            }, 2000);
+            
+            setTimeout(() => {
+                checkAdexoraSdkInit();
+            }, 5000);
+        }
+        
+        function adexoraScriptOnError() {
+            console.error('[Adexora onerror handler] Script failed to load');
+            window.__adexoraLoadStatus.scriptError = 'Network error loading script';
+        }
+        
+        function checkAdexoraSdkInit() {
+            console.log('[Adexora Init Check] Running at:', new Date().toISOString());
+            console.log('[Adexora Init Check] window.showAdexora exists:', typeof window.showAdexora === 'function');
+            console.log('[Adexora Init Check] window.showAdexora type:', typeof window.showAdexora);
+            
+            if (typeof window.showAdexora === 'function') {
+                window.__adexoraLoadStatus.sdkInitialized = true;
+                console.log('[Adexora Init Check] ✅ SDK initialized successfully');
+                
+                // Test the function
+                try {
+                    const testResult = window.showAdexora();
+                    console.log('[Adexora Init Check] Test call result type:', typeof testResult);
+                    console.log('[Adexora Init Check] Test call result:', testResult);
+                    console.log('[Adexora Init Check] Is Promise:', testResult && typeof testResult.then === 'function');
+                } catch(e) {
+                    console.error('[Adexora Init Check] Test call error:', e);
+                }
+            } else {
+                console.warn('[Adexora Init Check] ⚠️ SDK not yet initialized');
+            }
+        }
+    </script>
     
     <style>
         /* ===== CSS Variables ===== */
@@ -593,7 +664,7 @@
             color: var(--danger);
         }
         
-        .sdk-status.unknown {
+        .sdk-status.loading {
             background: rgba(245, 158, 11, 0.2);
             color: var(--warning);
         }
@@ -613,34 +684,70 @@
             color: var(--text-muted);
         }
         
-        /* ===== Debug Console ===== */
-        .debug-console {
-            background: rgba(0, 0, 0, 0.8);
+        /* ===== Diagnostics Panel ===== */
+        .diagnostics-panel {
+            background: rgba(0, 0, 0, 0.9);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-sm);
-            padding: 10px;
+            padding: 12px;
             margin-top: 10px;
-            max-height: 200px;
-            overflow-y: auto;
             font-family: monospace;
             font-size: 10px;
-            color: #0f0;
-            display: none;
+            max-height: 400px;
+            overflow-y: auto;
         }
         
-        .debug-console.visible {
-            display: block;
+        .diag-section {
+            margin-bottom: 8px;
+            padding: 6px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 4px;
         }
         
-        .debug-entry {
+        .diag-section .diag-title {
+            color: var(--accent);
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .diag-row {
+            display: flex;
+            justify-content: space-between;
             padding: 2px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         
-        .debug-entry.success { color: #0f0; }
-        .debug-entry.error { color: #f00; }
-        .debug-entry.warning { color: #ff0; }
-        .debug-entry.info { color: #0af; }
+        .diag-row .diag-label {
+            color: var(--text-muted);
+        }
+        
+        .diag-row .diag-value {
+            color: var(--text-primary);
+        }
+        
+        .diag-row .diag-value.success { color: var(--success); }
+        .diag-row .diag-value.error { color: var(--danger); }
+        .diag-row .diag-value.warning { color: var(--warning); }
+        
+        .diag-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 10px;
+            margin: 2px;
+            transition: all 0.2s;
+        }
+        
+        .diag-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .diag-btn.active {
+            border-color: var(--primary-light);
+            background: rgba(108, 60, 225, 0.2);
+        }
         
         /* ===== Bottom Navigation ===== */
         .bottom-nav {
@@ -859,7 +966,6 @@
         <!-- ===== HOME SECTION ===== -->
         <div class="section active" id="section-home">
             
-            <!-- Balance Big -->
             <div class="card">
                 <div class="balance-big">
                     <div class="label">Total Balance</div>
@@ -870,12 +976,10 @@
                 </div>
             </div>
 
-            <!-- RichAds Placement 1 -->
             <div class="richads-container" id="richads-home-1">
                 <span>📢 Advertisement</span>
             </div>
 
-            <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-item">
                     <div class="stat-value green" id="todayIncome">+Ⓝ0.00</div>
@@ -895,35 +999,10 @@
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="card">
-                <div class="card-title"><i class="fas fa-bolt"></i> Quick Actions</div>
-                <div class="quick-actions">
-                    <div class="quick-btn gradient-1" onclick="navigateTo('tasks')">
-                        <i class="fas fa-video"></i>
-                        <span class="label">Watch Ads</span>
-                    </div>
-                    <div class="quick-btn gradient-2" onclick="navigateTo('tasks')">
-                        <i class="fas fa-tasks"></i>
-                        <span class="label">Tasks</span>
-                    </div>
-                    <div class="quick-btn gradient-3" onclick="navigateTo('tasks')">
-                        <i class="fas fa-gift"></i>
-                        <span class="label">Claim Rewards</span>
-                    </div>
-                    <div class="quick-btn gradient-4" onclick="navigateTo('refer')">
-                        <i class="fas fa-users"></i>
-                        <span class="label">Refer Friends</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- RichAds Placement 2 -->
             <div class="richads-container" id="richads-home-2">
                 <span>📢 Advertisement</span>
             </div>
 
-            <!-- Recent Activity -->
             <div class="card">
                 <div class="card-title"><i class="fas fa-clock"></i> Recent Activity</div>
                 <div id="recentActivity">
@@ -944,18 +1023,14 @@
         <!-- ===== TASKS SECTION ===== -->
         <div class="section" id="section-tasks">
             
-            <!-- Watch Ads Section -->
             <div class="card">
                 <div class="card-title"><i class="fas fa-play"></i> Watch Ads & Earn</div>
                 <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
-                    Watch 30 ads per network, then claim your reward. Default reward: Ⓝ3 per network.
-                </p>
-                <p style="font-size: 10px; color: var(--danger); margin-bottom: 10px;">
-                    ⚠️ Progress only counts when ads complete successfully. Failed/Skipped ads = NO progress.
+                    Watch 30 ads per network, then claim your reward.
                 </p>
                 
                 <div class="ad-network-grid">
-                    <!-- LibTL (Monetag) -->
+                    <!-- LibTL -->
                     <div class="ad-network-card" id="card-libtl">
                         <div class="network-icon">🔵</div>
                         <div class="network-name">LibTL (Monetag)</div>
@@ -967,12 +1042,8 @@
                             <span id="libtlCount">0/30</span>
                             <span id="libtlStatus">Ready</span>
                         </div>
-                        <button class="watch-btn" onclick="watchAd('libtl')" id="libtlWatchBtn">
-                            ▶ Watch Ad
-                        </button>
-                        <button class="claim-btn" onclick="claimReward('libtl')" id="libtlClaimBtn" style="display:none;">
-                            🎁 Claim Ⓝ3
-                        </button>
+                        <button class="watch-btn" onclick="watchAd('libtl')" id="libtlWatchBtn">▶ Watch Ad</button>
+                        <button class="claim-btn" onclick="claimReward('libtl')" id="libtlClaimBtn" style="display:none;">🎁 Claim Ⓝ3</button>
                         <div class="cooldown-timer" id="libtlCooldown"></div>
                         <div class="error-message" id="libtlError"></div>
                     </div>
@@ -981,20 +1052,16 @@
                     <div class="ad-network-card" id="card-adexora">
                         <div class="network-icon">🟣</div>
                         <div class="network-name">Adexora</div>
-                        <div class="sdk-status" id="adexoraSdkStatus">Checking...</div>
+                        <div class="sdk-status loading" id="adexoraSdkStatus">Loading SDK...</div>
                         <div class="progress-bar">
                             <div class="progress-fill adexora" id="adexoraProgress" style="width: 0%"></div>
                         </div>
                         <div class="progress-info">
                             <span id="adexoraCount">0/30</span>
-                            <span id="adexoraStatus">Ready</span>
+                            <span id="adexoraStatus">Waiting for SDK</span>
                         </div>
-                        <button class="watch-btn" onclick="watchAd('adexora')" id="adexoraWatchBtn">
-                            ▶ Watch Ad
-                        </button>
-                        <button class="claim-btn" onclick="claimReward('adexora')" id="adexoraClaimBtn" style="display:none;">
-                            🎁 Claim Ⓝ3
-                        </button>
+                        <button class="watch-btn" onclick="watchAd('adexora')" id="adexoraWatchBtn" disabled>⏳ SDK Loading...</button>
+                        <button class="claim-btn" onclick="claimReward('adexora')" id="adexoraClaimBtn" style="display:none;">🎁 Claim Ⓝ3</button>
                         <div class="cooldown-timer" id="adexoraCooldown"></div>
                         <div class="error-message" id="adexoraError"></div>
                     </div>
@@ -1011,39 +1078,100 @@
                             <span id="gigapubCount">0/30</span>
                             <span id="gigapubStatus">Ready</span>
                         </div>
-                        <button class="watch-btn" onclick="watchAd('gigapub')" id="gigapubWatchBtn">
-                            ▶ Watch Ad
-                        </button>
-                        <button class="claim-btn" onclick="claimReward('gigapub')" id="gigapubClaimBtn" style="display:none;">
-                            🎁 Claim Ⓝ3
-                        </button>
+                        <button class="watch-btn" onclick="watchAd('gigapub')" id="gigapubWatchBtn">▶ Watch Ad</button>
+                        <button class="claim-btn" onclick="claimReward('gigapub')" id="gigapubClaimBtn" style="display:none;">🎁 Claim Ⓝ3</button>
                         <div class="cooldown-timer" id="gigapubCooldown"></div>
                         <div class="error-message" id="gigapubError"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- RichAds Placement 3 -->
             <div class="richads-container" id="richads-tasks-1">
                 <span>📢 Advertisement</span>
             </div>
 
-            <!-- Debug Console -->
+            <!-- Adexora Diagnostics Panel -->
             <div class="card">
-                <div class="card-title" style="cursor:pointer;" onclick="toggleDebugConsole()">
-                    <i class="fas fa-bug"></i> Debug Console 
-                    <span style="font-size:10px; color:var(--text-muted);">(click to toggle - shows Adexora diagnostics)</span>
+                <div class="card-title"><i class="fas fa-stethoscope"></i> Adexora SDK Diagnostics</div>
+                <div class="diagnostics-panel" id="adexoraDiagnostics">
+                    <div class="diag-section">
+                        <div class="diag-title">📋 Script Load Status</div>
+                        <div class="diag-row">
+                            <span class="diag-label">Script Tag Present:</span>
+                            <span class="diag-value" id="diag-scriptTag">Checking...</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-label">Script Loaded (onload):</span>
+                            <span class="diag-value" id="diag-scriptLoaded">Checking...</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-label">Script Error (onerror):</span>
+                            <span class="diag-value" id="diag-scriptError">Checking...</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-label">Script Element:</span>
+                            <span class="diag-value" id="diag-scriptElement">Checking...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="diag-section">
+                        <div class="diag-title">🔧 SDK Initialization</div>
+                        <div class="diag-row">
+                            <span class="diag-label">showAdexora exists:</span>
+                            <span class="diag-value" id="diag-sdkExists">Checking...</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-label">showAdexora type:</span>
+                            <span class="diag-value" id="diag-sdkType">Checking...</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-label">Test call result:</span>
+                            <span class="diag-value" id="diag-testResult">Not tested</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-label">Is Promise:</span>
+                            <span class="diag-value" id="diag-isPromise">Not tested</span>
+                        </div>
+                    </div>
+                    
+                    <div class="diag-section">
+                        <div class="diag-title">🌐 Network Status</div>
+                        <div class="diag-row">
+                            <span class="diag-label">Online:</span>
+                            <span class="diag-value" id="diag-online">Checking...</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-label">Adexora reachable:</span>
+                            <span class="diag-value" id="diag-reachable">Not tested</span>
+                        </div>
+                    </div>
+                    
+                    <div class="diag-section">
+                        <div class="diag-title">📱 Environment</div>
+                        <div class="diag-row">
+                            <span class="diag-label">Telegram WebApp:</span>
+                            <span class="diag-value" id="diag-telegram">Checking...</span>
+                        </div>
+                        <div class="diag-row">
+                            <span class="diag-label">User Agent:</span>
+                            <span class="diag-value" id="diag-userAgent" style="font-size:8px; word-break:break-all;">...</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top:8px;">
+                        <button class="diag-btn" onclick="runFullDiagnostic()">🔍 Run Full Diagnostic</button>
+                        <button class="diag-btn" onclick="reloadAdexoraSdk()">🔄 Reload SDK</button>
+                        <button class="diag-btn" onclick="testAdexoraCall()">🧪 Test Call</button>
+                        <button class="diag-btn" onclick="checkAdexoraNetwork()">🌐 Check Network</button>
+                    </div>
                 </div>
-                <div class="debug-console visible" id="debugConsole"></div>
             </div>
 
-            <!-- Ad History Log -->
+            <!-- Ad History -->
             <div class="card">
                 <div class="card-title"><i class="fas fa-history"></i> Ad Watch History</div>
                 <div id="adHistoryLog" style="max-height: 200px; overflow-y: auto;">
-                    <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 10px;">
-                        No ads watched yet
-                    </div>
+                    <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 10px;">No ads watched yet</div>
                 </div>
             </div>
             
@@ -1053,45 +1181,25 @@
         <div class="section" id="section-refer">
             <div class="card">
                 <div class="card-title"><i class="fas fa-share-alt"></i> Refer & Earn</div>
-                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 12px;">
-                    Invite friends and earn <strong style="color: var(--accent);">10%</strong> of their earnings!
-                </p>
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 12px;">Invite friends and earn <strong style="color: var(--accent);">10%</strong> of their earnings!</p>
                 <div style="background: var(--glass-bg); border-radius: var(--radius-sm); padding: 12px; text-align: center; border: 1px solid var(--glass-border);">
                     <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Your Referral Link</div>
                     <div style="font-size: 12px; font-weight: 600; word-break: break-all; color: var(--primary-light);" id="referralLink">Loading...</div>
-                    <button class="claim-btn" style="margin-top: 8px; padding: 8px; font-size: 13px;" onclick="copyReferral()">
-                        <i class="fas fa-copy"></i> Copy Link
-                    </button>
+                    <button class="claim-btn" style="margin-top: 8px; padding: 8px; font-size: 13px;" onclick="copyReferral()">📋 Copy Link</button>
                 </div>
             </div>
-            <div class="richads-container" id="richads-refer-1">
-                <span>📢 Advertisement</span>
-            </div>
+            <div class="richads-container" id="richads-refer-1"><span>📢 Advertisement</span></div>
         </div>
 
         <!-- ===== WALLET SECTION ===== -->
         <div class="section" id="section-wallet">
             <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-value gold" id="walletBalance">Ⓝ0.00</div>
-                    <div class="stat-label">Balance</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value green" id="walletToday">+Ⓝ0.00</div>
-                    <div class="stat-label">Today</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value purple" id="walletTotal">Ⓝ0.00</div>
-                    <div class="stat-label">Total Earn</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value blue" id="walletPending">Ⓝ0.00</div>
-                    <div class="stat-label">Pending</div>
-                </div>
+                <div class="stat-item"><div class="stat-value gold" id="walletBalance">Ⓝ0.00</div><div class="stat-label">Balance</div></div>
+                <div class="stat-item"><div class="stat-value green" id="walletToday">+Ⓝ0.00</div><div class="stat-label">Today</div></div>
+                <div class="stat-item"><div class="stat-value purple" id="walletTotal">Ⓝ0.00</div><div class="stat-label">Total Earn</div></div>
+                <div class="stat-item"><div class="stat-value blue" id="walletPending">Ⓝ0.00</div><div class="stat-label">Pending</div></div>
             </div>
-            <div class="richads-container" id="richads-wallet-1">
-                <span>📢 Advertisement</span>
-            </div>
+            <div class="richads-container" id="richads-wallet-1"><span>📢 Advertisement</span></div>
         </div>
 
         <!-- ===== PROFILE SECTION ===== -->
@@ -1107,35 +1215,18 @@
                     </div>
                 </div>
             </div>
-            <div class="richads-container" id="richads-profile-1">
-                <span>📢 Advertisement</span>
-            </div>
+            <div class="richads-container" id="richads-profile-1"><span>📢 Advertisement</span></div>
         </div>
 
     </div>
 
     <!-- ===== BOTTOM NAVIGATION ===== -->
     <nav class="bottom-nav">
-        <button class="nav-item active" data-section="home" onclick="navigateTo('home')">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </button>
-        <button class="nav-item" data-section="tasks" onclick="navigateTo('tasks')">
-            <i class="fas fa-tasks"></i>
-            <span>Tasks</span>
-        </button>
-        <button class="nav-item" data-section="refer" onclick="navigateTo('refer')">
-            <i class="fas fa-users"></i>
-            <span>Refer</span>
-        </button>
-        <button class="nav-item" data-section="wallet" onclick="navigateTo('wallet')">
-            <i class="fas fa-wallet"></i>
-            <span>Wallet</span>
-        </button>
-        <button class="nav-item" data-section="profile" onclick="navigateTo('profile')">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </button>
+        <button class="nav-item active" data-section="home" onclick="navigateTo('home')"><i class="fas fa-home"></i><span>Home</span></button>
+        <button class="nav-item" data-section="tasks" onclick="navigateTo('tasks')"><i class="fas fa-tasks"></i><span>Tasks</span></button>
+        <button class="nav-item" data-section="refer" onclick="navigateTo('refer')"><i class="fas fa-users"></i><span>Refer</span></button>
+        <button class="nav-item" data-section="wallet" onclick="navigateTo('wallet')"><i class="fas fa-wallet"></i><span>Wallet</span></button>
+        <button class="nav-item" data-section="profile" onclick="navigateTo('profile')"><i class="fas fa-user"></i><span>Profile</span></button>
     </nav>
 
 </div>
@@ -1149,9 +1240,7 @@
             <div style="font-size: 48px; margin-bottom: 10px;">🎁</div>
             <div style="font-size: 18px; font-weight: 700; color: var(--accent);" id="claimAmount">+Ⓝ3.00</div>
             <div style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;" id="claimNetwork">Adexora</div>
-            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
-                Next claim available in <span id="claimCooldown">12:00:00</span>
-            </div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Next claim available in <span id="claimCooldown">12:00:00</span></div>
         </div>
         <button class="claim-btn" onclick="closeModal('claimModal')">OK</button>
     </div>
@@ -1164,15 +1253,16 @@
         botUsername: 'NxEranBot',
         currency: 'Ⓝ',
         adminId: '8407948229',
-        // Adexora configuration
         adexora: {
             sdkUrl: 'https://adexora.com/cdn/ads.js?id=363',
             publisherId: '363',
-            adTimeout: 20000
+            adTimeout: 20000,
+            maxLoadWait: 10000,
+            retryDelay: 3000
         }
     };
 
-    // ===== AD NETWORK CONFIGURATION (Adexium REMOVED) =====
+    // ===== AD NETWORK CONFIGURATION =====
     const AD_NETWORKS = {
         libtl: {
             name: 'LibTL (Monetag)',
@@ -1183,8 +1273,7 @@
             icon: '🔵',
             color: 'libtl',
             sdkLoaded: false,
-            sdkCheckFunction: () => typeof show_9388728 === 'function',
-            lastError: null
+            sdkCheckFunction: () => typeof show_9388728 === 'function'
         },
         adexora: {
             name: 'Adexora',
@@ -1196,7 +1285,8 @@
             color: 'adexora',
             sdkLoaded: false,
             sdkCheckFunction: () => typeof window.showAdexora === 'function',
-            lastError: null
+            loadRetries: 0,
+            maxRetries: 3
         },
         gigapub: {
             name: 'GigaPub',
@@ -1207,8 +1297,7 @@
             icon: '🟢',
             color: 'gigapub',
             sdkLoaded: false,
-            sdkCheckFunction: () => typeof window.showGiga === 'function' || typeof window.AdGigaFallback === 'function',
-            lastError: null
+            sdkCheckFunction: () => typeof window.showGiga === 'function' || typeof window.AdGigaFallback === 'function'
         }
     };
 
@@ -1232,60 +1321,274 @@
             adexora: { watched: 0, claimed: false, claimTime: null, expireTime: null },
             gigapub: { watched: 0, claimed: false, claimTime: null, expireTime: null }
         },
-        settings: {
-            darkMode: true,
-            notifications: true,
-            sound: true,
-            debugMode: true // Enable debug by default for Adexora diagnostics
-        }
+        settings: { darkMode: true, notifications: true, sound: true }
     };
 
     let isAdRunning = false;
     let currentAdNetwork = null;
     let adTimeoutId = null;
-    let debugLogs = [];
 
-    // ===== DEBUG LOGGING =====
-    function debugLog(message, type = 'info') {
-        const entry = {
-            timestamp: new Date().toISOString(),
-            message: message,
-            type: type
-        };
-        debugLogs.unshift(entry);
-        if (debugLogs.length > 200) debugLogs.pop();
+    // ===== ADEXORA SDK LOAD MONITORING =====
+    function monitorAdexoraLoad() {
+        console.log('[Adexora Monitor] Starting load monitoring...');
         
-        const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
-        console.log(`${prefix} [${new Date().toLocaleTimeString()}] ${message}`);
+        // Check immediately
+        updateAdexoraDiagnostics();
         
-        updateDebugConsole();
+        // Check after delays
+        [500, 1000, 2000, 3000, 5000, 8000, 10000].forEach(delay => {
+            setTimeout(() => {
+                console.log(`[Adexora Monitor] Check at ${delay}ms`);
+                updateAdexoraDiagnostics();
+                checkAdexoraSdkReady();
+            }, delay);
+        });
     }
 
-    function updateDebugConsole() {
-        const console = document.getElementById('debugConsole');
-        if (!console || !console.classList.contains('visible')) return;
+    function updateAdexoraDiagnostics() {
+        const scriptEl = document.getElementById('adexora-sdk-script');
+        const loadStatus = window.__adexoraLoadStatus || {};
         
-        console.innerHTML = debugLogs.slice(0, 100).map(entry => {
-            return `<div class="debug-entry ${entry.type}">[${new Date(entry.timestamp).toLocaleTimeString()}] ${entry.message}</div>`;
-        }).join('');
-    }
-
-    function toggleDebugConsole() {
-        const console = document.getElementById('debugConsole');
-        console.classList.toggle('visible');
-        if (console.classList.contains('visible')) {
-            updateDebugConsole();
+        // Script tag
+        updateDiagValue('diag-scriptTag', scriptEl ? '✅ Present' : '❌ Missing', scriptEl ? 'success' : 'error');
+        
+        // Script loaded
+        updateDiagValue('diag-scriptLoaded', 
+            loadStatus.scriptLoaded ? '✅ Yes' : '❌ No (not fired)', 
+            loadStatus.scriptLoaded ? 'success' : 'error');
+        
+        // Script error
+        updateDiagValue('diag-scriptError', 
+            loadStatus.scriptError ? `❌ ${loadStatus.scriptError}` : '✅ None', 
+            loadStatus.scriptError ? 'error' : 'success');
+        
+        // Script element status
+        if (scriptEl) {
+            updateDiagValue('diag-scriptElement', 
+                scriptEl.complete ? '✅ Loaded' : '⏳ Loading...', 
+                scriptEl.complete ? 'success' : 'warning');
         }
-        userData.settings.debugMode = console.classList.contains('visible');
-        saveUserData();
+        
+        // SDK exists
+        const sdkExists = typeof window.showAdexora === 'function';
+        updateDiagValue('diag-sdkExists', sdkExists ? '✅ Yes' : '❌ No', sdkExists ? 'success' : 'error');
+        updateDiagValue('diag-sdkType', typeof window.showAdexora, sdkExists ? 'success' : 'error');
+        
+        // Online status
+        updateDiagValue('diag-online', navigator.onLine ? '✅ Online' : '❌ Offline', navigator.onLine ? 'success' : 'error');
+        
+        // Telegram status
+        const isTelegram = !!(window.Telegram && window.Telegram.WebApp);
+        updateDiagValue('diag-telegram', isTelegram ? '✅ Yes' : '⚠️ No', isTelegram ? 'success' : 'warning');
+        
+        // User agent
+        updateDiagValue('diag-userAgent', navigator.userAgent.substring(0, 100) + '...', 'info');
+    }
+
+    function updateDiagValue(id, text, className) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = text;
+            el.className = 'diag-value';
+            if (className) el.classList.add(className);
+        }
+    }
+
+    function checkAdexoraSdkReady() {
+        const sdkLoaded = typeof window.showAdexora === 'function';
+        const config = AD_NETWORKS.adexora;
+        const sdkStatusEl = document.getElementById('adexoraSdkStatus');
+        const watchBtn = document.getElementById('adexoraWatchBtn');
+        const statusEl = document.getElementById('adexoraStatus');
+        
+        if (sdkLoaded) {
+            config.sdkLoaded = true;
+            if (sdkStatusEl) { sdkStatusEl.textContent = '✅ SDK Ready'; sdkStatusEl.className = 'sdk-status loaded'; }
+            if (watchBtn) { watchBtn.disabled = false; watchBtn.textContent = '▶ Watch Ad'; }
+            if (statusEl) statusEl.textContent = 'Ready';
+            
+            // Test the SDK
+            try {
+                const testResult = window.showAdexora();
+                updateDiagValue('diag-testResult', JSON.stringify(testResult).substring(0, 50), 'success');
+                updateDiagValue('diag-isPromise', 
+                    testResult && typeof testResult.then === 'function' ? '✅ Yes' : '❌ No',
+                    testResult && typeof testResult.then === 'function' ? 'success' : 'error');
+            } catch(e) {
+                updateDiagValue('diag-testResult', `Error: ${e.message}`, 'error');
+                updateDiagValue('diag-isPromise', 'N/A', 'error');
+            }
+            
+            console.log('[Adexora Monitor] ✅ SDK Ready!');
+        } else {
+            if (sdkStatusEl) { sdkStatusEl.textContent = '⏳ Waiting for SDK...'; sdkStatusEl.className = 'sdk-status loading'; }
+            if (watchBtn) { watchBtn.disabled = true; watchBtn.textContent = '⏳ SDK Loading...'; }
+            if (statusEl) statusEl.textContent = 'Waiting for SDK';
+            
+            // Retry loading if needed
+            if (config.loadRetries < config.maxRetries) {
+                config.loadRetries++;
+                console.log(`[Adexora Monitor] SDK not ready. Retry ${config.loadRetries}/${config.maxRetries} in ${CONFIG.adexora.retryDelay}ms`);
+                setTimeout(() => {
+                    reloadAdexoraSdk();
+                }, CONFIG.adexora.retryDelay);
+            }
+        }
+    }
+
+    function runFullDiagnostic() {
+        console.log('═══════════════════════════════');
+        console.log('🔍 FULL ADEXORA DIAGNOSTIC');
+        console.log('═══════════════════════════════');
+        
+        updateAdexoraDiagnostics();
+        
+        // Check network
+        checkAdexoraNetwork();
+        
+        // Check all window properties related to Adexora
+        const adexoraKeys = Object.keys(window).filter(k => 
+            k.toLowerCase().includes('adex') || 
+            k.toLowerCase().includes('adx') ||
+            k.toLowerCase().includes('showad')
+        );
+        console.log('[Diag] Adexora-related window keys:', adexoraKeys);
+        
+        // Check script element
+        const scriptEl = document.getElementById('adexora-sdk-script');
+        if (scriptEl) {
+            console.log('[Diag] Script element:', {
+                src: scriptEl.src,
+                async: scriptEl.async,
+                defer: scriptEl.defer,
+                complete: scriptEl.complete,
+                readyState: scriptEl.readyState,
+                onload: !!scriptEl.onload,
+                onerror: !!scriptEl.onerror
+            });
+        }
+        
+        // Test SDK call
+        testAdexoraCall();
+        
+        showNotification('🔍 Full diagnostic completed. Check console.', 'info');
+    }
+
+    function reloadAdexoraSdk() {
+        console.log('[Adexora Reload] Attempting SDK reload...');
+        
+        // Remove existing script
+        const existingScript = document.getElementById('adexora-sdk-script');
+        if (existingScript) {
+            existingScript.remove();
+            console.log('[Adexora Reload] Removed existing script');
+        }
+        
+        // Reset status
+        window.__adexoraLoadStatus = {
+            scriptRequested: true,
+            scriptLoaded: false,
+            scriptError: null,
+            sdkInitialized: false,
+            loadAttempts: (window.__adexoraLoadStatus?.loadAttempts || 0) + 1
+        };
+        
+        // Create new script element
+        const newScript = document.createElement('script');
+        newScript.id = 'adexora-sdk-script';
+        newScript.src = CONFIG.adexora.sdkUrl;
+        newScript.onload = function() {
+            console.log('[Adexora Reload] ✅ Script loaded successfully');
+            window.__adexoraLoadStatus.scriptLoaded = true;
+            window.__adexoraLoadStatus.scriptRequested = true;
+            updateAdexoraDiagnostics();
+            
+            // Check for SDK initialization
+            setTimeout(checkAdexoraSdkReady, 500);
+            setTimeout(checkAdexoraSdkReady, 2000);
+            setTimeout(checkAdexoraSdkReady, 5000);
+        };
+        newScript.onerror = function(e) {
+            console.error('[Adexora Reload] ❌ Script failed to load:', e);
+            window.__adexoraLoadStatus.scriptError = 'Failed to load on reload attempt';
+            updateAdexoraDiagnostics();
+        };
+        
+        document.head.appendChild(newScript);
+        console.log('[Adexora Reload] New script appended');
+        updateAdexoraDiagnostics();
+        
+        showNotification('🔄 Adexora SDK reloading...', 'warning');
+    }
+
+    function testAdexoraCall() {
+        console.log('[Adexora Test] Testing showAdexora() call...');
+        
+        if (typeof window.showAdexora !== 'function') {
+            console.error('[Adexora Test] ❌ showAdexora is not a function');
+            updateDiagValue('diag-testResult', '❌ Not a function', 'error');
+            showNotification('❌ Adexora SDK not loaded', 'error');
+            return;
+        }
+        
+        try {
+            const result = window.showAdexora();
+            console.log('[Adexora Test] Result type:', typeof result);
+            console.log('[Adexora Test] Result:', result);
+            
+            updateDiagValue('diag-testResult', typeof result + ': ' + JSON.stringify(result).substring(0, 40), 'info');
+            updateDiagValue('diag-isPromise', 
+                result && typeof result.then === 'function' ? '✅ Yes' : '⚠️ No (resolves with undefined)',
+                result && typeof result.then === 'function' ? 'success' : 'warning');
+            
+            if (result && typeof result.then === 'function') {
+                result.then(val => {
+                    console.log('[Adexora Test] Promise resolved with:', val);
+                    updateDiagValue('diag-testResult', 'Resolved: ' + JSON.stringify(val).substring(0, 40), val ? 'success' : 'warning');
+                }).catch(err => {
+                    console.error('[Adexora Test] Promise rejected:', err);
+                    updateDiagValue('diag-testResult', 'Rejected: ' + err.message, 'error');
+                });
+            }
+            
+            showNotification('🧪 Adexora test call completed', 'info');
+        } catch(e) {
+            console.error('[Adexora Test] ❌ Error:', e);
+            updateDiagValue('diag-testResult', 'Error: ' + e.message, 'error');
+            showNotification('❌ Adexora test call failed', 'error');
+        }
+    }
+
+    function checkAdexoraNetwork() {
+        console.log('[Adexora Network] Checking connectivity...');
+        updateDiagValue('diag-reachable', 'Testing...', 'warning');
+        
+        // Try to fetch the Adexora domain
+        fetch('https://adexora.com/cdn/ads.js?id=363', { 
+            method: 'HEAD',
+            mode: 'no-cors',
+            cache: 'no-cache'
+        })
+        .then(() => {
+            console.log('[Adexora Network] ✅ Domain reachable');
+            updateDiagValue('diag-reachable', '✅ Reachable', 'success');
+            window.__adexoraLoadStatus.networkChecked = true;
+            window.__adexoraLoadStatus.networkAvailable = true;
+        })
+        .catch((error) => {
+            console.error('[Adexora Network] ❌ Not reachable:', error);
+            updateDiagValue('diag-reachable', '❌ Not reachable: ' + error.message, 'error');
+            window.__adexoraLoadStatus.networkChecked = true;
+            window.__adexoraLoadStatus.networkAvailable = false;
+        });
     }
 
     // ===== LOADING SCREEN =====
     window.addEventListener('DOMContentLoaded', function() {
-        // Show debug console immediately for Adexora diagnostics
-        document.getElementById('debugConsole').classList.add('visible');
-        debugLog('🚀 NX ERAN Starting... (Adexium REMOVED)', 'info');
-        debugLog('🔍 Adexora diagnostic mode ACTIVE', 'warning');
+        console.log('🚀 NX ERAN - Adexora Diagnostics Mode');
+        
+        // Start monitoring Adexora load
+        monitorAdexoraLoad();
         
         setTimeout(() => {
             const loading = document.getElementById('loading-screen');
@@ -1300,20 +1603,10 @@
 
     // ===== INIT APP =====
     function initApp() {
-        debugLog('📱 Initializing app...', 'info');
         initTelegram();
         loadUserData();
         loadAdminSettings();
-        
-        // Detailed Adexora diagnostic
-        debugLog('═══════════════════════════════', 'warning');
-        debugLog('🔍 ADEXORA DIAGNOSTIC START', 'warning');
-        debugLog('═══════════════════════════════', 'warning');
-        diagnoseAdexora();
-        debugLog('═══════════════════════════════', 'warning');
-        debugLog('🔍 ADEXORA DIAGNOSTIC END', 'warning');
-        debugLog('═══════════════════════════════', 'warning');
-        
+        updateAdexoraDiagnostics();
         checkAllSdkAvailability();
         updateUI();
         initReferralLink();
@@ -1324,74 +1617,10 @@
         initRichAds();
         checkDailyReset();
         
-        debugLog('✅ Initialization complete', 'success');
+        // Run network check
+        checkAdexoraNetwork();
     }
 
-    // ===== ADEXORA DIAGNOSTIC =====
-    function diagnoseAdexora() {
-        debugLog('[Adexora Diag] Checking SDK script tag...', 'info');
-        const scripts = document.querySelectorAll('script[src]');
-        let adexoraScriptFound = false;
-        scripts.forEach(script => {
-            if (script.src.includes('adexora')) {
-                debugLog(`[Adexora Diag] ✅ Script tag found: ${script.src}`, 'success');
-                debugLog(`[Adexora Diag] Script async: ${script.async}`, 'info');
-                debugLog(`[Adexora Diag] Script defer: ${script.defer}`, 'info');
-                debugLog(`[Adexora Diag] Script loaded: ${script.complete ? 'YES' : 'NO'}`, script.complete ? 'success' : 'warning');
-                adexoraScriptFound = true;
-            }
-        });
-        if (!adexoraScriptFound) {
-            debugLog('[Adexora Diag] ❌ No Adexora script tag found in DOM!', 'error');
-        }
-        
-        debugLog('[Adexora Diag] Checking window.showAdexora...', 'info');
-        debugLog(`[Adexora Diag] typeof window.showAdexora: ${typeof window.showAdexora}`, 'info');
-        debugLog(`[Adexora Diag] window.showAdexora value: ${window.showAdexora}`, 'info');
-        
-        if (typeof window.showAdexora === 'function') {
-            debugLog('[Adexora Diag] ✅ showAdexora is a function', 'success');
-            debugLog(`[Adexora Diag] Function source (first 200 chars): ${window.showAdexora.toString().substring(0, 200)}`, 'info');
-        } else {
-            debugLog('[Adexora Diag] ❌ showAdexora is NOT a function', 'error');
-            
-            // Check for alternative names
-            debugLog('[Adexora Diag] Searching for alternative SDK names...', 'warning');
-            const adexoraKeys = Object.keys(window).filter(k => 
-                k.toLowerCase().includes('adex') || 
-                k.toLowerCase().includes('adx') ||
-                k.toLowerCase().includes('showad')
-            );
-            debugLog(`[Adexora Diag] Related window keys: ${adexoraKeys.join(', ') || 'NONE FOUND'}`, 'warning');
-            
-            // Check if SDK loaded as a different type
-            const allWindowTypes = {};
-            adexoraKeys.forEach(key => {
-                allWindowTypes[key] = typeof window[key];
-            });
-            debugLog(`[Adexora Diag] Types: ${JSON.stringify(allWindowTypes)}`, 'info');
-        }
-        
-        // Try to call the function and see what happens
-        if (typeof window.showAdexora === 'function') {
-            debugLog('[Adexora Diag] Attempting test call to showAdexora()...', 'warning');
-            try {
-                const testResult = window.showAdexora();
-                debugLog(`[Adexora Diag] Test call returned: ${typeof testResult}`, 'info');
-                debugLog(`[Adexora Diag] Test call value: ${JSON.stringify(testResult)}`, 'info');
-                
-                if (testResult && typeof testResult.then === 'function') {
-                    debugLog('[Adexora Diag] ✅ Test call returned a Promise', 'success');
-                } else {
-                    debugLog('[Adexora Diag] ⚠️ Test call did NOT return a Promise', 'warning');
-                }
-            } catch(e) {
-                debugLog(`[Adexora Diag] ❌ Test call ERROR: ${e.message}`, 'error');
-            }
-        }
-    }
-
-    // ===== TELEGRAM INIT =====
     function initTelegram() {
         if (window.Telegram && window.Telegram.WebApp) {
             const tg = window.Telegram.WebApp;
@@ -1409,77 +1638,41 @@
                     document.getElementById('avatarImg').src = user.photo_url;
                     document.getElementById('profileAvatarImg').src = user.photo_url;
                 }
-                debugLog(`Telegram user: ${user.first_name} (${user.id})`, 'info');
             }
         }
     }
 
-    // ===== LOAD ADMIN SETTINGS =====
     function loadAdminSettings() {
         const saved = localStorage.getItem('nxeran_adNetworkConfig');
         if (saved) {
             try {
                 const config = JSON.parse(saved);
                 Object.keys(config).forEach(key => {
-                    if (AD_NETWORKS[key]) {
-                        Object.assign(AD_NETWORKS[key], config[key]);
-                    }
+                    if (AD_NETWORKS[key]) Object.assign(AD_NETWORKS[key], config[key]);
                 });
-                debugLog('Admin settings loaded', 'info');
-            } catch(e) {
-                debugLog('Failed to load admin settings: ' + e.message, 'error');
-            }
+            } catch(e) {}
         }
     }
 
-    // ===== CHECK ALL SDK AVAILABILITY =====
     function checkAllSdkAvailability() {
-        debugLog('🔍 Checking SDK availability...', 'info');
-        
         Object.keys(AD_NETWORKS).forEach(network => {
+            if (network === 'adexora') return; // Handled separately
             const config = AD_NETWORKS[network];
             const sdkStatusEl = document.getElementById(network + 'SdkStatus');
-            
             try {
-                const isLoaded = config.sdkCheckFunction();
-                config.sdkLoaded = isLoaded;
-                
+                config.sdkLoaded = config.sdkCheckFunction();
                 if (sdkStatusEl) {
-                    if (isLoaded) {
-                        sdkStatusEl.textContent = '✅ SDK Loaded';
-                        sdkStatusEl.className = 'sdk-status loaded';
-                    } else {
-                        sdkStatusEl.textContent = '⚠️ SDK Unavailable';
-                        sdkStatusEl.className = 'sdk-status unavailable';
-                    }
+                    sdkStatusEl.textContent = config.sdkLoaded ? '✅ SDK Loaded' : '⚠️ SDK Unavailable';
+                    sdkStatusEl.className = 'sdk-status ' + (config.sdkLoaded ? 'loaded' : 'unavailable');
                 }
-                
-                debugLog(`${config.name}: SDK ${isLoaded ? 'LOADED' : 'NOT LOADED'}`, isLoaded ? 'success' : 'warning');
-                
-                // Special handling for Adexora
-                if (network === 'adexora') {
-                    debugLog(`Adexora - typeof window.showAdexora: ${typeof window.showAdexora}`, 'info');
-                    if (typeof window.showAdexora === 'function') {
-                        debugLog('Adexora - showAdexora is available ✓', 'success');
-                    } else {
-                        debugLog('Adexora - showAdexora NOT available ✗', 'error');
-                    }
-                }
-                
             } catch(e) {
                 config.sdkLoaded = false;
-                if (sdkStatusEl) {
-                    sdkStatusEl.textContent = '❌ SDK Error';
-                    sdkStatusEl.className = 'sdk-status unavailable';
-                }
-                debugLog(`${config.name}: SDK check error - ${e.message}`, 'error');
+                if (sdkStatusEl) { sdkStatusEl.textContent = '❌ SDK Error'; sdkStatusEl.className = 'sdk-status unavailable'; }
             }
         });
-        
         updateAllAdProgress();
     }
 
-    // ===== USER DATA =====
     function loadUserData() {
         const key = 'nxeran_userData_' + userData.id;
         const saved = localStorage.getItem(key);
@@ -1494,51 +1687,32 @@
                     gigapub: Object.assign({ watched: 0, claimed: false, claimTime: null, expireTime: null }, existingProgress.gigapub || {})
                 };
                 userData.adHistory = parsed.adHistory || [];
-                debugLog(`User data loaded for ${userData.id}`, 'info');
-            } catch(e) {
-                debugLog('Failed to load user data: ' + e.message, 'error');
-            }
+            } catch(e) {}
         }
     }
 
     function saveUserData() {
-        const key = 'nxeran_userData_' + userData.id;
-        localStorage.setItem(key, JSON.stringify(userData));
-        syncWithAdmin();
-    }
-
-    function syncWithAdmin() {
+        localStorage.setItem('nxeran_userData_' + userData.id, JSON.stringify(userData));
         const adminData = JSON.parse(localStorage.getItem('nxeran_adminData') || '{}');
         if (!adminData.users) adminData.users = [];
         const existing = adminData.users.find(u => u.id == userData.id);
-        const userSummary = {
-            id: userData.id,
-            name: userData.firstName,
-            username: userData.username,
-            balance: userData.balance,
-            totalEarn: userData.totalEarn,
-            todayAds: userData.todayAds,
-            totalAds: userData.totalAds,
-            referrals: userData.referrals ? userData.referrals.length : 0,
-            level: userData.level || 'Bronze',
-            status: 'active',
-            joined: userData.joinedDate || new Date().toLocaleDateString(),
+        const summary = {
+            id: userData.id, name: userData.firstName, username: userData.username,
+            balance: userData.balance, totalEarn: userData.totalEarn,
+            todayAds: userData.todayAds, totalAds: userData.totalAds,
+            referrals: (userData.referrals || []).length, level: userData.level || 'Bronze',
+            status: 'active', joined: userData.joinedDate || new Date().toLocaleDateString(),
             adProgress: userData.adProgress
         };
-        if (existing) {
-            Object.assign(existing, userSummary);
-        } else {
-            adminData.users.push(userSummary);
-        }
+        if (existing) Object.assign(existing, summary);
+        else adminData.users.push(summary);
         localStorage.setItem('nxeran_adminData', JSON.stringify(adminData));
     }
 
-    // ===== DAILY RESET =====
     function checkDailyReset() {
         const today = new Date().toDateString();
         const lastReset = localStorage.getItem('nxeran_lastReset_' + userData.id);
-        const adminReset = localStorage.getItem('nxeran_forceReset');
-        if (adminReset === 'true') {
+        if (localStorage.getItem('nxeran_forceReset') === 'true') {
             performDailyReset();
             localStorage.removeItem('nxeran_forceReset');
             return;
@@ -1550,68 +1724,53 @@
     }
 
     function performDailyReset() {
-        debugLog('🔄 Performing daily reset...', 'warning');
-        Object.keys(userData.adProgress).forEach(network => {
-            userData.adProgress[network] = {
-                watched: 0,
-                claimed: false,
-                claimTime: null,
-                expireTime: null
-            };
+        Object.keys(userData.adProgress).forEach(n => {
+            userData.adProgress[n] = { watched: 0, claimed: false, claimTime: null, expireTime: null };
         });
         userData.todayEarnings = 0;
         userData.todayAds = 0;
         saveUserData();
         updateAllAdProgress();
-        showNotification('🔄 Daily limits have been reset!', 'warning');
+        showNotification('🔄 Daily limits reset!', 'warning');
     }
 
-    // ===== REFERRAL =====
     function initReferralLink() {
         userData.referralLink = `https://t.me/${CONFIG.botUsername}?start=ref${userData.id}`;
         document.getElementById('referralLink').textContent = userData.referralLink;
     }
 
     function copyReferral() {
-        navigator.clipboard.writeText(userData.referralLink).then(() => {
-            showNotification('📋 Referral link copied!', 'success');
-        });
+        navigator.clipboard.writeText(userData.referralLink).then(() => showNotification('📋 Copied!', 'success'));
     }
 
-    // ===== NAVIGATION =====
     function navigateTo(section) {
         document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        const targetSection = document.getElementById('section-' + section);
-        if (targetSection) targetSection.classList.add('active');
+        const target = document.getElementById('section-' + section);
+        if (target) target.classList.add('active');
         const navItem = document.querySelector(`.nav-item[data-section="${section}"]`);
         if (navItem) navItem.classList.add('active');
-        refreshRichAds(section);
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-        }
+        refreshRichAds();
+        if (window.Telegram?.WebApp) window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
     }
 
-    // ===== UPDATE UI =====
     function updateUI() {
-        const balanceFormatted = userData.balance.toFixed(2);
-        document.getElementById('headerBalance').textContent = balanceFormatted;
-        document.getElementById('homeBalance').textContent = balanceFormatted;
-        document.getElementById('walletBalance').textContent = 'Ⓝ' + balanceFormatted;
+        const bf = userData.balance.toFixed(2);
+        document.getElementById('headerBalance').textContent = bf;
+        document.getElementById('homeBalance').textContent = bf;
+        document.getElementById('walletBalance').textContent = 'Ⓝ' + bf;
         document.getElementById('todayIncome').textContent = '+Ⓝ' + userData.todayEarnings.toFixed(2);
         document.getElementById('todayAds').textContent = userData.todayAds;
         document.getElementById('totalAds').textContent = userData.totalAds;
-        const referralCount = userData.referrals ? userData.referrals.length : 0;
-        document.getElementById('totalReferrals').textContent = referralCount;
+        document.getElementById('totalReferrals').textContent = (userData.referrals || []).length;
         document.getElementById('walletToday').textContent = '+Ⓝ' + userData.todayEarnings.toFixed(2);
         document.getElementById('walletTotal').textContent = 'Ⓝ' + userData.totalEarn.toFixed(2);
         updateAllAdProgress();
         saveUserData();
     }
 
-    // ===== UPDATE AD PROGRESS =====
     function updateAllAdProgress() {
-        Object.keys(AD_NETWORKS).forEach(network => updateAdProgress(network));
+        Object.keys(AD_NETWORKS).forEach(n => updateAdProgress(n));
     }
 
     function updateAdProgress(network) {
@@ -1619,10 +1778,9 @@
         const progress = userData.adProgress[network];
         const watched = progress.watched;
         const max = config.adsPerCycle;
-        const percentage = Math.min((watched / max) * 100, 100);
         
         const progressBar = document.getElementById(network + 'Progress');
-        if (progressBar) progressBar.style.width = percentage + '%';
+        if (progressBar) progressBar.style.width = Math.min((watched / max) * 100, 100) + '%';
         
         const countEl = document.getElementById(network + 'Count');
         if (countEl) countEl.textContent = `${watched}/${max}`;
@@ -1635,10 +1793,7 @@
         const cardEl = document.getElementById('card-' + network);
         
         if (errorEl) errorEl.classList.remove('visible');
-        if (cardEl) {
-            cardEl.classList.remove('error-state');
-            cardEl.classList.remove('unavailable-state');
-        }
+        if (cardEl) { cardEl.classList.remove('error-state', 'unavailable-state'); }
         
         if (!config.enabled) {
             if (statusEl) statusEl.textContent = '🚫 Disabled';
@@ -1646,6 +1801,12 @@
             if (claimBtn) claimBtn.style.display = 'none';
             if (cardEl) cardEl.classList.add('unavailable-state');
             return;
+        }
+        
+        // For Adexora, check SDK status
+        if (network === 'adexora' && !config.sdkLoaded) {
+            // Don't override the SDK loading message
+            if (watchBtn && watchBtn.textContent.includes('SDK Loading')) return;
         }
         
         if (!config.sdkLoaded) {
@@ -1664,10 +1825,8 @@
                 if (claimBtn) claimBtn.style.display = 'none';
                 updateCooldownTimer(network);
             } else {
-                progress.claimed = false;
-                progress.watched = 0;
-                progress.claimTime = null;
-                progress.expireTime = null;
+                progress.claimed = false; progress.watched = 0;
+                progress.claimTime = null; progress.expireTime = null;
                 if (statusEl) statusEl.textContent = '✅ Ready';
                 if (watchBtn) { watchBtn.style.display = 'inline-block'; watchBtn.disabled = false; }
                 if (claimBtn) claimBtn.style.display = 'none';
@@ -1680,10 +1839,7 @@
             if (claimBtn) { claimBtn.style.display = 'inline-block'; claimBtn.disabled = false; }
         } else {
             if (statusEl) statusEl.textContent = '✅ Ready';
-            if (watchBtn) { 
-                watchBtn.style.display = 'inline-block'; 
-                watchBtn.disabled = isAdRunning;
-            }
+            if (watchBtn) { watchBtn.style.display = 'inline-block'; watchBtn.disabled = isAdRunning; }
             if (claimBtn) claimBtn.style.display = 'none';
         }
     }
@@ -1692,650 +1848,254 @@
         const progress = userData.adProgress[network];
         const cooldownEl = document.getElementById(network + 'Cooldown');
         if (!progress.expireTime || !cooldownEl) return;
-        
-        const updateTimer = () => {
-            const now = Date.now();
-            const remaining = progress.expireTime - now;
-            if (remaining <= 0) {
-                cooldownEl.textContent = '';
-                updateAdProgress(network);
-                return;
-            }
+        const update = () => {
+            const remaining = progress.expireTime - Date.now();
+            if (remaining <= 0) { cooldownEl.textContent = ''; updateAdProgress(network); return; }
             const h = Math.floor(remaining / 3600000);
             const m = Math.floor((remaining % 3600000) / 60000);
             const s = Math.floor((remaining % 60000) / 1000);
             cooldownEl.textContent = `⏳ ${h}h ${m}m ${s}s`;
         };
-        
-        updateTimer();
-        const intervalId = setInterval(() => {
-            if (Date.now() >= progress.expireTime) {
-                clearInterval(intervalId);
-                updateAdProgress(network);
-            } else {
-                updateTimer();
-            }
-        }, 1000);
+        update();
+        const id = setInterval(() => { if (Date.now() >= progress.expireTime) { clearInterval(id); updateAdProgress(network); } else update(); }, 1000);
     }
 
     function startCooldownTimers() {
-        Object.keys(AD_NETWORKS).forEach(network => {
-            const progress = userData.adProgress[network];
-            if (progress.claimed && progress.expireTime && Date.now() < progress.expireTime) {
-                updateCooldownTimer(network);
-            }
+        Object.keys(AD_NETWORKS).forEach(n => {
+            const p = userData.adProgress[n];
+            if (p.claimed && p.expireTime && Date.now() < p.expireTime) updateCooldownTimer(n);
         });
     }
 
-    // ===== WATCH AD - STRICT VERIFICATION =====
+    // ===== WATCH AD =====
     async function watchAd(network) {
-        if (isAdRunning) {
-            showNotification('⚠️ Please wait for the current ad to finish.', 'warning');
-            return;
-        }
-        
+        if (isAdRunning) { showNotification('⚠️ Wait for current ad.', 'warning'); return; }
         const config = AD_NETWORKS[network];
-        
-        if (!config.enabled) {
-            showNotification(`⚠️ ${config.name} is currently disabled.`, 'warning');
-            return;
-        }
-        
-        if (!config.sdkLoaded) {
-            showNetworkError(network, `${config.name} SDK is not available. Please try again later.`);
-            debugLog(`[${config.name}] SDK not loaded, cannot show ad`, 'error');
-            return;
-        }
-        
+        if (!config.enabled) { showNotification(`⚠️ ${config.name} disabled.`, 'warning'); return; }
+        if (!config.sdkLoaded) { showNetworkError(network, `${config.name} SDK not available.`); return; }
         const progress = userData.adProgress[network];
-        
-        if (progress.claimed && progress.expireTime && Date.now() < progress.expireTime) {
-            showNotification(`⏳ ${config.name} is in cooldown. Please wait.`, 'warning');
-            return;
-        }
-        
-        if (progress.watched >= config.adsPerCycle) {
-            showNotification(`🎁 ${config.name}: Claim your reward first!`, 'warning');
-            return;
-        }
+        if (progress.claimed && progress.expireTime && Date.now() < progress.expireTime) { showNotification('⏳ Cooldown active.', 'warning'); return; }
+        if (progress.watched >= config.adsPerCycle) { showNotification('🎁 Claim your reward first!', 'warning'); return; }
         
         isAdRunning = true;
         currentAdNetwork = network;
-        
         const watchBtn = document.getElementById(network + 'WatchBtn');
         const cardEl = document.getElementById('card-' + network);
         const errorEl = document.getElementById(network + 'Error');
-        
-        if (watchBtn) {
-            watchBtn.disabled = true;
-            watchBtn.textContent = '⏳ Loading Ad...';
-            watchBtn.classList.add('loading');
-        }
+        if (watchBtn) { watchBtn.disabled = true; watchBtn.textContent = '⏳ Loading...'; watchBtn.classList.add('loading'); }
         if (errorEl) errorEl.classList.remove('visible');
         if (cardEl) cardEl.classList.remove('error-state');
         
-        debugLog(`📺 [${config.name}] Starting ad request... Progress: ${progress.watched}/${config.adsPerCycle}`, 'info');
-        
-        const timeoutDuration = network === 'adexora' ? CONFIG.adexora.adTimeout : 15000;
-        adTimeoutId = setTimeout(() => {
-            if (isAdRunning && currentAdNetwork === network) {
-                debugLog(`[${config.name}] ⏰ Ad timed out after ${timeoutDuration}ms`, 'error');
-                handleAdFailure(network, 'Advertisement timed out. Please try again.');
-            }
-        }, timeoutDuration);
+        const timeout = network === 'adexora' ? CONFIG.adexora.adTimeout : 15000;
+        adTimeoutId = setTimeout(() => { if (isAdRunning && currentAdNetwork === network) handleAdFailure(network, 'Ad timed out.'); }, timeout);
         
         try {
             const result = await showAdForNetwork(network);
             clearTimeout(adTimeoutId);
-            
-            debugLog(`[${config.name}] Ad function returned: ${JSON.stringify(result)}`, 'info');
-            
-            if (result && result.success === true) {
-                debugLog(`[${config.name}] ✅ Ad CONFIRMED successful`, 'success');
-                handleAdSuccess(network);
-            } else {
-                debugLog(`[${config.name}] ❌ Ad did NOT confirm success. Reason: ${result?.reason || 'No success confirmation'}`, 'error');
-                handleAdFailure(network, result?.reason || 'Advertisement did not complete successfully.');
-            }
-            
-        } catch (error) {
+            if (result?.success) handleAdSuccess(network);
+            else handleAdFailure(network, result?.reason || 'Ad did not complete.');
+        } catch(e) {
             clearTimeout(adTimeoutId);
-            debugLog(`[${config.name}] ❌ Ad ERROR: ${error.message}`, 'error');
-            handleAdFailure(network, error.message || 'Advertisement is currently unavailable. Please try again later.');
+            handleAdFailure(network, e.message || 'Ad unavailable.');
         }
     }
 
     function handleAdSuccess(network) {
         const config = AD_NETWORKS[network];
         const progress = userData.adProgress[network];
-        
-        debugLog(`[${config.name}] ✅ Processing ad success. New progress: ${progress.watched + 1}/${config.adsPerCycle}`, 'success');
-        
-        progress.watched += 1;
-        userData.todayAds += 1;
-        userData.totalAds += 1;
-        
-        const historyEntry = {
-            id: Date.now(),
-            network: network,
-            networkName: config.name,
-            timestamp: new Date().toISOString(),
-            status: 'success',
-            adNumber: progress.watched,
-            message: `Ad #${progress.watched} completed`
-        };
-        userData.adHistory.unshift(historyEntry);
-        
-        userData.transactions.unshift({
-            type: 'ad_watch',
-            title: `${config.name} Ad #${progress.watched} ✓`,
-            amount: 0,
-            date: new Date().toLocaleString(),
-            icon: 'fa-check-circle',
-            network: network,
-            status: 'success'
-        });
-        
-        saveUserData();
-        updateAdProgress(network);
-        updateUI();
-        renderAdHistory();
-        renderRecentActivity();
-        
+        progress.watched++; userData.todayAds++; userData.totalAds++;
+        userData.adHistory.unshift({ id: Date.now(), network, networkName: config.name, timestamp: new Date().toISOString(), status: 'success', adNumber: progress.watched, message: `Ad #${progress.watched} ✓` });
+        userData.transactions.unshift({ type: 'ad_watch', title: `${config.name} Ad #${progress.watched} ✓`, amount: 0, date: new Date().toLocaleString(), icon: 'fa-check-circle', network, status: 'success' });
+        saveUserData(); updateAdProgress(network); updateUI(); renderAdHistory(); renderRecentActivity();
         const remaining = config.adsPerCycle - progress.watched;
-        const message = remaining > 0 
-            ? `✅ ${config.name}: ${progress.watched}/${config.adsPerCycle} (${remaining} left)`
-            : `🎁 ${config.name}: Ready to claim!`;
-        
-        showNotification(message, 'success');
-        
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-        }
-        
+        showNotification(remaining > 0 ? `✅ ${config.name}: ${progress.watched}/${config.adsPerCycle}` : `🎁 ${config.name}: Ready!`, 'success');
+        if (window.Telegram?.WebApp) window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
         resetAdState(network);
     }
 
-    function handleAdFailure(network, errorMessage) {
+    function handleAdFailure(network, msg) {
         const config = AD_NETWORKS[network];
-        
-        debugLog(`[${config.name}] ❌ Ad FAILED: ${errorMessage}. Progress NOT updated.`, 'error');
-        
-        const historyEntry = {
-            id: Date.now(),
-            network: network,
-            networkName: config.name,
-            timestamp: new Date().toISOString(),
-            status: 'failed',
-            message: errorMessage
-        };
-        userData.adHistory.unshift(historyEntry);
-        
-        userData.transactions.unshift({
-            type: 'ad_error',
-            title: `${config.name} Ad Failed ✗`,
-            amount: 0,
-            date: new Date().toLocaleString(),
-            icon: 'fa-times-circle',
-            network: network,
-            status: 'failed'
-        });
-        
-        saveUserData();
-        renderAdHistory();
-        renderRecentActivity();
-        
-        showNetworkError(network, errorMessage);
-        showNotification(`❌ ${config.name}: ${errorMessage}`, 'error');
-        
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-        }
-        
-        sendMessageToAdmin(`⚠️ Ad Failure: ${config.name} for ${userData.firstName} (${userData.id}) - ${errorMessage}`);
-        
+        userData.adHistory.unshift({ id: Date.now(), network, networkName: config.name, timestamp: new Date().toISOString(), status: 'failed', message: msg });
+        userData.transactions.unshift({ type: 'ad_error', title: `${config.name} Failed ✗`, amount: 0, date: new Date().toLocaleString(), icon: 'fa-times-circle', network, status: 'failed' });
+        saveUserData(); renderAdHistory(); renderRecentActivity();
+        showNetworkError(network, msg);
+        showNotification(`❌ ${config.name}: ${msg}`, 'error');
+        if (window.Telegram?.WebApp) window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+        sendMessageToAdmin(`⚠️ ${config.name} failure: ${userData.firstName} (${userData.id}) - ${msg}`);
         resetAdState(network);
     }
 
-    function showNetworkError(network, message) {
+    function showNetworkError(network, msg) {
         const errorEl = document.getElementById(network + 'Error');
         const cardEl = document.getElementById('card-' + network);
-        
-        if (errorEl) {
-            errorEl.textContent = message;
-            errorEl.classList.add('visible');
-            setTimeout(() => {
-                errorEl.classList.remove('visible');
-                if (cardEl) cardEl.classList.remove('error-state');
-            }, 8000);
-        }
-        
-        if (cardEl) {
-            cardEl.classList.add('error-state');
-        }
+        if (errorEl) { errorEl.textContent = msg; errorEl.classList.add('visible'); setTimeout(() => { errorEl.classList.remove('visible'); if (cardEl) cardEl.classList.remove('error-state'); }, 8000); }
+        if (cardEl) cardEl.classList.add('error-state');
     }
 
     function resetAdState(network) {
-        isAdRunning = false;
-        currentAdNetwork = null;
-        clearTimeout(adTimeoutId);
-        
+        isAdRunning = false; currentAdNetwork = null; clearTimeout(adTimeoutId);
         const watchBtn = document.getElementById(network + 'WatchBtn');
-        if (watchBtn) {
-            watchBtn.disabled = false;
-            watchBtn.textContent = '▶ Watch Ad';
-            watchBtn.classList.remove('loading');
-        }
-        
+        if (watchBtn) { watchBtn.disabled = false; watchBtn.textContent = '▶ Watch Ad'; watchBtn.classList.remove('loading'); }
         updateAdProgress(network);
     }
 
-    // ===== SHOW AD FOR NETWORK =====
     async function showAdForNetwork(network) {
         switch(network) {
-            case 'libtl':
-                return await showLibTLAd();
-            case 'adexora':
-                return await showAdexoraAd();
-            case 'gigapub':
-                return await showGigaPubAd();
-            default:
-                throw new Error('Unknown network: ' + network);
+            case 'libtl': return showLibTLAd();
+            case 'adexora': return showAdexoraAd();
+            case 'gigapub': return showGigaPubAd();
+            default: throw new Error('Unknown network');
         }
     }
 
-    // ===== LIBTL AD =====
     async function showLibTLAd() {
-        debugLog('[LibTL] Starting ad request...', 'info');
         return new Promise((resolve, reject) => {
-            try {
-                if (typeof show_9388728 !== 'function') {
-                    debugLog('[LibTL] SDK not loaded', 'error');
-                    reject(new Error('LibTL SDK not loaded'));
-                    return;
-                }
-                
-                debugLog('[LibTL] Calling show_9388728()...', 'info');
-                
-                show_9388728()
-                    .then(() => {
-                        debugLog('[LibTL] Ad completed', 'success');
-                        resolve({ success: true, network: 'libtl' });
-                    })
-                    .catch((error) => {
-                        debugLog(`[LibTL] Interstitial failed, trying popup: ${error.message}`, 'warning');
-                        show_9388728("pop")
-                            .then(() => {
-                                debugLog('[LibTL] Popup ad completed', 'success');
-                                resolve({ success: true, network: 'libtl' });
-                            })
-                            .catch((popupError) => {
-                                debugLog(`[LibTL] Popup failed: ${popupError.message}`, 'error');
-                                reject(new Error('LibTL advertisement unavailable'));
-                            });
-                    });
-                    
-            } catch(error) {
-                debugLog(`[LibTL] Exception: ${error.message}`, 'error');
-                reject(new Error('LibTL advertisement unavailable'));
-            }
+            if (typeof show_9388728 !== 'function') { reject(new Error('LibTL SDK not loaded')); return; }
+            show_9388728().then(() => resolve({ success: true })).catch(() => {
+                show_9388728("pop").then(() => resolve({ success: true })).catch(() => reject(new Error('LibTL unavailable')));
+            });
         });
     }
 
-    // ===== ADEXORA AD - FIXED WITH FULL DIAGNOSTICS =====
+    // ===== ADEXORA AD - With SDK readiness check =====
     async function showAdexoraAd() {
-        debugLog('═══════════════════════════════', 'warning');
-        debugLog('[Adexora] 🔍 SHOW AD REQUESTED', 'warning');
-        debugLog('═══════════════════════════════', 'warning');
+        console.log('[Adexora] showAdexoraAd() called');
         
         return new Promise((resolve, reject) => {
-            // Step 1: Check if SDK function exists
-            debugLog('[Adexora] Step 1: Checking window.showAdexora...', 'info');
-            debugLog(`[Adexora] typeof: ${typeof window.showAdexora}`, 'info');
-            debugLog(`[Adexora] value: ${window.showAdexora}`, 'info');
-            
+            // Check if SDK is ready
             if (typeof window.showAdexora !== 'function') {
-                // Check if it loaded as something else
-                debugLog('[Adexora] ❌ showAdexora is NOT a function!', 'error');
-                
-                // List all window properties that might be Adexora
-                const allKeys = Object.keys(window);
-                const adexoraKeys = allKeys.filter(k => 
-                    k.toLowerCase().includes('adex') || 
-                    k.toLowerCase().includes('adx') ||
-                    k.toLowerCase().includes('showad')
-                );
-                debugLog(`[Adexora] Related window keys: ${adexoraKeys.join(', ') || 'NONE'}`, 'error');
-                
-                // Check if the SDK created any global objects
-                const possibleSdkObjects = allKeys.filter(k => 
-                    typeof window[k] === 'object' && window[k] !== null &&
-                    (k.toLowerCase().includes('ad') || k.toLowerCase().includes('sdk'))
-                );
-                debugLog(`[Adexora] Possible SDK objects: ${possibleSdkObjects.join(', ') || 'NONE'}`, 'error');
-                
-                reject(new Error('Adexora SDK not loaded. Please try again later.'));
+                console.error('[Adexora] ❌ showAdexora not available');
+                reject(new Error('Adexora SDK not loaded. Please wait for SDK to initialize.'));
                 return;
             }
             
-            debugLog('[Adexora] ✅ showAdexora function found', 'success');
+            console.log('[Adexora] Calling showAdexora()...');
             
-            // Step 2: Call the function
-            debugLog('[Adexora] Step 2: Calling window.showAdexora()...', 'info');
-            
-            let adexoraResult;
             try {
-                adexoraResult = window.showAdexora();
-                debugLog(`[Adexora] Return type: ${typeof adexoraResult}`, 'info');
-                debugLog(`[Adexora] Return value: ${JSON.stringify(adexoraResult)}`, 'info');
-                debugLog(`[Adexora] Is Promise: ${adexoraResult && typeof adexoraResult.then === 'function' ? 'YES' : 'NO'}`, 'info');
-            } catch(callError) {
-                debugLog(`[Adexora] ❌ Error calling showAdexora(): ${callError.message}`, 'error');
-                debugLog(`[Adexora] Stack: ${callError.stack}`, 'error');
-                reject(new Error('Adexora advertisement failed to initialize.'));
-                return;
-            }
-            
-            // Step 3: Handle if it's a Promise
-            if (adexoraResult && typeof adexoraResult.then === 'function') {
-                debugLog('[Adexora] Step 3: Result IS a Promise, waiting...', 'info');
+                const result = window.showAdexora();
+                console.log('[Adexora] Result type:', typeof result);
+                console.log('[Adexora] Result:', result);
                 
-                const promiseTimeout = setTimeout(() => {
-                    debugLog('[Adexora] ⏰ Promise timed out after 20s', 'error');
-                    reject(new Error('Adexora advertisement timed out.'));
-                }, 20000);
-                
-                adexoraResult
-                    .then((result) => {
-                        clearTimeout(promiseTimeout);
+                if (result && typeof result.then === 'function') {
+                    console.log('[Adexora] Result is Promise, waiting...');
+                    
+                    const timeout = setTimeout(() => {
+                        console.error('[Adexora] Promise timeout');
+                        reject(new Error('Adexora ad timed out.'));
+                    }, CONFIG.adexora.adTimeout);
+                    
+                    result.then((val) => {
+                        clearTimeout(timeout);
+                        console.log('[Adexora] Promise resolved with:', val);
                         
-                        debugLog('[Adexora] ✅ Promise RESOLVED', 'success');
-                        debugLog(`[Adexora] Resolution type: ${typeof result}`, 'info');
-                        debugLog(`[Adexora] Resolution value: ${JSON.stringify(result)}`, 'info');
-                        
-                        // Step 4: Verify the result means ad was shown
-                        if (result === true || result === 'success' || result === 'completed' || result === 'shown') {
-                            debugLog('[Adexora] ✅ Ad confirmed complete (positive value)', 'success');
-                            resolve({ success: true, network: 'adexora', rawResult: result });
-                        } else if (result && typeof result === 'object') {
-                            debugLog(`[Adexora] Object keys: ${Object.keys(result).join(', ')}`, 'info');
-                            if (result.success === true || result.completed === true || result.status === 'success' || result.shown === true) {
-                                debugLog('[Adexora] ✅ Ad confirmed complete (object indicator)', 'success');
-                                resolve({ success: true, network: 'adexora', rawResult: result });
+                        // Check if ad was actually shown
+                        if (val === true || val === 'success' || val === 'completed' || val === 'shown') {
+                            console.log('[Adexora] ✅ Ad confirmed');
+                            resolve({ success: true });
+                        } else if (val === undefined || val === null) {
+                            console.warn('[Adexora] ⚠️ Resolved with undefined - ad may not have shown');
+                            reject(new Error('Adexora ad did not display. Please try again.'));
+                        } else if (val && typeof val === 'object') {
+                            if (val.success || val.completed || val.shown) {
+                                console.log('[Adexora] ✅ Ad confirmed via object');
+                                resolve({ success: true });
                             } else {
-                                debugLog('[Adexora] ❌ Object returned but no success indicator', 'error');
-                                reject(new Error('Adexora advertisement did not confirm completion.'));
+                                console.warn('[Adexora] Object without success indicator:', val);
+                                reject(new Error('Adexora ad completion not confirmed.'));
                             }
-                        } else if (result === undefined || result === null) {
-                            debugLog('[Adexora] ❌ Promise resolved with null/undefined - ad was likely closed', 'error');
-                            reject(new Error('Adexora advertisement was not completed.'));
                         } else {
-                            debugLog(`[Adexora] ❌ Unknown resolution: ${result}`, 'error');
-                            reject(new Error('Adexora advertisement response not recognized.'));
+                            console.warn('[Adexora] Unknown resolution value:', val);
+                            reject(new Error('Adexora response not recognized.'));
                         }
-                    })
-                    .catch((error) => {
-                        clearTimeout(promiseTimeout);
-                        
-                        debugLog('[Adexora] ❌ Promise REJECTED', 'error');
-                        debugLog(`[Adexora] Error message: ${error?.message || error}`, 'error');
-                        debugLog(`[Adexora] Error type: ${error?.constructor?.name || typeof error}`, 'error');
-                        
-                        if (error?.message?.includes('no ad') || error?.message?.includes('unavailable') || error?.message?.includes('fill')) {
-                            reject(new Error('No Adexora advertisement available at this time.'));
-                        } else if (error?.message?.includes('skip') || error?.message?.includes('close') || error?.message?.includes('dismiss')) {
-                            reject(new Error('Adexora advertisement was skipped.'));
-                        } else {
-                            reject(new Error('Adexora advertisement is currently unavailable. Please try again later.'));
-                        }
+                    }).catch((err) => {
+                        clearTimeout(timeout);
+                        console.error('[Adexora] Promise rejected:', err);
+                        reject(new Error('Adexora ad unavailable: ' + (err?.message || 'unknown error')));
                     });
-                    
-            } else {
-                // Not a Promise
-                debugLog('[Adexora] ❌ Result is NOT a Promise', 'error');
-                debugLog(`[Adexora] Cannot verify ad completion without Promise`, 'error');
-                debugLog('[Adexora] Treating as FAILED to prevent false rewards', 'warning');
-                
-                reject(new Error('Adexora SDK does not provide completion verification. Ad cannot be verified.'));
-            }
-        });
-    }
-
-    // ===== GIGAPUB AD =====
-    async function showGigaPubAd() {
-        debugLog('[GigaPub] Starting ad request...', 'info');
-        return new Promise((resolve, reject) => {
-            try {
-                if (typeof window.showGiga !== 'function') {
-                    if (typeof window.AdGigaFallback === 'function') {
-                        window.showGiga = window.AdGigaFallback;
-                        debugLog('[GigaPub] Using fallback SDK', 'warning');
-                    } else {
-                        debugLog('[GigaPub] SDK not loaded', 'error');
-                        reject(new Error('GigaPub SDK not loaded'));
-                        return;
-                    }
+                } else {
+                    console.warn('[Adexora] Did not return Promise. Value:', result);
+                    reject(new Error('Adexora SDK did not return a Promise. Cannot verify ad completion.'));
                 }
-                
-                debugLog('[GigaPub] Calling window.showGiga()...', 'info');
-                
-                window.showGiga()
-                    .then(() => {
-                        debugLog('[GigaPub] Ad completed', 'success');
-                        resolve({ success: true, network: 'gigapub' });
-                    })
-                    .catch((error) => {
-                        debugLog(`[GigaPub] Ad failed: ${error.message}`, 'error');
-                        reject(new Error('GigaPub advertisement unavailable'));
-                    });
-                    
-            } catch(error) {
-                debugLog(`[GigaPub] Exception: ${error.message}`, 'error');
-                reject(new Error('GigaPub advertisement unavailable'));
+            } catch(e) {
+                console.error('[Adexora] Exception:', e);
+                reject(new Error('Adexora error: ' + e.message));
             }
         });
     }
 
-    // ===== CLAIM REWARD =====
+    async function showGigaPubAd() {
+        return new Promise((resolve, reject) => {
+            const fn = window.showGiga || window.AdGigaFallback;
+            if (typeof fn !== 'function') { reject(new Error('GigaPub SDK not loaded')); return; }
+            fn().then(() => resolve({ success: true })).catch(() => reject(new Error('GigaPub unavailable')));
+        });
+    }
+
     function claimReward(network) {
         const config = AD_NETWORKS[network];
         const progress = userData.adProgress[network];
-        
-        debugLog(`[${config.name}] Claim request. Progress: ${progress.watched}/${config.adsPerCycle}`, 'info');
-        
-        if (progress.claimed && progress.expireTime && Date.now() < progress.expireTime) {
-            showNotification('⏳ Cooldown still active!', 'warning');
-            return;
-        }
-        
-        if (progress.watched < config.adsPerCycle) {
-            debugLog(`[${config.name}] Claim DENIED: Only ${progress.watched}/${config.adsPerCycle} ads`, 'error');
-            showNotification(`❌ Need ${config.adsPerCycle} completed ads! (${progress.watched}/${config.adsPerCycle})`, 'error');
-            return;
-        }
-        
-        debugLog(`[${config.name}] Claim APPROVED. Awarding Ⓝ${config.rewardAmount}`, 'success');
-        
-        const rewardAmount = config.rewardAmount;
-        
-        userData.balance += rewardAmount;
-        userData.todayEarnings += rewardAmount;
-        userData.totalEarn += rewardAmount;
-        
-        progress.claimed = true;
-        progress.claimTime = Date.now();
-        progress.expireTime = Date.now() + (config.cooldownHours * 60 * 60 * 1000);
-        
-        userData.transactions.unshift({
-            type: 'claim',
-            title: `Claimed ${config.name}`,
-            amount: rewardAmount,
-            date: new Date().toLocaleString(),
-            icon: 'fa-gift',
-            network: network,
-            status: 'success'
-        });
-        
-        userData.adHistory.unshift({
-            id: Date.now(),
-            network: network,
-            networkName: config.name,
-            timestamp: new Date().toISOString(),
-            status: 'claimed',
-            message: `Claimed Ⓝ${rewardAmount.toFixed(2)}`
-        });
-        
-        saveUserData();
-        updateUI();
-        updateAdProgress(network);
-        renderAdHistory();
-        renderRecentActivity();
-        
-        document.getElementById('claimAmount').textContent = `+Ⓝ${rewardAmount.toFixed(2)}`;
+        if (progress.claimed && progress.expireTime && Date.now() < progress.expireTime) { showNotification('⏳ Cooldown active!', 'warning'); return; }
+        if (progress.watched < config.adsPerCycle) { showNotification(`❌ Need ${config.adsPerCycle} ads!`, 'error'); return; }
+        const reward = config.rewardAmount;
+        userData.balance += reward; userData.todayEarnings += reward; userData.totalEarn += reward;
+        progress.claimed = true; progress.claimTime = Date.now(); progress.expireTime = Date.now() + (config.cooldownHours * 3600000);
+        userData.transactions.unshift({ type: 'claim', title: `Claimed ${config.name}`, amount: reward, date: new Date().toLocaleString(), icon: 'fa-gift', network, status: 'success' });
+        userData.adHistory.unshift({ id: Date.now(), network, networkName: config.name, timestamp: new Date().toISOString(), status: 'claimed', message: `Claimed Ⓝ${reward.toFixed(2)}` });
+        saveUserData(); updateUI(); updateAdProgress(network); renderAdHistory(); renderRecentActivity();
+        document.getElementById('claimAmount').textContent = `+Ⓝ${reward.toFixed(2)}`;
         document.getElementById('claimNetwork').textContent = config.name;
         document.getElementById('claimCooldown').textContent = `${config.cooldownHours}:00:00`;
         document.getElementById('claimModal').classList.add('active');
-        
-        sendMessageToAdmin(`🎁 ${userData.firstName} (${userData.id}) claimed Ⓝ${rewardAmount} from ${config.name}`);
-        
+        sendMessageToAdmin(`🎁 ${userData.firstName} claimed Ⓝ${reward} from ${config.name}`);
         updateCooldownTimer(network);
-        
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-        }
-        
-        showNotification(`🎉 Claimed Ⓝ${rewardAmount.toFixed(2)} from ${config.name}!`, 'success');
+        if (window.Telegram?.WebApp) window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        showNotification(`🎉 Claimed Ⓝ${reward.toFixed(2)}!`, 'success');
     }
 
-    // ===== RENDER AD HISTORY =====
     function renderAdHistory() {
         const container = document.getElementById('adHistoryLog');
         const history = userData.adHistory || [];
-        
-        if (history.length === 0) {
-            container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 10px;">No ads watched yet</div>';
-            return;
-        }
-        
-        container.innerHTML = history.slice(0, 20).map(entry => {
-            const statusIcon = entry.status === 'success' ? '✅' : 
-                              entry.status === 'claimed' ? '🎁' : '❌';
-            const time = new Date(entry.timestamp).toLocaleTimeString();
-            
-            return `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--glass-border); font-size: 11px;">
-                    <span>${statusIcon} ${entry.networkName}</span>
-                    <span style="color: var(--text-muted);">${entry.message}</span>
-                    <span style="color: var(--text-muted); font-size: 10px;">${time}</span>
-                </div>
-            `;
+        if (!history.length) { container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:12px;padding:10px;">No ads yet</div>'; return; }
+        container.innerHTML = history.slice(0, 20).map(e => {
+            const icon = e.status === 'success' ? '✅' : e.status === 'claimed' ? '🎁' : '❌';
+            return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--glass-border);font-size:11px;"><span>${icon} ${e.networkName}</span><span style="color:var(--text-muted)">${e.message}</span><span style="color:var(--text-muted);font-size:10px">${new Date(e.timestamp).toLocaleTimeString()}</span></div>`;
         }).join('');
     }
 
-    // ===== RECENT ACTIVITY =====
     function renderRecentActivity() {
         const container = document.getElementById('recentActivity');
-        const transactions = userData.transactions || [];
-        
-        if (transactions.length === 0) {
-            container.innerHTML = `
-                <div class="activity-item">
-                    <div class="left">
-                        <div class="icon"><i class="fas fa-info"></i></div>
-                        <div class="info">
-                            <div class="title">No activity yet</div>
-                            <div class="time">Start earning now!</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            return;
-        }
-        
-        container.innerHTML = transactions.slice(0, 10).map(t => {
-            const isPositive = t.amount > 0;
-            return `
-                <div class="activity-item">
-                    <div class="left">
-                        <div class="icon"><i class="fas ${t.icon || 'fa-coins'}" style="color: ${t.status === 'failed' ? 'var(--danger)' : 'var(--primary-light)'}"></i></div>
-                        <div class="info">
-                            <div class="title">${t.title}</div>
-                            <div class="time">${t.date || 'Just now'}</div>
-                        </div>
-                    </div>
-                    <div class="amount ${t.status === 'failed' ? 'red' : (isPositive ? 'green' : 'red')}">
-                        ${t.amount > 0 ? '+' : ''}Ⓝ${Math.abs(t.amount).toFixed(2)}
-                    </div>
-                </div>
-            `;
+        const tx = userData.transactions || [];
+        if (!tx.length) { container.innerHTML = '<div class="activity-item"><div class="left"><div class="icon"><i class="fas fa-info"></i></div><div class="info"><div class="title">No activity</div><div class="time">Start earning!</div></div></div></div>'; return; }
+        container.innerHTML = tx.slice(0, 10).map(t => {
+            const pos = t.amount > 0;
+            return `<div class="activity-item"><div class="left"><div class="icon"><i class="fas ${t.icon||'fa-coins'}" style="color:${t.status==='failed'?'var(--danger)':'var(--primary-light)'}"></i></div><div class="info"><div class="title">${t.title}</div><div class="time">${t.date||'Now'}</div></div></div><div class="amount ${t.status==='failed'?'red':(pos?'green':'red')}">${pos?'+':''}Ⓝ${Math.abs(t.amount).toFixed(2)}</div></div>`;
         }).join('');
     }
 
-    // ===== RICHADS =====
-    function initRichAds() {
-        document.querySelectorAll('.richads-container').forEach(container => {
-            container.style.display = 'flex';
-        });
-    }
-
-    function refreshRichAds(section) {
-        try {
-            if (window.TelegramAdsController) {
-                window.TelegramAdsController.refreshAds();
-            }
-        } catch(e) {}
-    }
-
-    // ===== MODALS =====
-    function closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-    }
-
-    // ===== NOTIFICATION =====
-    function showNotification(message, type = '') {
-        if (!userData.settings || !userData.settings.notifications) return;
-        
+    function initRichAds() { document.querySelectorAll('.richads-container').forEach(c => c.style.display = 'flex'); }
+    function refreshRichAds() { try { if (window.TelegramAdsController) window.TelegramAdsController.refreshAds(); } catch(e) {} }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    
+    function showNotification(msg, type = '') {
+        if (!userData.settings?.notifications) return;
         const existing = document.querySelector('.toast-notification');
         if (existing) existing.remove();
-
         const toast = document.createElement('div');
-        toast.className = 'toast-notification';
-        if (type) toast.classList.add(type);
-        toast.textContent = message;
+        toast.className = 'toast-notification' + (type ? ' ' + type : '');
+        toast.textContent = msg;
         document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s ease';
-            setTimeout(() => toast.remove(), 300);
-        }, 4000);
+        setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 4000);
     }
 
-    // ===== SEND MESSAGE TO ADMIN =====
-    function sendMessageToAdmin(message) {
-        try {
-            fetch(`https://api.telegram.org/bot${CONFIG.botApiToken}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: CONFIG.adminId,
-                    text: `📢 NX ERAN\n${message}`,
-                    parse_mode: 'HTML'
-                })
-            }).catch(() => {});
-        } catch(e) {}
+    function sendMessageToAdmin(msg) {
+        try { fetch(`https://api.telegram.org/bot${CONFIG.botApiToken}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chat_id:CONFIG.adminId, text:'📢 NX ERAN\n'+msg, parse_mode:'HTML'}) }).catch(()=>{}); } catch(e) {}
     }
 
-    // ===== KEYBOARD SHORTCUTS =====
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal-overlay.active').forEach(el => el.classList.remove('active'));
-        }
-    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.active').forEach(el => el.classList.remove('active')); });
 
     // ===== ADMIN API =====
     window.NxEranAdmin = {
-        updateAdNetworkConfig: function(network, config) {
+        updateAdNetworkConfig: (network, config) => {
             if (AD_NETWORKS[network]) {
                 Object.assign(AD_NETWORKS[network], config);
                 const saved = JSON.parse(localStorage.getItem('nxeran_adNetworkConfig') || '{}');
@@ -2344,24 +2104,15 @@
                 updateAllAdProgress();
             }
         },
-        forceDailyReset: function() {
-            localStorage.setItem('nxeran_forceReset', 'true');
-            performDailyReset();
-        },
-        getDebugLogs: function() {
-            return debugLogs;
-        },
-        recheckSdks: function() {
-            checkAllSdkAvailability();
-        },
-        diagnoseAdexora: function() {
-            diagnoseAdexora();
-        }
+        forceDailyReset: () => { localStorage.setItem('nxeran_forceReset', 'true'); performDailyReset(); },
+        getAdexoraStatus: () => window.__adexoraLoadStatus,
+        runDiagnostic: runFullDiagnostic,
+        reloadAdexora: reloadAdexoraSdk
     };
 
-    console.log('🚀 NX ERAN - Adexium REMOVED, Adexora Diagnostic Mode');
-    console.log('📺 Active Networks: LibTL (Monetag), Adexora, GigaPub');
-    console.log('🔍 Adexora Debug Console: Visible in Tasks tab');
+    console.log('🚀 NX ERAN - Adexora Diagnostic Mode Active');
+    console.log('📺 Networks: LibTL, Adexora, GigaPub');
+    console.log('🔍 Adexora Diagnostics: Visible in Tasks tab');
     console.log('🔧 Admin API: window.NxEranAdmin');
 </script>
 </body>
