@@ -536,6 +536,11 @@
             animation: errorPulse 2s ease;
         }
         
+        .ad-network-card.unavailable-state {
+            border-color: var(--warning);
+            opacity: 0.7;
+        }
+        
         @keyframes errorPulse {
             0%, 100% { border-color: var(--danger); }
             50% { border-color: transparent; }
@@ -591,6 +596,29 @@
             display: block;
         }
         
+        .sdk-status {
+            font-size: 9px;
+            margin-top: 4px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        .sdk-status.loaded {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+        
+        .sdk-status.unavailable {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        
+        .sdk-status.unknown {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        
         /* RichAds Container */
         .richads-container {
             margin: 10px 0;
@@ -605,6 +633,35 @@
             font-size: 11px;
             color: var(--text-muted);
         }
+        
+        /* ===== Debug Console ===== */
+        .debug-console {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 10px;
+            color: #0f0;
+            display: none;
+        }
+        
+        .debug-console.visible {
+            display: block;
+        }
+        
+        .debug-entry {
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .debug-entry.success { color: #0f0; }
+        .debug-entry.error { color: #f00; }
+        .debug-entry.warning { color: #ff0; }
+        .debug-entry.info { color: #0af; }
         
         /* ===== Bottom Navigation ===== */
         .bottom-nav {
@@ -914,8 +971,8 @@
                 <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
                     Watch 30 ads per network, then claim your reward. Default reward: Ⓝ3 per network.
                 </p>
-                <p style="font-size: 10px; color: var(--text-muted); margin-bottom: 10px;">
-                    ⚠️ Progress only counts when ads complete successfully.
+                <p style="font-size: 10px; color: var(--danger); margin-bottom: 10px;">
+                    ⚠️ Progress only counts when ads complete successfully. Failed/Skipped ads = NO progress.
                 </p>
                 
                 <div class="ad-network-grid">
@@ -923,6 +980,7 @@
                     <div class="ad-network-card" id="card-adexium">
                         <div class="network-icon">🔴</div>
                         <div class="network-name">Adexium (TGAds)</div>
+                        <div class="sdk-status" id="adexiumSdkStatus">Checking...</div>
                         <div class="progress-bar">
                             <div class="progress-fill adexium" id="adexiumProgress" style="width: 0%"></div>
                         </div>
@@ -944,6 +1002,7 @@
                     <div class="ad-network-card" id="card-libtl">
                         <div class="network-icon">🔵</div>
                         <div class="network-name">LibTL</div>
+                        <div class="sdk-status" id="libtlSdkStatus">Checking...</div>
                         <div class="progress-bar">
                             <div class="progress-fill libtl" id="libtlProgress" style="width: 0%"></div>
                         </div>
@@ -965,6 +1024,7 @@
                     <div class="ad-network-card" id="card-adexora">
                         <div class="network-icon">🟣</div>
                         <div class="network-name">Adexora</div>
+                        <div class="sdk-status" id="adexoraSdkStatus">Checking...</div>
                         <div class="progress-bar">
                             <div class="progress-fill adexora" id="adexoraProgress" style="width: 0%"></div>
                         </div>
@@ -986,6 +1046,7 @@
                     <div class="ad-network-card" id="card-gigapub">
                         <div class="network-icon">🟢</div>
                         <div class="network-name">GigaPub</div>
+                        <div class="sdk-status" id="gigapubSdkStatus">Checking...</div>
                         <div class="progress-bar">
                             <div class="progress-fill gigapub" id="gigapubProgress" style="width: 0%"></div>
                         </div>
@@ -1008,6 +1069,15 @@
             <!-- RichAds Placement 3 -->
             <div class="richads-container" id="richads-tasks-1">
                 <span>📢 Advertisement</span>
+            </div>
+
+            <!-- Debug Console (for development) -->
+            <div class="card">
+                <div class="card-title" style="cursor:pointer;" onclick="toggleDebugConsole()">
+                    <i class="fas fa-bug"></i> Debug Console 
+                    <span style="font-size:10px; color:var(--text-muted);">(click to toggle)</span>
+                </div>
+                <div class="debug-console" id="debugConsole"></div>
             </div>
 
             <!-- Ad History Log -->
@@ -1037,8 +1107,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- RichAds Placement 4 -->
             <div class="richads-container" id="richads-refer-1">
                 <span>📢 Advertisement</span>
             </div>
@@ -1064,8 +1132,6 @@
                     <div class="stat-label">Pending</div>
                 </div>
             </div>
-
-            <!-- RichAds Placement 5 -->
             <div class="richads-container" id="richads-wallet-1">
                 <span>📢 Advertisement</span>
             </div>
@@ -1084,8 +1150,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- RichAds Placement 6 -->
             <div class="richads-container" id="richads-profile-1">
                 <span>📢 Advertisement</span>
             </div>
@@ -1143,6 +1207,16 @@
         botUsername: 'NxEranBot',
         currency: 'Ⓝ',
         adminId: '8407948229',
+        // Adexora configuration
+        adexora: {
+            sdkUrl: 'https://adexora.com/cdn/ads.js?id=363',
+            publisherId: '363',
+            // If true, requires explicit ad completion confirmation
+            // If false, always treats as failed when confirmation is missing
+            requireExplicitConfirmation: true,
+            // Timeout for ad display (milliseconds)
+            adTimeout: 20000
+        }
     };
 
     // ===== AD NETWORK CONFIGURATION =====
@@ -1156,6 +1230,7 @@
             icon: '🔴',
             color: 'adexium',
             sdkLoaded: false,
+            sdkCheckFunction: () => typeof AdexiumWidget !== 'undefined',
             lastError: null
         },
         libtl: {
@@ -1167,6 +1242,7 @@
             icon: '🔵',
             color: 'libtl',
             sdkLoaded: false,
+            sdkCheckFunction: () => typeof show_9388728 === 'function',
             lastError: null
         },
         adexora: {
@@ -1178,6 +1254,7 @@
             icon: '🟣',
             color: 'adexora',
             sdkLoaded: false,
+            sdkCheckFunction: () => typeof window.showAdexora === 'function',
             lastError: null
         },
         gigapub: {
@@ -1189,6 +1266,7 @@
             icon: '🟢',
             color: 'gigapub',
             sdkLoaded: false,
+            sdkCheckFunction: () => typeof window.showGiga === 'function' || typeof window.AdGigaFallback === 'function',
             lastError: null
         }
     };
@@ -1207,7 +1285,7 @@
         totalWithdraw: 0,
         referralLink: '',
         transactions: [],
-        adHistory: [], // Detailed ad watch history
+        adHistory: [],
         adProgress: {
             adexium: { watched: 0, claimed: false, claimTime: null, expireTime: null },
             libtl: { watched: 0, claimed: false, claimTime: null, expireTime: null },
@@ -1217,13 +1295,54 @@
         settings: {
             darkMode: true,
             notifications: true,
-            sound: true
+            sound: true,
+            debugMode: false
         }
     };
 
     let isAdRunning = false;
     let currentAdNetwork = null;
     let adTimeoutId = null;
+    let debugLogs = [];
+
+    // ===== DEBUG LOGGING =====
+    function debugLog(message, type = 'info') {
+        const entry = {
+            timestamp: new Date().toISOString(),
+            message: message,
+            type: type
+        };
+        debugLogs.unshift(entry);
+        
+        // Keep only last 100 logs
+        if (debugLogs.length > 100) debugLogs.pop();
+        
+        // Console output
+        const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+        console.log(`${prefix} [${entry.timestamp}] ${message}`);
+        
+        // Update debug console if visible
+        updateDebugConsole();
+    }
+
+    function updateDebugConsole() {
+        const console = document.getElementById('debugConsole');
+        if (!console || !console.classList.contains('visible')) return;
+        
+        console.innerHTML = debugLogs.slice(0, 50).map(entry => {
+            return `<div class="debug-entry ${entry.type}">[${new Date(entry.timestamp).toLocaleTimeString()}] ${entry.message}</div>`;
+        }).join('');
+    }
+
+    function toggleDebugConsole() {
+        const console = document.getElementById('debugConsole');
+        console.classList.toggle('visible');
+        if (console.classList.contains('visible')) {
+            updateDebugConsole();
+        }
+        userData.settings.debugMode = console.classList.contains('visible');
+        saveUserData();
+    }
 
     // ===== LOADING SCREEN =====
     window.addEventListener('DOMContentLoaded', function() {
@@ -1240,10 +1359,11 @@
 
     // ===== INIT APP =====
     function initApp() {
+        debugLog('🚀 NX ERAN Initializing...', 'info');
         initTelegram();
         loadUserData();
         loadAdminSettings();
-        checkSdkAvailability();
+        checkAllSdkAvailability();
         updateUI();
         initReferralLink();
         renderRecentActivity();
@@ -1252,6 +1372,14 @@
         startCooldownTimers();
         initRichAds();
         checkDailyReset();
+        
+        // Restore debug console state
+        if (userData.settings.debugMode) {
+            document.getElementById('debugConsole').classList.add('visible');
+            updateDebugConsole();
+        }
+        
+        debugLog('✅ Initialization complete', 'success');
     }
 
     // ===== TELEGRAM INIT =====
@@ -1272,6 +1400,7 @@
                     document.getElementById('avatarImg').src = user.photo_url;
                     document.getElementById('profileAvatarImg').src = user.photo_url;
                 }
+                debugLog(`Telegram user initialized: ${user.first_name} (${user.id})`, 'info');
             }
         }
     }
@@ -1287,42 +1416,62 @@
                         Object.assign(AD_NETWORKS[key], config[key]);
                     }
                 });
-            } catch(e) {}
+                debugLog('Admin settings loaded', 'info');
+            } catch(e) {
+                debugLog('Failed to load admin settings: ' + e.message, 'error');
+            }
         }
     }
 
-    // ===== CHECK SDK AVAILABILITY =====
-    function checkSdkAvailability() {
-        // Check Adexium
-        if (typeof AdexiumWidget !== 'undefined') {
-            AD_NETWORKS.adexium.sdkLoaded = true;
-        }
+    // ===== CHECK ALL SDK AVAILABILITY =====
+    function checkAllSdkAvailability() {
+        debugLog('🔍 Checking SDK availability...', 'info');
         
-        // Check LibTL
-        if (typeof show_9388728 === 'function') {
-            AD_NETWORKS.libtl.sdkLoaded = true;
-        }
-        
-        // Check Adexora
-        if (typeof window.showAdexora === 'function') {
-            AD_NETWORKS.adexora.sdkLoaded = true;
-        }
-        
-        // Check GigaPub
-        if (typeof window.showGiga === 'function') {
-            AD_NETWORKS.gigapub.sdkLoaded = true;
-        } else if (typeof window.AdGigaFallback === 'function') {
-            window.showGiga = window.AdGigaFallback;
-            AD_NETWORKS.gigapub.sdkLoaded = true;
-        }
-        
-        // Log SDK status
-        console.log('SDK Availability:', {
-            adexium: AD_NETWORKS.adexium.sdkLoaded,
-            libtl: AD_NETWORKS.libtl.sdkLoaded,
-            adexora: AD_NETWORKS.adexora.sdkLoaded,
-            gigapub: AD_NETWORKS.gigapub.sdkLoaded
+        Object.keys(AD_NETWORKS).forEach(network => {
+            const config = AD_NETWORKS[network];
+            const sdkStatusEl = document.getElementById(network + 'SdkStatus');
+            
+            try {
+                const isLoaded = config.sdkCheckFunction();
+                config.sdkLoaded = isLoaded;
+                
+                if (sdkStatusEl) {
+                    if (isLoaded) {
+                        sdkStatusEl.textContent = '✅ SDK Loaded';
+                        sdkStatusEl.className = 'sdk-status loaded';
+                    } else {
+                        sdkStatusEl.textContent = '⚠️ SDK Unavailable';
+                        sdkStatusEl.className = 'sdk-status unavailable';
+                    }
+                }
+                
+                debugLog(`${config.name}: SDK ${isLoaded ? 'LOADED' : 'NOT LOADED'}`, isLoaded ? 'success' : 'warning');
+                
+                // Special handling for Adexora
+                if (network === 'adexora') {
+                    debugLog(`Adexora - typeof window.showAdexora: ${typeof window.showAdexora}`, 'info');
+                    if (typeof window.showAdexora === 'function') {
+                        debugLog('Adexora - showAdexora is a function ✓', 'success');
+                    } else {
+                        debugLog('Adexora - showAdexora is NOT available ✗', 'error');
+                        // List all properties on window that might be related
+                        const adexoraProps = Object.keys(window).filter(k => k.toLowerCase().includes('adexora') || k.toLowerCase().includes('adx'));
+                        debugLog(`Adexora - Related window properties: ${adexoraProps.join(', ') || 'none'}`, 'info');
+                    }
+                }
+                
+            } catch(e) {
+                config.sdkLoaded = false;
+                if (sdkStatusEl) {
+                    sdkStatusEl.textContent = '❌ SDK Error';
+                    sdkStatusEl.className = 'sdk-status unavailable';
+                }
+                debugLog(`${config.name}: SDK check error - ${e.message}`, 'error');
+            }
         });
+        
+        // Update all progress displays
+        updateAllAdProgress();
     }
 
     // ===== USER DATA =====
@@ -1341,7 +1490,10 @@
                     gigapub: Object.assign({ watched: 0, claimed: false, claimTime: null, expireTime: null }, existingProgress.gigapub || {})
                 };
                 userData.adHistory = parsed.adHistory || [];
-            } catch(e) {}
+                debugLog(`User data loaded for ${userData.id}`, 'info');
+            } catch(e) {
+                debugLog('Failed to load user data: ' + e.message, 'error');
+            }
         }
     }
 
@@ -1394,6 +1546,7 @@
     }
 
     function performDailyReset() {
+        debugLog('🔄 Performing daily reset...', 'warning');
         Object.keys(userData.adProgress).forEach(network => {
             userData.adProgress[network] = {
                 watched: 0,
@@ -1477,9 +1630,28 @@
         const errorEl = document.getElementById(network + 'Error');
         const cardEl = document.getElementById('card-' + network);
         
-        // Clear any previous error state
         if (errorEl) errorEl.classList.remove('visible');
-        if (cardEl) cardEl.classList.remove('error-state');
+        if (cardEl) {
+            cardEl.classList.remove('error-state');
+            cardEl.classList.remove('unavailable-state');
+        }
+        
+        // Check if network is available
+        if (!config.enabled) {
+            if (statusEl) statusEl.textContent = '🚫 Disabled';
+            if (watchBtn) { watchBtn.style.display = 'inline-block'; watchBtn.disabled = true; }
+            if (claimBtn) claimBtn.style.display = 'none';
+            if (cardEl) cardEl.classList.add('unavailable-state');
+            return;
+        }
+        
+        if (!config.sdkLoaded) {
+            if (statusEl) statusEl.textContent = '⚠️ SDK Unavailable';
+            if (watchBtn) { watchBtn.style.display = 'inline-block'; watchBtn.disabled = true; }
+            if (claimBtn) claimBtn.style.display = 'none';
+            if (cardEl) cardEl.classList.add('unavailable-state');
+            return;
+        }
         
         if (progress.claimed) {
             const now = Date.now();
@@ -1503,18 +1675,13 @@
             if (statusEl) statusEl.textContent = '🎁 Ready to Claim!';
             if (watchBtn) watchBtn.style.display = 'none';
             if (claimBtn) { claimBtn.style.display = 'inline-block'; claimBtn.disabled = false; }
-            if (cooldownEl) cooldownEl.textContent = '';
         } else {
             if (statusEl) statusEl.textContent = '✅ Ready';
-            if (watchBtn) { watchBtn.style.display = 'inline-block'; watchBtn.disabled = isAdRunning || !config.enabled || !config.sdkLoaded; }
+            if (watchBtn) { 
+                watchBtn.style.display = 'inline-block'; 
+                watchBtn.disabled = isAdRunning;
+            }
             if (claimBtn) claimBtn.style.display = 'none';
-            if (cooldownEl) cooldownEl.textContent = '';
-        }
-        
-        // Show SDK status
-        if (!config.sdkLoaded) {
-            if (statusEl) statusEl.textContent = '⚠️ SDK Unavailable';
-            if (watchBtn) watchBtn.disabled = true;
         }
     }
 
@@ -1559,7 +1726,6 @@
 
     // ===== WATCH AD - STRICT VERIFICATION =====
     async function watchAd(network) {
-        // Prevent multiple simultaneous ad requests
         if (isAdRunning) {
             showNotification('⚠️ Please wait for the current ad to finish.', 'warning');
             return;
@@ -1567,27 +1733,24 @@
         
         const config = AD_NETWORKS[network];
         
-        // Check if network is enabled
         if (!config.enabled) {
             showNotification(`⚠️ ${config.name} is currently disabled.`, 'warning');
             return;
         }
         
-        // Check if SDK is loaded
         if (!config.sdkLoaded) {
             showNetworkError(network, `${config.name} SDK is not available. Please try again later.`);
+            debugLog(`${config.name}: SDK not loaded, cannot show ad`, 'error');
             return;
         }
         
         const progress = userData.adProgress[network];
         
-        // Check cooldown
         if (progress.claimed && progress.expireTime && Date.now() < progress.expireTime) {
             showNotification(`⏳ ${config.name} is in cooldown. Please wait.`, 'warning');
             return;
         }
         
-        // Check if ready to claim
         if (progress.watched >= config.adsPerCycle) {
             showNotification(`🎁 ${config.name}: Claim your reward first!`, 'warning');
             return;
@@ -1601,7 +1764,6 @@
         const cardEl = document.getElementById('card-' + network);
         const errorEl = document.getElementById(network + 'Error');
         
-        // Update UI to loading state
         if (watchBtn) {
             watchBtn.disabled = true;
             watchBtn.textContent = '⏳ Loading Ad...';
@@ -1610,36 +1772,45 @@
         if (errorEl) errorEl.classList.remove('visible');
         if (cardEl) cardEl.classList.remove('error-state');
         
-        // Set timeout for ad (15 seconds max)
+        debugLog(`📺 [${config.name}] Starting ad request...`, 'info');
+        debugLog(`[${config.name}] Current progress: ${progress.watched}/${config.adsPerCycle}`, 'info');
+        
+        // Set timeout for ad
+        const timeoutDuration = network === 'adexora' ? CONFIG.adexora.adTimeout : 15000;
         adTimeoutId = setTimeout(() => {
             if (isAdRunning && currentAdNetwork === network) {
+                debugLog(`[${config.name}] ⏰ Ad timed out after ${timeoutDuration}ms`, 'error');
                 handleAdFailure(network, 'Advertisement timed out. Please try again.');
             }
-        }, 15000);
+        }, timeoutDuration);
         
         try {
-            // Call the appropriate ad function - MUST return a promise
+            debugLog(`[${config.name}] Calling showAdForNetwork...`, 'info');
             const result = await showAdForNetwork(network);
             
-            // Clear timeout
             clearTimeout(adTimeoutId);
             
-            // Verify the result indicates successful completion
+            debugLog(`[${config.name}] Ad function returned:`, 'info');
+            debugLog(`[${config.name}] Result type: ${typeof result}`, 'info');
+            debugLog(`[${config.name}] Result value: ${JSON.stringify(result)}`, 'info');
+            
+            // STRICT VERIFICATION
             if (result && result.success === true) {
-                // AD SUCCESSFULLY COMPLETED - Now increment progress
+                debugLog(`[${config.name}] ✅ Ad CONFIRMED successful`, 'success');
                 handleAdSuccess(network);
             } else {
-                // Ad did not complete successfully
-                handleAdFailure(network, 'Advertisement did not complete. Please try again.');
+                debugLog(`[${config.name}] ❌ Ad did NOT confirm success`, 'error');
+                debugLog(`[${config.name}] Reason: ${result?.reason || 'No success confirmation from SDK'}`, 'error');
+                handleAdFailure(network, result?.reason || 'Advertisement did not complete successfully.');
             }
             
         } catch (error) {
-            // Clear timeout
             clearTimeout(adTimeoutId);
             
-            // AD FAILED - Do NOT increment progress
-            console.error(`[${network}] Ad Error:`, error.message || error);
-            handleAdFailure(network, 'Advertisement is currently unavailable. Please try again later.');
+            debugLog(`[${config.name}] ❌ Ad ERROR: ${error.message || error}`, 'error');
+            debugLog(`[${config.name}] Error stack: ${error.stack || 'N/A'}`, 'error');
+            
+            handleAdFailure(network, error.message || 'Advertisement is currently unavailable. Please try again later.');
         }
     }
 
@@ -1648,12 +1819,15 @@
         const config = AD_NETWORKS[network];
         const progress = userData.adProgress[network];
         
-        // Increment watched count ONLY on verified success
+        debugLog(`[${config.name}] ✅ Processing successful ad completion`, 'success');
+        
+        // ONLY increment on verified success
         progress.watched += 1;
         userData.todayAds += 1;
         userData.totalAds += 1;
         
-        // Add to ad history with success status
+        debugLog(`[${config.name}] Progress updated: ${progress.watched}/${config.adsPerCycle}`, 'success');
+        
         const historyEntry = {
             id: Date.now(),
             network: network,
@@ -1665,7 +1839,6 @@
         };
         userData.adHistory.unshift(historyEntry);
         
-        // Add to transactions
         userData.transactions.unshift({
             type: 'ad_watch',
             title: `${config.name} Ad #${progress.watched} ✓`,
@@ -1682,20 +1855,17 @@
         renderAdHistory();
         renderRecentActivity();
         
-        // Show success notification
         const remaining = config.adsPerCycle - progress.watched;
         const message = remaining > 0 
             ? `✅ ${config.name}: ${progress.watched}/${config.adsPerCycle} (${remaining} left)`
             : `🎁 ${config.name}: Ready to claim!`;
         
-        showNotification(message, remaining > 0 ? 'success' : 'success');
+        showNotification(message, 'success');
         
-        // Vibrate on success
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
         }
         
-        // Reset state
         resetAdState(network);
     }
 
@@ -1703,10 +1873,12 @@
     function handleAdFailure(network, errorMessage) {
         const config = AD_NETWORKS[network];
         
+        debugLog(`[${config.name}] ❌ Ad FAILED: ${errorMessage}`, 'error');
+        debugLog(`[${config.name}] Progress NOT updated. Current: ${userData.adProgress[network].watched}/${config.adsPerCycle}`, 'warning');
+        
         // DO NOT increment progress
         // DO NOT update watched count
         
-        // Add to ad history with failure status
         const historyEntry = {
             id: Date.now(),
             network: network,
@@ -1717,7 +1889,6 @@
         };
         userData.adHistory.unshift(historyEntry);
         
-        // Add to transactions with failure note
         userData.transactions.unshift({
             type: 'ad_error',
             title: `${config.name} Ad Failed ✗`,
@@ -1732,21 +1903,15 @@
         renderAdHistory();
         renderRecentActivity();
         
-        // Show error in UI
         showNetworkError(network, errorMessage);
-        
-        // Show error notification
         showNotification(`❌ ${config.name}: ${errorMessage}`, 'error');
         
-        // Vibrate on error
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
         }
         
-        // Log to admin
-        sendMessageToAdmin(`⚠️ Ad Failure: ${config.name} for user ${userData.firstName} (${userData.id}) - ${errorMessage}`);
+        sendMessageToAdmin(`⚠️ Ad Failure: ${config.name} for ${userData.firstName} (${userData.id}) - ${errorMessage}`);
         
-        // Reset state
         resetAdState(network);
     }
 
@@ -1757,8 +1922,6 @@
         if (errorEl) {
             errorEl.textContent = message;
             errorEl.classList.add('visible');
-            
-            // Auto-hide after 8 seconds
             setTimeout(() => {
                 errorEl.classList.remove('visible');
                 if (cardEl) cardEl.classList.remove('error-state');
@@ -1785,7 +1948,7 @@
         updateAdProgress(network);
     }
 
-    // ===== SHOW AD FOR NETWORK (Returns Promise with success status) =====
+    // ===== SHOW AD FOR NETWORK =====
     async function showAdForNetwork(network) {
         switch(network) {
             case 'adexium':
@@ -1801,11 +1964,13 @@
         }
     }
 
-    // ===== ADEXIUM AD (TGAds) =====
+    // ===== ADEXIUM AD =====
     async function showAdexiumAd() {
+        debugLog('[Adexium] Starting ad request...', 'info');
         return new Promise((resolve, reject) => {
             try {
                 if (typeof AdexiumWidget === 'undefined') {
+                    debugLog('[Adexium] SDK not loaded', 'error');
                     reject(new Error('Adexium SDK not loaded'));
                     return;
                 }
@@ -1815,20 +1980,20 @@
                     adFormat: "interstitial"
                 });
                 
-                // Try to show the ad
+                debugLog('[Adexium] Calling adexiumWidget.show()...', 'info');
+                
                 adexiumWidget.show()
                     .then(() => {
-                        // Ad completed successfully
+                        debugLog('[Adexium] Ad completed successfully', 'success');
                         resolve({ success: true, network: 'adexium' });
                     })
                     .catch((error) => {
-                        // Ad failed or was skipped
-                        console.error('Adexium show() failed:', error);
+                        debugLog(`[Adexium] Ad failed: ${error.message || error}`, 'error');
                         reject(new Error('Adexium advertisement unavailable'));
                     });
                     
             } catch(error) {
-                console.error('Adexium exception:', error);
+                debugLog(`[Adexium] Exception: ${error.message}`, 'error');
                 reject(new Error('Adexium advertisement unavailable'));
             }
         });
@@ -1836,96 +2001,204 @@
 
     // ===== LIBTL AD =====
     async function showLibTLAd() {
+        debugLog('[LibTL] Starting ad request...', 'info');
         return new Promise((resolve, reject) => {
             try {
                 if (typeof show_9388728 !== 'function') {
+                    debugLog('[LibTL] SDK not loaded', 'error');
                     reject(new Error('LibTL SDK not loaded'));
                     return;
                 }
                 
-                // Try rewarded interstitial first
+                debugLog('[LibTL] Calling show_9388728()...', 'info');
+                
                 show_9388728()
                     .then(() => {
-                        // Ad completed successfully
+                        debugLog('[LibTL] Ad completed successfully', 'success');
                         resolve({ success: true, network: 'libtl' });
                     })
                     .catch((error) => {
-                        console.warn('LibTL interstitial failed, trying popup:', error.message);
-                        
-                        // Try popup format as fallback
-                        if (typeof show_9388728 === 'function') {
-                            show_9388728("pop")
-                                .then(() => {
-                                    resolve({ success: true, network: 'libtl' });
-                                })
-                                .catch((popupError) => {
-                                    console.error('LibTL popup also failed:', popupError);
-                                    reject(new Error('LibTL advertisement unavailable'));
-                                });
-                        } else {
-                            reject(new Error('LibTL advertisement unavailable'));
-                        }
+                        debugLog(`[LibTL] Interstitial failed: ${error.message}. Trying popup...`, 'warning');
+                        show_9388728("pop")
+                            .then(() => {
+                                debugLog('[LibTL] Popup ad completed successfully', 'success');
+                                resolve({ success: true, network: 'libtl' });
+                            })
+                            .catch((popupError) => {
+                                debugLog(`[LibTL] Popup also failed: ${popupError.message}`, 'error');
+                                reject(new Error('LibTL advertisement unavailable'));
+                            });
                     });
                     
             } catch(error) {
-                console.error('LibTL exception:', error);
+                debugLog(`[LibTL] Exception: ${error.message}`, 'error');
                 reject(new Error('LibTL advertisement unavailable'));
             }
         });
     }
 
-    // ===== ADEXORA AD =====
+    // ===== ADEXORA AD - FIXED WITH STRICT VERIFICATION =====
     async function showAdexoraAd() {
+        debugLog('═══════════════════════════════', 'info');
+        debugLog('[Adexora] 🔍 STARTING DETAILED DIAGNOSTIC', 'info');
+        debugLog('═══════════════════════════════', 'info');
+        
         return new Promise((resolve, reject) => {
             try {
+                // STEP 1: Check if SDK is loaded
+                debugLog('[Adexora] Step 1: Checking SDK availability...', 'info');
+                debugLog(`[Adexora] typeof window.showAdexora: ${typeof window.showAdexora}`, 'info');
+                
                 if (typeof window.showAdexora !== 'function') {
-                    reject(new Error('Adexora SDK not loaded'));
+                    debugLog('[Adexora] ❌ CRITICAL: window.showAdexora is NOT a function', 'error');
+                    debugLog('[Adexora] Checking for alternative SDK names...', 'warning');
+                    
+                    // Check for alternative SDK names
+                    const possibleNames = ['showAdexora', 'adexora', 'Adexora', 'showAd', 'showRewardedAd'];
+                    possibleNames.forEach(name => {
+                        debugLog(`[Adexora] window.${name}: ${typeof window[name]}`, 'info');
+                    });
+                    
+                    // List all functions on window that might be ad-related
+                    const adFunctions = Object.keys(window).filter(k => 
+                        typeof window[k] === 'function' && 
+                        (k.toLowerCase().includes('ad') || k.toLowerCase().includes('adex'))
+                    );
+                    debugLog(`[Adexora] Possible ad functions found: ${adFunctions.join(', ') || 'NONE'}`, 'warning');
+                    
+                    reject(new Error('Adexora SDK not loaded. Please try again later.'));
                     return;
                 }
                 
-                window.showAdexora()
-                    .then(() => {
-                        // Ad completed successfully
-                        resolve({ success: true, network: 'adexora' });
-                    })
-                    .catch((error) => {
-                        console.error('Adexora ad failed:', error);
-                        reject(new Error('Adexora advertisement is currently unavailable. Please try again later.'));
-                    });
+                debugLog('[Adexora] ✅ SDK function found: window.showAdexora', 'success');
+                
+                // STEP 2: Check if the function returns a Promise
+                debugLog('[Adexora] Step 2: Testing function return type...', 'info');
+                
+                let adexoraResult;
+                try {
+                    adexoraResult = window.showAdexora();
+                    debugLog(`[Adexora] showAdexora() returned: ${typeof adexoraResult}`, 'info');
+                    debugLog(`[Adexora] Return value: ${JSON.stringify(adexoraResult)}`, 'info');
                     
+                    // Check if it's a Promise
+                    if (adexoraResult && typeof adexoraResult.then === 'function') {
+                        debugLog('[Adexora] ✅ Return value IS a Promise', 'success');
+                    } else {
+                        debugLog('[Adexora] ⚠️ Return value is NOT a Promise', 'warning');
+                        debugLog(`[Adexora] Value type: ${typeof adexoraResult}`, 'warning');
+                        debugLog(`[Adexora] Value: ${adexoraResult}`, 'warning');
+                    }
+                } catch(callError) {
+                    debugLog(`[Adexora] ❌ Error calling showAdexora(): ${callError.message}`, 'error');
+                    reject(new Error('Adexora advertisement failed to initialize.'));
+                    return;
+                }
+                
+                // STEP 3: If it's a Promise, handle it properly
+                if (adexoraResult && typeof adexoraResult.then === 'function') {
+                    debugLog('[Adexora] Step 3: Waiting for Promise resolution...', 'info');
+                    
+                    // Set a timeout for the Promise
+                    const promiseTimeout = setTimeout(() => {
+                        debugLog('[Adexora] ⏰ Promise timed out after 20 seconds', 'error');
+                        reject(new Error('Adexora advertisement timed out.'));
+                    }, 20000);
+                    
+                    adexoraResult
+                        .then((result) => {
+                            clearTimeout(promiseTimeout);
+                            
+                            debugLog('[Adexora] ✅ Promise RESOLVED', 'success');
+                            debugLog(`[Adexora] Resolution value type: ${typeof result}`, 'info');
+                            debugLog(`[Adexora] Resolution value: ${JSON.stringify(result)}`, 'info');
+                            
+                            // STEP 4: Verify the resolution value
+                            if (result === true || result === 'success' || result === 'completed') {
+                                debugLog('[Adexora] ✅ Ad confirmed complete (truthy value)', 'success');
+                                resolve({ success: true, network: 'adexora', rawResult: result });
+                            } else if (result && typeof result === 'object') {
+                                // Check for common success indicators in the object
+                                if (result.success === true || result.completed === true || result.status === 'success') {
+                                    debugLog('[Adexora] ✅ Ad confirmed complete (object with success indicator)', 'success');
+                                    resolve({ success: true, network: 'adexora', rawResult: result });
+                                } else {
+                                    debugLog('[Adexora] ❌ Object returned but no success indicator found', 'error');
+                                    debugLog(`[Adexora] Object keys: ${Object.keys(result).join(', ')}`, 'error');
+                                    reject(new Error('Adexora advertisement did not confirm completion.'));
+                                }
+                            } else if (result === undefined) {
+                                debugLog('[Adexora] ❌ Promise resolved with undefined', 'error');
+                                debugLog('[Adexora] This usually means the ad was closed or skipped', 'warning');
+                                reject(new Error('Adexora advertisement was not completed.'));
+                            } else {
+                                debugLog(`[Adexora] ❌ Unknown resolution value: ${result}`, 'error');
+                                reject(new Error('Adexora advertisement response not recognized.'));
+                            }
+                        })
+                        .catch((error) => {
+                            clearTimeout(promiseTimeout);
+                            
+                            debugLog('[Adexora] ❌ Promise REJECTED', 'error');
+                            debugLog(`[Adexora] Error: ${error?.message || error}`, 'error');
+                            debugLog(`[Adexora] Error type: ${error?.constructor?.name || typeof error}`, 'error');
+                            
+                            if (error?.message?.includes('no ad') || error?.message?.includes('unavailable')) {
+                                reject(new Error('No Adexora advertisement available at this time.'));
+                            } else if (error?.message?.includes('skip') || error?.message?.includes('close')) {
+                                reject(new Error('Adexora advertisement was skipped.'));
+                            } else {
+                                reject(new Error('Adexora advertisement is currently unavailable. Please try again later.'));
+                            }
+                        });
+                        
+                } else {
+                    // Not a Promise - cannot verify ad completion
+                    debugLog('[Adexora] ❌ CRITICAL: showAdexora() did not return a Promise', 'error');
+                    debugLog('[Adexora] Cannot verify ad completion without Promise', 'error');
+                    debugLog('[Adexora] Treating as FAILED to prevent false rewards', 'warning');
+                    
+                    reject(new Error('Adexora SDK does not provide completion verification. Ad cannot be verified.'));
+                }
+                
             } catch(error) {
-                console.error('Adexora exception:', error);
-                reject(new Error('Adexora advertisement is currently unavailable. Please try again later.'));
+                debugLog(`[Adexora] ❌ EXCEPTION: ${error.message}`, 'error');
+                debugLog(`[Adexora] Stack: ${error.stack}`, 'error');
+                reject(new Error('Adexora advertisement encountered an error. Please try again later.'));
             }
         });
     }
 
     // ===== GIGAPUB AD =====
     async function showGigaPubAd() {
+        debugLog('[GigaPub] Starting ad request...', 'info');
         return new Promise((resolve, reject) => {
             try {
                 if (typeof window.showGiga !== 'function') {
-                    // Try fallback
                     if (typeof window.AdGigaFallback === 'function') {
                         window.showGiga = window.AdGigaFallback;
+                        debugLog('[GigaPub] Using fallback SDK', 'warning');
                     } else {
+                        debugLog('[GigaPub] SDK not loaded', 'error');
                         reject(new Error('GigaPub SDK not loaded'));
                         return;
                     }
                 }
                 
+                debugLog('[GigaPub] Calling window.showGiga()...', 'info');
+                
                 window.showGiga()
                     .then(() => {
-                        // Ad completed successfully
+                        debugLog('[GigaPub] Ad completed successfully', 'success');
                         resolve({ success: true, network: 'gigapub' });
                     })
                     .catch((error) => {
-                        console.error('GigaPub ad failed:', error);
+                        debugLog(`[GigaPub] Ad failed: ${error.message || error}`, 'error');
                         reject(new Error('GigaPub advertisement unavailable'));
                     });
                     
             } catch(error) {
-                console.error('GigaPub exception:', error);
+                debugLog(`[GigaPub] Exception: ${error.message}`, 'error');
                 reject(new Error('GigaPub advertisement unavailable'));
             }
         });
@@ -1936,7 +2209,8 @@
         const config = AD_NETWORKS[network];
         const progress = userData.adProgress[network];
         
-        // Strict verification before claiming
+        debugLog(`[${config.name}] Claim request. Progress: ${progress.watched}/${config.adsPerCycle}`, 'info');
+        
         if (progress.claimed) {
             if (progress.expireTime && Date.now() < progress.expireTime) {
                 showNotification('⏳ Cooldown still active!', 'warning');
@@ -1945,11 +2219,13 @@
         }
         
         if (progress.watched < config.adsPerCycle) {
+            debugLog(`[${config.name}] Claim DENIED: Only ${progress.watched}/${config.adsPerCycle} ads completed`, 'error');
             showNotification(`❌ Need ${config.adsPerCycle} completed ads to claim! (${progress.watched}/${config.adsPerCycle})`, 'error');
             return;
         }
         
-        // Process claim
+        debugLog(`[${config.name}] Claim APPROVED. Awarding Ⓝ${config.rewardAmount}`, 'success');
+        
         const rewardAmount = config.rewardAmount;
         
         userData.balance += rewardAmount;
@@ -1960,7 +2236,6 @@
         progress.claimTime = Date.now();
         progress.expireTime = Date.now() + (config.cooldownHours * 60 * 60 * 1000);
         
-        // Add claim transaction
         userData.transactions.unshift({
             type: 'claim',
             title: `Claimed ${config.name}`,
@@ -1971,7 +2246,6 @@
             status: 'success'
         });
         
-        // Add to ad history
         userData.adHistory.unshift({
             id: Date.now(),
             network: network,
@@ -1987,7 +2261,6 @@
         renderAdHistory();
         renderRecentActivity();
         
-        // Show claim modal
         document.getElementById('claimAmount').textContent = `+Ⓝ${rewardAmount.toFixed(2)}`;
         document.getElementById('claimNetwork').textContent = config.name;
         document.getElementById('claimCooldown').textContent = `${config.cooldownHours}:00:00`;
@@ -2053,7 +2326,6 @@
         
         container.innerHTML = transactions.slice(0, 10).map(t => {
             const isPositive = t.amount > 0;
-            const statusIcon = t.status === 'failed' ? '✗' : (isPositive ? '+' : '');
             return `
                 <div class="activity-item">
                     <div class="left">
@@ -2073,9 +2345,8 @@
 
     // ===== RICHADS =====
     function initRichAds() {
-        const richadsEnabled = true; // Can be configured via admin
         document.querySelectorAll('.richads-container').forEach(container => {
-            container.style.display = richadsEnabled ? 'flex' : 'none';
+            container.style.display = 'flex';
         });
     }
 
@@ -2149,20 +2420,19 @@
             localStorage.setItem('nxeran_forceReset', 'true');
             performDailyReset();
         },
-        getAdStats: function() {
-            return {
-                adProgress: userData.adProgress,
-                adHistory: userData.adHistory,
-                todayAds: userData.todayAds,
-                totalAds: userData.totalAds
-            };
+        getDebugLogs: function() {
+            return debugLogs;
+        },
+        recheckSdks: function() {
+            checkAllSdkAvailability();
         }
     };
 
     console.log('🚀 NX ERAN - Strict Ad Verification System');
     console.log('📺 Networks:', Object.keys(AD_NETWORKS).join(', '));
     console.log('🔒 Policy: Progress ONLY on verified ad completion');
-    console.log('❌ Failed/Skipped ads = NO progress, NO reward');
+    console.log('🐛 Debug: Click "Debug Console" in Tasks tab for detailed logs');
+    console.log('🔧 Admin API: window.NxEranAdmin');
 </script>
 </body>
 </html>
