@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NX ERAN - Earn Money</title>
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- RichAds Script (Passive) -->
+    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+    <script>
+        window.TelegramAdsController = new TelegramAdsController();
+        window.TelegramAdsController.initialize({
+            pubId: "985872",
+            appId: "3640",
+        });
+    </script>
+    
+    <!-- Ad Network SDKs -->
+    <!-- Adexium (TGAds) -->
+    <script src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
+    <!-- LibTL -->
+    <script src="//libtl.com/sdk.js" data-zone="9388728" data-sdk="show_9388728"></script>
+    <!-- Adexora -->
+    <script src="https://adexora.com/cdn/ads.js?id=363"></script>
+    <!-- GigaPub -->
+    <script src="https://ad.gigapub.tech/script?id=1476"></script>
+    
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --primary: #6C3CE1;
+            --primary-light: #8B5CF6;
+            --primary-dark: #5B2BCB;
+            --secondary: #EC4899;
+            --accent: #F59E0B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            
+            --bg-start: #0F0A1A;
+            --bg-end: #1A0F2E;
+            --glass-bg: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-shadow: rgba(0, 0, 0, 0.3);
+            
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.08);
+            
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-lg: 24px;
+            
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font);
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        
+        /* ===== Loading Screen ===== */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease;
+        }
+        
+        .orbit-loader {
+            position: relative;
+            width: 70px;
+            height: 70px;
+        }
+        
+        .orbit-loader .orbit {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid transparent;
+        }
+        
+        .orbit-loader .orbit-1 {
+            width: 70px;
+            height: 70px;
+            border-top-color: var(--primary-light);
+            animation: orbit-spin 1.2s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+        }
+        
+        .orbit-loader .orbit-2 {
+            width: 50px;
+            height: 50px;
+            top: 10px;
+            left: 10px;
+            border-right-color: var(--secondary);
+            animation: orbit-spin 0.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite reverse;
+        }
+        
+        .orbit-loader .orbit-3 {
+            width: 30px;
+            height: 30px;
+            top: 20px;
+            left: 20px;
+            border-bottom-color: var(--accent);
+            animation: orbit-spin 0.6s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+        }
+        
+        .orbit-loader .core {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            top: 29px;
+            left: 29px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            box-shadow: 0 0 20px rgba(108, 60, 225, 0.5);
+        }
+        
+        @keyframes orbit-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            margin-top: 25px;
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+        
+        /* ===== Container ===== */
+        .app-container {
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 90px;
+            position: relative;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        
+        .app-container.visible {
+            opacity: 1;
+        }
+        
+        /* ===== Header ===== */
+        .header {
+            padding: 12px 16px 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .header-brand .bot-name {
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-brand .verified {
+            color: var(--info);
+            font-size: 12px;
+            -webkit-text-fill-color: var(--info);
+        }
+        
+        .header-balance {
+            background: var(--glass-bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .header-balance .currency {
+            color: var(--accent);
+            font-size: 14px;
+        }
+        
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            overflow: hidden;
+            border: 2px solid var(--glass-border);
+            flex-shrink: 0;
+        }
+        
+        .header-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .header-user-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .header-username {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .header-userid {
+            font-size: 10px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* ===== Content ===== */
+        .content {
+            padding: 12px 12px 0;
+        }
+        
+        /* ===== Sections ===== */
+        .section {
+            display: none;
+            animation: fadeScale 0.3s ease;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeScale {
+            0% { opacity: 0; transform: scale(0.97); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        /* ===== Cards ===== */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 12px;
+            transition: transform 0.2s ease;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-1px);
+        }
+        
+        .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .card-title i {
+            color: var(--primary-light);
+            font-size: 14px;
+        }
+        
+        /* ===== Stats Grid ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .stat-item {
+            background: var(--glass-bg);
+            border-radius: var(--radius-sm);
+            padding: 10px 6px;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+        }
+        
+        .stat-item .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+            word-break: break-word;
+        }
+        
+        .stat-item .stat-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-item .stat-value.green { color: var(--success); }
+        .stat-item .stat-value.gold { color: var(--accent); }
+        .stat-item .stat-value.purple { color: var(--primary-light); }
+        .stat-item .stat-value.pink { color: var(--secondary); }
+        .stat-item .stat-value.blue { color: var(--info); }
+        .stat-item .stat-value.red { color: var(--danger); }
+        
+        /* ===== Balance Big ===== */
+        .balance-big {
+            text-align: center;
+            padding: 14px 0 6px;
+        }
+        
+        .balance-big .amount {
+            font-size: 34px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .balance-big .currency {
+            font-size: 24px;
+            color: var(--accent);
+            -webkit-text-fill-color: var(--accent);
+            margin-right: 2px;
+        }
+        
+        .balance-big .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        /* ===== Ad Network Progress ===== */
+        .ad-network-progress {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .ad-network-progress .network-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-fill.adexium { background: linear-gradient(90deg, #FF6B35, #FF8C42); }
+        .progress-fill.libtl { background: linear-gradient(90deg, #2D9CDB, #56CCF2); }
+        .progress-fill.adexora { background: linear-gradient(90deg, #9B51E0, #BB6BD9); }
+        .progress-fill.gigapub { background: linear-gradient(90deg, #27AE60, #6FCF97); }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .claim-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: linear-gradient(135deg, var(--accent), #E67E22);
+            color: white;
+            margin-top: 6px;
+        }
+        
+        .claim-btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .claim-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .cooldown-timer {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        /* ===== Quick Actions ===== */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .quick-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+        
+        .quick-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .quick-btn i {
+            font-size: 20px;
+            margin-bottom: 2px;
+            display: block;
+        }
+        
+        .quick-btn .label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .quick-btn.gradient-1 i { color: var(--primary-light); }
+        .quick-btn.gradient-2 i { color: var(--secondary); }
+        .quick-btn.gradient-3 i { color: var(--accent); }
+        .quick-btn.gradient-4 i { color: var(--success); }
+        
+        /* ===== Ad Network Grid ===== */
+        .ad-network-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .ad-network-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .ad-network-card .network-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+        
+        .ad-network-card .network-name {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .ad-network-card .watch-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            margin-top: 6px;
+            width: 100%;
+        }
+        
+        .ad-network-card .watch-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .ad-network-card .watch-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* RichAds Container */
+        .richads-container {
+            margin: 10px 0;
+            padding: 8px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        /* ===== Bottom Navigation ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 24px);
+            max-width: 400px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 6px 4px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 6px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-muted);
+            min-width: 36px;
+            position: relative;
+            background: transparent;
+            border: none;
+            font-family: var(--font);
+        }
+        
+        .nav-item i {
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item span {
+            font-size: 9px;
+            margin-top: 1px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active i {
+            color: var(--primary-light);
+        }
+        
+        .nav-item.active span {
+            color: var(--primary-light);
+        }
+        
+        .nav-item .badge {
+            position: absolute;
+            top: 0;
+            right: 2px;
+            background: var(--danger);
+            color: white;
+            font-size: 8px;
+            font-weight: 700;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* ===== Modal ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: linear-gradient(145deg, rgba(30, 20, 50, 0.95), rgba(15, 10, 30, 0.98));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            max-width: 380px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: fadeScale 0.3s ease;
+        }
+        
+        .modal .modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+        
+        .modal .modal-close {
+            float: right;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .modal .modal-close:hover {
+            color: var(--text-primary);
+        }
+        
+        /* ===== Toast ===== */
+        .toast-notification {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            z-index: 999;
+            font-size: 13px;
+            font-weight: 500;
+            max-width: 90%;
+            text-align: center;
+            animation: fadeScale 0.3s ease;
+        }
+        
+        /* ===== Responsive ===== */
+        @media (max-width: 380px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-item .stat-value {
+                font-size: 14px;
+            }
+            .balance-big .amount {
+                font-size: 28px;
+            }
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .ad-network-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== LOADING SCREEN ===== -->
+<div id="loading-screen">
+    <div class="orbit-loader">
+        <div class="orbit orbit-1"></div>
+        <div class="orbit orbit-2"></div>
+        <div class="orbit orbit-3"></div>
+        <div class="core"></div>
+    </div>
+    <div class="loading-text">NX ERAN</div>
+</div>
+
+<!-- ===== APP CONTAINER ===== -->
+<div class="app-container" id="app">
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-top">
+            <div class="header-brand">
+                <span class="bot-name">NX ERAN</span>
+                <span class="verified"><i class="fas fa-badge-check"></i></span>
+            </div>
+            <div class="header-balance">
+                <span class="currency">Ⓝ</span>
+                <span id="headerBalance">0.00</span>
+            </div>
+        </div>
+        <div class="header-user">
+            <div class="header-avatar" id="headerAvatar">
+                <img src="https://via.placeholder.com/36" alt="Avatar" id="avatarImg">
+            </div>
+            <div class="header-user-info">
+                <span class="header-username" id="headerUsername">User</span>
+                <span class="header-userid" id="headerUserId">ID: Loading...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== CONTENT ===== -->
+    <div class="content">
+
+        <!-- ===== HOME SECTION ===== -->
+        <div class="section active" id="section-home">
+            
+            <!-- Balance Big -->
+            <div class="card">
+                <div class="balance-big">
+                    <div class="label">Total Balance</div>
+                    <div class="amount">
+                        <span class="currency">Ⓝ</span>
+                        <span id="homeBalance">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RichAds Placement 1 -->
+            <div class="richads-container" id="richads-home-1">
+                <span>📢 Advertisement</span>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value green" id="todayIncome">+Ⓝ0.00</div>
+                    <div class="stat-label">Today's Income</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value gold" id="todayAds">0</div>
+                    <div class="stat-label">Ads Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value purple" id="totalAds">0</div>
+                    <div class="stat-label">Total Ads</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value pink" id="totalReferrals">0</div>
+                    <div class="stat-label">Referrals</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-bolt"></i> Quick Actions</div>
+                <div class="quick-actions">
+                    <div class="quick-btn gradient-1" onclick="navigateTo('tasks')">
+                        <i class="fas fa-video"></i>
+                        <span class="label">Watch Ads</span>
+                    </div>
+                    <div class="quick-btn gradient-2" onclick="navigateTo('tasks')">
+                        <i class="fas fa-tasks"></i>
+                        <span class="label">Tasks</span>
+                    </div>
+                    <div class="quick-btn gradient-3" onclick="navigateTo('tasks')">
+                        <i class="fas fa-gift"></i>
+                        <span class="label">Claim Rewards</span>
+                    </div>
+                    <div class="quick-btn gradient-4" onclick="navigateTo('refer')">
+                        <i class="fas fa-users"></i>
+                        <span class="label">Refer Friends</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RichAds Placement 2 -->
+            <div class="richads-container" id="richads-home-2">
+                <span>📢 Advertisement</span>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-clock"></i> Recent Activity</div>
+                <div id="recentActivity">
+                    <div class="activity-item">
+                        <div class="left">
+                            <div class="icon"><i class="fas fa-info"></i></div>
+                            <div class="info">
+                                <div class="title">No activity yet</div>
+                                <div class="time">Start earning now!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- ===== TASKS SECTION ===== -->
+        <div class="section" id="section-tasks">
+            
+            <!-- Watch Ads Section -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-play"></i> Watch Ads & Earn</div>
+                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+                    Watch 30 ads per network, then claim your reward. Default reward: Ⓝ3 per network.
+                </p>
+                
+                <div class="ad-network-grid">
+                    <!-- Adexium -->
+                    <div class="ad-network-card">
+                        <div class="network-icon">🔴</div>
+                        <div class="network-name">Adexium</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill adexium" id="adexiumProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="adexiumCount">0/30</span>
+                            <span id="adexiumStatus">Ready</span>
+                        </div>
+                        <button class="watch-btn" onclick="watchAd('adexium')" id="adexiumWatchBtn">
+                            ▶ Watch Ad
+                        </button>
+                        <button class="claim-btn" onclick="claimReward('adexium')" id="adexiumClaimBtn" style="display:none;">
+                            🎁 Claim Ⓝ3
+                        </button>
+                        <div class="cooldown-timer" id="adexiumCooldown"></div>
+                    </div>
+
+                    <!-- LibTL -->
+                    <div class="ad-network-card">
+                        <div class="network-icon">🔵</div>
+                        <div class="network-name">LibTL</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill libtl" id="libtlProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="libtlCount">0/30</span>
+                            <span id="libtlStatus">Ready</span>
+                        </div>
+                        <button class="watch-btn" onclick="watchAd('libtl')" id="libtlWatchBtn">
+                            ▶ Watch Ad
+                        </button>
+                        <button class="claim-btn" onclick="claimReward('libtl')" id="libtlClaimBtn" style="display:none;">
+                            🎁 Claim Ⓝ3
+                        </button>
+                        <div class="cooldown-timer" id="libtlCooldown"></div>
+                    </div>
+
+                    <!-- Adexora -->
+                    <div class="ad-network-card">
+                        <div class="network-icon">🟣</div>
+                        <div class="network-name">Adexora</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill adexora" id="adexoraProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="adexoraCount">0/30</span>
+                            <span id="adexoraStatus">Ready</span>
+                        </div>
+                        <button class="watch-btn" onclick="watchAd('adexora')" id="adexoraWatchBtn">
+                            ▶ Watch Ad
+                        </button>
+                        <button class="claim-btn" onclick="claimReward('adexora')" id="adexoraClaimBtn" style="display:none;">
+                            🎁 Claim Ⓝ3
+                        </button>
+                        <div class="cooldown-timer" id="adexoraCooldown"></div>
+                    </div>
+
+                    <!-- GigaPub -->
+                    <div class="ad-network-card">
+                        <div class="network-icon">🟢</div>
+                        <div class="network-name">GigaPub</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill gigapub" id="gigapubProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span id="gigapubCount">0/30</span>
+                            <span id="gigapubStatus">Ready</span>
+                        </div>
+                        <button class="watch-btn" onclick="watchAd('gigapub')" id="gigapubWatchBtn">
+                            ▶ Watch Ad
+                        </button>
+                        <button class="claim-btn" onclick="claimReward('gigapub')" id="gigapubClaimBtn" style="display:none;">
+                            🎁 Claim Ⓝ3
+                        </button>
+                        <div class="cooldown-timer" id="gigapubCooldown"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RichAds Placement 3 -->
+            <div class="richads-container" id="richads-tasks-1">
+                <span>📢 Advertisement</span>
+            </div>
+
+            <!-- Short Tasks -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-tasks"></i> Short Tasks</div>
+                <div id="shortTasks">
+                    <div class="task-card">
+                        <div class="task-icon" style="background: linear-gradient(135deg, #6C3CE1, #EC4899);"><i class="fas fa-plus"></i></div>
+                        <div class="task-info">
+                            <div class="name">No tasks available</div>
+                            <div class="details">Check back later for new tasks</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- ===== REFER SECTION ===== -->
+        <div class="section" id="section-refer">
+            <div class="card">
+                <div class="card-title"><i class="fas fa-share-alt"></i> Refer & Earn</div>
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 12px;">
+                    Invite friends and earn <strong style="color: var(--accent);">10%</strong> of their earnings!
+                </p>
+                <div style="background: var(--glass-bg); border-radius: var(--radius-sm); padding: 12px; text-align: center; border: 1px solid var(--glass-border);">
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Your Referral Link</div>
+                    <div style="font-size: 12px; font-weight: 600; word-break: break-all; color: var(--primary-light);" id="referralLink">Loading...</div>
+                    <button class="claim-btn" style="margin-top: 8px; padding: 8px; font-size: 13px;" onclick="copyReferral()">
+                        <i class="fas fa-copy"></i> Copy Link
+                    </button>
+                </div>
+            </div>
+
+            <!-- RichAds Placement 4 -->
+            <div class="richads-container" id="richads-refer-1">
+                <span>📢 Advertisement</span>
+            </div>
+
+            <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                <div class="stat-item">
+                    <div class="stat-value gold" id="refCount">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value green" id="refToday">0</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value purple" id="refPending">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value pink" id="refEarnings">Ⓝ0</div>
+                    <div class="stat-label">Earned</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-users"></i> Your Referrals</div>
+                <div id="referralList">
+                    <div class="activity-item">
+                        <div class="left">
+                            <div class="icon"><i class="fas fa-user"></i></div>
+                            <div class="info">
+                                <div class="title">No referrals yet</div>
+                                <div class="time">Start inviting friends!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- ===== WALLET SECTION ===== -->
+        <div class="section" id="section-wallet">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value gold" id="walletBalance">Ⓝ0.00</div>
+                    <div class="stat-label">Balance</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value green" id="walletToday">+Ⓝ0.00</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value purple" id="walletTotal">Ⓝ0.00</div>
+                    <div class="stat-label">Total Earn</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value blue" id="walletPending">Ⓝ0.00</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+
+            <!-- RichAds Placement 5 -->
+            <div class="richads-container" id="richads-wallet-1">
+                <span>📢 Advertisement</span>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-credit-card"></i> Withdraw Methods</div>
+                <div style="padding: 8px; text-align: center; color: var(--text-muted); font-size: 12px;">
+                    Withdrawal options will appear here
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><i class="fas fa-history"></i> Withdraw History</div>
+                <div id="withdrawHistory">
+                    <div class="activity-item">
+                        <div class="left">
+                            <div class="icon"><i class="fas fa-clock"></i></div>
+                            <div class="info">
+                                <div class="title">No withdraw requests</div>
+                                <div class="time">Your history will appear here</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- ===== PROFILE SECTION ===== -->
+        <div class="section" id="section-profile">
+            <div class="card">
+                <div class="profile-header" style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; overflow: hidden; border: 3px solid var(--glass-border);">
+                        <img src="https://via.placeholder.com/56" alt="Profile" id="profileAvatarImg" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <div>
+                        <div style="font-size: 17px; font-weight: 700;" id="profileName">User</div>
+                        <div style="font-size: 12px; color: var(--text-muted);" id="profileUsername">@username</div>
+                        <span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; background: linear-gradient(135deg, var(--primary), var(--secondary)); margin-top: 2px;" id="profileBadge">🌟 New Member</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RichAds Placement 6 -->
+            <div class="richads-container" id="richads-profile-1">
+                <span>📢 Advertisement</span>
+            </div>
+
+            <div style="text-align:center; padding:8px; color:var(--text-muted); font-size:11px;" id="versionDisplay">
+                Version 2.0.0 | NX ERAN Ⓝ
+            </div>
+            
+        </div>
+
+    </div>
+
+    <!-- ===== BOTTOM NAVIGATION ===== -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-section="home" onclick="navigateTo('home')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-item" data-section="tasks" onclick="navigateTo('tasks')">
+            <i class="fas fa-tasks"></i>
+            <span>Tasks</span>
+        </button>
+        <button class="nav-item" data-section="refer" onclick="navigateTo('refer')">
+            <i class="fas fa-users"></i>
+            <span>Refer</span>
+            <span class="badge" id="referBadge">0</span>
+        </button>
+        <button class="nav-item" data-section="wallet" onclick="navigateTo('wallet')">
+            <i class="fas fa-wallet"></i>
+            <span>Wallet</span>
+        </button>
+        <button class="nav-item" data-section="profile" onclick="navigateTo('profile')">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Claim Success Modal -->
+<div class="modal-overlay" id="claimModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('claimModal')">&times;</button>
+        <div class="modal-title">🎉 Reward Claimed!</div>
+        <div style="text-align:center; padding:20px;">
+            <div style="font-size: 48px; margin-bottom: 10px;">🎁</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--accent);" id="claimAmount">+Ⓝ3.00</div>
+            <div style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;" id="claimNetwork">Adexium</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                Next claim available in <span id="claimCooldown">12:00:00</span>
+            </div>
+        </div>
+        <button class="claim-btn" onclick="closeModal('claimModal')">OK</button>
+    </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+    // ===== CONFIGURATION =====
+    const CONFIG = {
+        botApiToken: '8002896346:AAG96XdUmW6auh_xvmljrj7hQGKymXsqJtg',
+        botUsername: 'NxEranBot',
+        currency: 'Ⓝ',
+        adminId: '8407948229',
+        adminUsername: '@RxCoderBD',
+        rewardUrl: 'https://rxcoder-bd.github.io/bot/reward.html'
+    };
+
+    // ===== AD NETWORK CONFIGURATION =====
+    // Default configuration - Admin can override via localStorage
+    const AD_NETWORKS = {
+        adexium: {
+            name: 'Adexium',
+            adsPerCycle: 30,
+            rewardAmount: 3,
+            cooldownHours: 12,
+            enabled: true,
+            icon: '🔴',
+            color: 'adexium',
+            sdkFunction: null, // Will be initialized
+            adFunction: 'showAdexiumAd'
+        },
+        libtl: {
+            name: 'LibTL',
+            adsPerCycle: 30,
+            rewardAmount: 3,
+            cooldownHours: 12,
+            enabled: true,
+            icon: '🔵',
+            color: 'libtl',
+            adFunction: 'showLibTLAd'
+        },
+        adexora: {
+            name: 'Adexora',
+            adsPerCycle: 30,
+            rewardAmount: 3,
+            cooldownHours: 12,
+            enabled: true,
+            icon: '🟣',
+            color: 'adexora',
+            adFunction: 'showAdexoraAd'
+        },
+        gigapub: {
+            name: 'GigaPub',
+            adsPerCycle: 30,
+            rewardAmount: 3,
+            cooldownHours: 12,
+            enabled: true,
+            icon: '🟢',
+            color: 'gigapub',
+            adFunction: 'showGigaPubAd'
+        }
+    };
+
+    // ===== STATE =====
+    let userData = {
+        id: 'Loading...',
+        username: 'User',
+        firstName: 'User',
+        balance: 0,
+        todayEarnings: 0,
+        todayAds: 0,
+        totalAds: 0,
+        referrals: [],
+        level: 'Bronze',
+        rank: 0,
+        totalEarn: 0,
+        totalWithdraw: 0,
+        referralLink: 'Loading...',
+        joinedDate: new Date().toLocaleDateString(),
+        transactions: [],
+        withdrawHistory: [],
+        achievements: [],
+        isBanned: false,
+        // Ad network progress (per network)
+        adProgress: {
+            adexium: { watched: 0, claimed: false, claimTime: null, expireTime: null },
+            libtl: { watched: 0, claimed: false, claimTime: null, expireTime: null },
+            adexora: { watched: 0, claimed: false, claimTime: null, expireTime: null },
+            gigapub: { watched: 0, claimed: false, claimTime: null, expireTime: null }
+        },
+        settings: {
+            darkMode: true,
+            notifications: true,
+            sound: true
+        }
+    };
+
+    let isAdRunning = false;
+    let adminSettings = {};
+
+    // ===== LOADING SCREEN =====
+    window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            const loading = document.getElementById('loading-screen');
+            loading.style.opacity = '0';
+            setTimeout(() => {
+                loading.style.display = 'none';
+                document.getElementById('app').classList.add('visible');
+                initApp();
+            }, 500);
+        }, 1500);
+    });
+
+    // ===== INIT APP =====
+    function initApp() {
+        initTelegram();
+        loadUserData();
+        loadAdminSettings();
+        loadAdNetworkConfig();
+        initAdNetworks();
+        updateUI();
+        initReferralLink();
+        renderRecentActivity();
+        renderWithdrawHistory();
+        updateAllAdProgress();
+        startCooldownTimers();
+        initRichAds();
+        checkDailyReset();
+    }
+
+    // ===== TELEGRAM INIT =====
+    function initTelegram() {
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+            const user = tg.initDataUnsafe.user;
+            if (user) {
+                userData.id = user.id;
+                userData.username = user.username || 'user';
+                userData.firstName = user.first_name;
+                
+                document.getElementById('headerUsername').textContent = user.first_name;
+                document.getElementById('headerUserId').textContent = 'ID: ' + user.id;
+                document.getElementById('profileName').textContent = user.first_name + ' ' + (user.last_name || '');
+                document.getElementById('profileUsername').textContent = '@' + (user.username || 'user');
+                
+                if (user.photo_url) {
+                    document.getElementById('avatarImg').src = user.photo_url;
+                    document.getElementById('profileAvatarImg').src = user.photo_url;
+                }
+                
+                checkUserStatus();
+            }
+        }
+    }
+
+    // ===== CHECK USER STATUS =====
+    function checkUserStatus() {
+        const adminData = JSON.parse(localStorage.getItem('nxeran_adminData') || '{}');
+        if (adminData.users) {
+            const user = adminData.users.find(u => u.id == userData.id);
+            if (user && user.status === 'banned') {
+                userData.isBanned = true;
+                showNotification('⛔ Your account has been banned!');
+            }
+        }
+    }
+
+    // ===== LOAD ADMIN SETTINGS =====
+    function loadAdminSettings() {
+        const saved = localStorage.getItem('nxeran_adminSettings');
+        if (saved) {
+            try {
+                adminSettings = JSON.parse(saved);
+            } catch(e) {}
+        }
+    }
+
+    // ===== LOAD AD NETWORK CONFIG =====
+    function loadAdNetworkConfig() {
+        // Admin can override ad network settings via localStorage
+        const saved = localStorage.getItem('nxeran_adNetworkConfig');
+        if (saved) {
+            try {
+                const config = JSON.parse(saved);
+                Object.keys(config).forEach(key => {
+                    if (AD_NETWORKS[key]) {
+                        Object.assign(AD_NETWORKS[key], config[key]);
+                    }
+                });
+            } catch(e) {}
+        }
+    }
+
+    // ===== INIT AD NETWORKS =====
+    function initAdNetworks() {
+        // Adexium (TGAds) - Initialize widget
+        try {
+            if (typeof AdexiumWidget !== 'undefined') {
+                const adexiumWidget = new AdexiumWidget({
+                    wid: "5bc711dc-f3fa-4083-918d-0304c510c77f",
+                    adFormat: "interstitial"
+                });
+                adexiumWidget.autoMode();
+                AD_NETWORKS.adexium.sdkInstance = adexiumWidget;
+            }
+        } catch(e) {
+            console.warn('Adexium SDK not loaded:', e.message);
+        }
+
+        // GigaPub fallback setup
+        if (window.showGiga === undefined && typeof window.AdGigaFallback !== 'undefined') {
+            window.showGiga = () => window.AdGigaFallback();
+        }
+    }
+
+    // ===== USER DATA =====
+    function loadUserData() {
+        const key = 'nxeran_userData_' + (userData.id || 'default');
+        const saved = localStorage.getItem(key);
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                // Merge ad progress separately to handle new networks
+                const existingProgress = parsed.adProgress || {};
+                Object.assign(userData, parsed);
+                // Restore ad progress with defaults for any missing networks
+                userData.adProgress = {
+                    adexium: Object.assign({ watched: 0, claimed: false, claimTime: null, expireTime: null }, existingProgress.adexium || {}),
+                    libtl: Object.assign({ watched: 0, claimed: false, claimTime: null, expireTime: null }, existingProgress.libtl || {}),
+                    adexora: Object.assign({ watched: 0, claimed: false, claimTime: null, expireTime: null }, existingProgress.adexora || {}),
+                    gigapub: Object.assign({ watched: 0, claimed: false, claimTime: null, expireTime: null }, existingProgress.gigapub || {})
+                };
+            } catch(e) {}
+        }
+    }
+
+    function saveUserData() {
+        const key = 'nxeran_userData_' + (userData.id || 'default');
+        localStorage.setItem(key, JSON.stringify(userData));
+        syncWithAdmin();
+    }
+
+    function syncWithAdmin() {
+        const adminData = JSON.parse(localStorage.getItem('nxeran_adminData') || '{}');
+        if (!adminData.users) adminData.users = [];
+        const existing = adminData.users.find(u => u.id == userData.id);
+        if (existing) {
+            existing.balance = userData.balance;
+            existing.totalEarn = userData.totalEarn;
+            existing.todayAds = userData.todayAds;
+            existing.totalAds = userData.totalAds;
+            existing.referrals = userData.referrals ? userData.referrals.length : 0;
+            existing.level = userData.level;
+            existing.name = userData.firstName;
+            existing.username = userData.username;
+            // Save ad progress to admin data
+            existing.adProgress = userData.adProgress;
+        } else {
+            adminData.users.push({
+                id: userData.id,
+                name: userData.firstName,
+                username: userData.username,
+                balance: userData.balance,
+                totalEarn: userData.totalEarn,
+                todayAds: userData.todayAds,
+                totalAds: userData.totalAds,
+                referrals: userData.referrals ? userData.referrals.length : 0,
+                level: userData.level,
+                status: 'active',
+                joined: new Date().toLocaleDateString(),
+                adProgress: userData.adProgress
+            });
+        }
+        localStorage.setItem('nxeran_adminData', JSON.stringify(adminData));
+    }
+
+    // ===== DAILY RESET =====
+    function checkDailyReset() {
+        const today = new Date().toDateString();
+        const lastReset = localStorage.getItem('nxeran_lastReset_' + userData.id);
+        
+        const adminReset = localStorage.getItem('nxeran_forceReset');
+        if (adminReset === 'true') {
+            performDailyReset();
+            localStorage.removeItem('nxeran_forceReset');
+            return;
+        }
+        
+        if (lastReset !== today) {
+            performDailyReset();
+            localStorage.setItem('nxeran_lastReset_' + userData.id, today);
+        }
+    }
+
+    function performDailyReset() {
+        // Reset ad progress for all networks
+        Object.keys(userData.adProgress).forEach(network => {
+            userData.adProgress[network] = {
+                watched: 0,
+                claimed: false,
+                claimTime: null,
+                expireTime: null
+            };
+        });
+        userData.todayEarnings = 0;
+        userData.todayAds = 0;
+        saveUserData();
+        updateAllAdProgress();
+        showNotification('🔄 Daily limits have been reset!');
+    }
+
+    // ===== REFERRAL LINK =====
+    function initReferralLink() {
+        const link = `https://t.me/${CONFIG.botUsername}?start=ref${userData.id}`;
+        userData.referralLink = link;
+        document.getElementById('referralLink').textContent = link;
+    }
+
+    function copyReferral() {
+        navigator.clipboard.writeText(userData.referralLink).then(() => {
+            showNotification('Referral link copied!');
+        });
+    }
+
+    // ===== NAVIGATION =====
+    function navigateTo(section) {
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        
+        const targetSection = document.getElementById('section-' + section);
+        if (targetSection) targetSection.classList.add('active');
+        
+        const navItem = document.querySelector(`.nav-item[data-section="${section}"]`);
+        if (navItem) navItem.classList.add('active');
+        
+        // Refresh RichAds on navigation
+        refreshRichAds(section);
+        
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+    }
+
+    // ===== UPDATE UI =====
+    function updateUI() {
+        const balanceFormatted = userData.balance.toFixed(2);
+        document.getElementById('headerBalance').textContent = balanceFormatted;
+        document.getElementById('homeBalance').textContent = balanceFormatted;
+        document.getElementById('walletBalance').textContent = 'Ⓝ' + balanceFormatted;
+        
+        document.getElementById('todayIncome').textContent = '+Ⓝ' + userData.todayEarnings.toFixed(2);
+        document.getElementById('todayAds').textContent = userData.todayAds;
+        document.getElementById('totalAds').textContent = userData.totalAds;
+        const referralCount = userData.referrals ? userData.referrals.length : 0;
+        document.getElementById('totalReferrals').textContent = referralCount;
+        document.getElementById('walletToday').textContent = '+Ⓝ' + userData.todayEarnings.toFixed(2);
+        document.getElementById('walletTotal').textContent = 'Ⓝ' + userData.totalEarn.toFixed(2);
+        document.getElementById('refCount').textContent = referralCount;
+        document.getElementById('refEarnings').textContent = 'Ⓝ' + (referralCount * 0.1).toFixed(2);
+        document.getElementById('referBadge').textContent = referralCount > 0 ? referralCount : '';
+        
+        const badges = {
+            'Bronze': '🌟 New Member',
+            'Silver': '🔥 Active User',
+            'Gold': '💎 Premium Member',
+            'Platinum': '👑 Top Earner',
+            'Diamond': '🏆 Elite Member',
+            'Master': '⭐ Master'
+        };
+        document.getElementById('profileBadge').textContent = badges[userData.level] || '🌟 New Member';
+        
+        const pending = userData.withdrawHistory ? 
+            userData.withdrawHistory.filter(w => w.status === 'pending').reduce((sum, w) => sum + w.amount, 0) : 0;
+        document.getElementById('walletPending').textContent = 'Ⓝ' + pending.toFixed(2);
+        
+        updateAllAdProgress();
+        saveUserData();
+    }
+
+    // ===== UPDATE AD PROGRESS =====
+    function updateAllAdProgress() {
+        Object.keys(AD_NETWORKS).forEach(network => {
+            updateAdProgress(network);
+        });
+    }
+
+    function updateAdProgress(network) {
+        const config = AD_NETWORKS[network];
+        const progress = userData.adProgress[network];
+        const watched = progress.watched;
+        const max = config.adsPerCycle;
+        const percentage = Math.min((watched / max) * 100, 100);
+        
+        // Update progress bar
+        const progressBar = document.getElementById(network + 'Progress');
+        if (progressBar) progressBar.style.width = percentage + '%';
+        
+        // Update count
+        const countEl = document.getElementById(network + 'Count');
+        if (countEl) countEl.textContent = `${watched}/${max}`;
+        
+        // Update status
+        const statusEl = document.getElementById(network + 'Status');
+        const watchBtn = document.getElementById(network + 'WatchBtn');
+        const claimBtn = document.getElementById(network + 'ClaimBtn');
+        const cooldownEl = document.getElementById(network + 'Cooldown');
+        
+        if (progress.claimed) {
+            // Check if cooldown is over
+            const now = Date.now();
+            if (progress.expireTime && now < progress.expireTime) {
+                // Still in cooldown
+                if (statusEl) statusEl.textContent = 'Cooldown';
+                if (watchBtn) watchBtn.style.display = 'none';
+                if (claimBtn) claimBtn.style.display = 'none';
+                updateCooldownTimer(network);
+            } else {
+                // Cooldown over, reset for new cycle
+                progress.claimed = false;
+                progress.watched = 0;
+                progress.claimTime = null;
+                progress.expireTime = null;
+                if (statusEl) statusEl.textContent = 'Ready';
+                if (watchBtn) watchBtn.style.display = 'inline-block';
+                if (watchBtn) watchBtn.disabled = false;
+                if (claimBtn) claimBtn.style.display = 'none';
+                if (cooldownEl) cooldownEl.textContent = '';
+                saveUserData();
+            }
+        } else if (watched >= max) {
+            // Ready to claim
+            if (statusEl) statusEl.textContent = 'Claim Ready!';
+            if (watchBtn) watchBtn.style.display = 'none';
+            if (claimBtn) claimBtn.style.display = 'inline-block';
+            if (claimBtn) claimBtn.disabled = false;
+            if (cooldownEl) cooldownEl.textContent = '';
+        } else {
+            // Still watching
+            if (statusEl) statusEl.textContent = 'Ready';
+            if (watchBtn) watchBtn.style.display = 'inline-block';
+            if (watchBtn) watchBtn.disabled = isAdRunning || userData.isBanned || !config.enabled;
+            if (claimBtn) claimBtn.style.display = 'none';
+            if (cooldownEl) cooldownEl.textContent = '';
+        }
+    }
+
+    function updateCooldownTimer(network) {
+        const progress = userData.adProgress[network];
+        const cooldownEl = document.getElementById(network + 'Cooldown');
+        
+        if (!progress.expireTime || !cooldownEl) return;
+        
+        const updateTimer = () => {
+            const now = Date.now();
+            const remaining = progress.expireTime - now;
+            
+            if (remaining <= 0) {
+                cooldownEl.textContent = '';
+                updateAdProgress(network);
+                return;
+            }
+            
+            const hours = Math.floor(remaining / (1000 * 60 * 60));
+            const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+            
+            cooldownEl.textContent = `Next claim in: ${hours}h ${minutes}m ${seconds}s`;
+        };
+        
+        updateTimer();
+        // Update every second
+        const intervalId = setInterval(() => {
+            const now = Date.now();
+            if (now >= progress.expireTime) {
+                clearInterval(intervalId);
+                updateAdProgress(network);
+            } else {
+                updateTimer();
+            }
+        }, 1000);
+        
+        // Store interval ID to prevent duplicates
+        if (!cooldownEl._intervalId) {
+            cooldownEl._intervalId = intervalId;
+        }
+    }
+
+    function startCooldownTimers() {
+        Object.keys(AD_NETWORKS).forEach(network => {
+            const progress = userData.adProgress[network];
+            if (progress.claimed && progress.expireTime && Date.now() < progress.expireTime) {
+                updateCooldownTimer(network);
+            }
+        });
+    }
+
+    // ===== WATCH AD =====
+    async function watchAd(network) {
+        if (isAdRunning) {
+            showNotification('Please wait for current ad to finish');
+            return;
+        }
+        
+        if (userData.isBanned) {
+            showNotification('⛔ Your account is banned!');
+            return;
+        }
+        
+        const config = AD_NETWORKS[network];
+        if (!config.enabled) {
+            showNotification('This network is currently disabled');
+            return;
+        }
+        
+        const progress = userData.adProgress[network];
+        
+        if (progress.claimed) {
+            if (progress.expireTime && Date.now() < progress.expireTime) {
+                showNotification(`Cooldown active. Please wait.`);
+                return;
+            }
+        }
+        
+        if (progress.watched >= config.adsPerCycle) {
+            showNotification('Claim your reward first!');
+            return;
+        }
+        
+        isAdRunning = true;
+        const watchBtn = document.getElementById(network + 'WatchBtn');
+        if (watchBtn) {
+            watchBtn.disabled = true;
+            watchBtn.textContent = '⏳ Loading...';
+        }
+        
+        try {
+            // Call the appropriate ad function
+            await showAdForNetwork(network);
+            
+            // Increment watched count
+            progress.watched += 1;
+            userData.todayAds += 1;
+            userData.totalAds += 1;
+            
+            // Add transaction
+            userData.transactions.unshift({
+                type: 'ad_watch',
+                title: `${config.name} Ad #${progress.watched}`,
+                amount: 0,
+                date: new Date().toLocaleString(),
+                icon: 'fa-play',
+                network: network
+            });
+            
+            saveUserData();
+            updateAdProgress(network);
+            updateUI();
+            renderRecentActivity();
+            
+            // Show progress notification
+            const remaining = config.adsPerCycle - progress.watched;
+            showNotification(`📺 ${config.name}: ${progress.watched}/${config.adsPerCycle} (${remaining} left for claim)`);
+            
+        } catch (error) {
+            console.error(`Ad failed for ${network}:`, error);
+            showNotification('Ad failed. Please try again.');
+        } finally {
+            isAdRunning = false;
+            if (watchBtn) {
+                watchBtn.disabled = false;
+                watchBtn.textContent = '▶ Watch Ad';
+            }
+        }
+    }
+
+    // ===== SHOW AD FOR NETWORK =====
+    async function showAdForNetwork(network) {
+        switch(network) {
+            case 'adexium':
+                return showAdexiumAd();
+            case 'libtl':
+                return showLibTLAd();
+            case 'adexora':
+                return showAdexoraAd();
+            case 'gigapub':
+                return showGigaPubAd();
+            default:
+                throw new Error('Unknown network');
+        }
+    }
+
+    // ===== ADEXIUM AD =====
+    async function showAdexiumAd() {
+        return new Promise((resolve, reject) => {
+            try {
+                // Adexium uses autoMode, so we trigger it manually
+                if (typeof AdexiumWidget !== 'undefined') {
+                    const widget = new AdexiumWidget({
+                        wid: "5bc711dc-f3fa-4083-918d-0304c510c77f",
+                        adFormat: "interstitial"
+                    });
+                    widget.show().then(() => {
+                        resolve(true);
+                    }).catch((e) => {
+                        // If show() fails, try autoMode
+                        widget.autoMode();
+                        // Give it some time and resolve
+                        setTimeout(() => resolve(true), 5000);
+                    });
+                } else {
+                    // Fallback: simulate ad completion after delay
+                    setTimeout(() => resolve(true), 3000);
+                }
+            } catch(e) {
+                // Fallback for testing
+                setTimeout(() => resolve(true), 3000);
+            }
+        });
+    }
+
+    // ===== LIBTL AD =====
+    async function showLibTLAd() {
+        return new Promise((resolve, reject) => {
+            try {
+                if (typeof show_9388728 === 'function') {
+                    show_9388728()
+                        .then(() => resolve(true))
+                        .catch((e) => {
+                            console.error('LibTL ad error:', e);
+                            // Try popup format
+                            if (typeof show_9388728 === 'function') {
+                                show_9388728("pop")
+                                    .then(() => resolve(true))
+                                    .catch(() => {
+                                        // Fallback
+                                        setTimeout(() => resolve(true), 3000);
+                                    });
+                            } else {
+                                setTimeout(() => resolve(true), 3000);
+                            }
+                        });
+                } else {
+                    // SDK not loaded, use fallback
+                    setTimeout(() => resolve(true), 3000);
+                }
+            } catch(e) {
+                setTimeout(() => resolve(true), 3000);
+            }
+        });
+    }
+
+    // ===== ADEXORA AD =====
+    async function showAdexoraAd() {
+        return new Promise((resolve, reject) => {
+            try {
+                if (typeof window.showAdexora === 'function') {
+                    window.showAdexora()
+                        .then(() => resolve(true))
+                        .catch((e) => {
+                            console.error('Adexora ad error:', e);
+                            setTimeout(() => resolve(true), 3000);
+                        });
+                } else {
+                    setTimeout(() => resolve(true), 3000);
+                }
+            } catch(e) {
+                setTimeout(() => resolve(true), 3000);
+            }
+        });
+    }
+
+    // ===== GIGAPUB AD =====
+    async function showGigaPubAd() {
+        return new Promise((resolve, reject) => {
+            try {
+                if (typeof window.showGiga === 'function') {
+                    window.showGiga()
+                        .then(() => resolve(true))
+                        .catch((e) => {
+                            console.error('GigaPub ad error:', e);
+                            setTimeout(() => resolve(true), 3000);
+                        });
+                } else {
+                    setTimeout(() => resolve(true), 3000);
+                }
+            } catch(e) {
+                setTimeout(() => resolve(true), 3000);
+            }
+        });
+    }
+
+    // ===== CLAIM REWARD =====
+    function claimReward(network) {
+        if (userData.isBanned) {
+            showNotification('⛔ Your account is banned!');
+            return;
+        }
+        
+        const config = AD_NETWORKS[network];
+        const progress = userData.adProgress[network];
+        
+        // Verify claim conditions
+        if (progress.claimed) {
+            if (progress.expireTime && Date.now() < progress.expireTime) {
+                showNotification('Cooldown still active!');
+                return;
+            }
+        }
+        
+        if (progress.watched < config.adsPerCycle) {
+            showNotification(`You need ${config.adsPerCycle} ads to claim!`);
+            return;
+        }
+        
+        // Process claim
+        const rewardAmount = config.rewardAmount;
+        
+        // Update user balance
+        userData.balance += rewardAmount;
+        userData.todayEarnings += rewardAmount;
+        userData.totalEarn += rewardAmount;
+        
+        // Update ad progress
+        progress.claimed = true;
+        progress.claimTime = Date.now();
+        progress.expireTime = Date.now() + (config.cooldownHours * 60 * 60 * 1000);
+        
+        // Add transaction
+        userData.transactions.unshift({
+            type: 'claim',
+            title: `Claimed ${config.name} Reward`,
+            amount: rewardAmount,
+            date: new Date().toLocaleString(),
+            icon: 'fa-gift',
+            network: network
+        });
+        
+        saveUserData();
+        updateUI();
+        updateAdProgress(network);
+        renderRecentActivity();
+        
+        // Show claim success modal
+        document.getElementById('claimAmount').textContent = `+Ⓝ${rewardAmount.toFixed(2)}`;
+        document.getElementById('claimNetwork').textContent = config.name;
+        document.getElementById('claimCooldown').textContent = `${config.cooldownHours}:00:00`;
+        document.getElementById('claimModal').classList.add('active');
+        
+        // Send notification to admin
+        sendMessageToAdmin(`🎁 User ${userData.firstName} (${userData.id}) claimed Ⓝ${rewardAmount} from ${config.name}`);
+        
+        // Start cooldown timer
+        updateCooldownTimer(network);
+        
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        }
+        
+        showNotification(`🎉 Claimed Ⓝ${rewardAmount.toFixed(2)} from ${config.name}!`);
+    }
+
+    // ===== SEND MESSAGE TO ADMIN =====
+    function sendMessageToAdmin(message) {
+        try {
+            const url = `https://api.telegram.org/bot${CONFIG.botApiToken}/sendMessage`;
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: CONFIG.adminId,
+                    text: `📢 NX ERAN Notification\n\n${message}`,
+                    parse_mode: 'HTML'
+                })
+            }).catch(() => {});
+        } catch(e) {}
+    }
+
+    // ===== RECENT ACTIVITY =====
+    function renderRecentActivity() {
+        const container = document.getElementById('recentActivity');
+        const transactions = userData.transactions || [];
+        
+        if (transactions.length === 0) {
+            container.innerHTML = `
+                <div class="activity-item">
+                    <div class="left">
+                        <div class="icon"><i class="fas fa-info"></i></div>
+                        <div class="info">
+                            <div class="title">No activity yet</div>
+                            <div class="time">Start earning now!</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = transactions.slice(0, 10).map(t => {
+            const isPositive = t.amount > 0;
+            return `
+                <div class="activity-item">
+                    <div class="left">
+                        <div class="icon"><i class="fas ${t.icon || 'fa-coins'}"></i></div>
+                        <div class="info">
+                            <div class="title">${t.title}</div>
+                            <div class="time">${t.date || 'Just now'}</div>
+                        </div>
+                    </div>
+                    <div class="amount ${isPositive ? 'green' : 'red'}">
+                        ${isPositive ? '+' : ''}Ⓝ${Math.abs(t.amount).toFixed(2)}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ===== WITHDRAW HISTORY =====
+    function renderWithdrawHistory() {
+        const container = document.getElementById('withdrawHistory');
+        const history = userData.withdrawHistory || [];
+        
+        if (history.length === 0) {
+            container.innerHTML = `
+                <div class="activity-item">
+                    <div class="left">
+                        <div class="icon"><i class="fas fa-clock"></i></div>
+                        <div class="info">
+                            <div class="title">No withdraw requests</div>
+                            <div class="time">Your history will appear here</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = history.map(w => {
+            const statusColors = {
+                'pending': 'gold',
+                'completed': 'green',
+                'rejected': 'red'
+            };
+            return `
+                <div class="activity-item">
+                    <div class="left">
+                        <div class="icon"><i class="fas fa-wallet"></i></div>
+                        <div class="info">
+                            <div class="title">${w.method} - ${w.status}</div>
+                            <div class="time">${w.date} • ${w.account || ''}</div>
+                        </div>
+                    </div>
+                    <div class="amount ${statusColors[w.status] || ''}">-Ⓝ${w.amount.toFixed(2)}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ===== RICHADS INIT =====
+    function initRichAds() {
+        // RichAds are already integrated via the script in head
+        // We just need to ensure placements are visible
+        const richadsEnabled = adminSettings.richadsEnabled !== false;
+        const adsPerPage = adminSettings.richadsPerPage || 2;
+        
+        document.querySelectorAll('.richads-container').forEach(container => {
+            if (!richadsEnabled) {
+                container.style.display = 'none';
+            } else {
+                container.style.display = 'flex';
+            }
+        });
+    }
+
+    function refreshRichAds(section) {
+        // Refresh RichAds placements when navigating
+        // The TelegramAdsController handles this automatically
+        try {
+            if (window.TelegramAdsController) {
+                window.TelegramAdsController.refreshAds();
+            }
+        } catch(e) {}
+    }
+
+    // ===== MODALS =====
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+
+    // ===== NOTIFICATION =====
+    function showNotification(message) {
+        if (!userData.settings || !userData.settings.notifications) return;
+        
+        const existing = document.querySelector('.toast-notification');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // ===== KEYBOARD SHORTCUTS =====
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay.active').forEach(el => {
+                el.classList.remove('active');
+            });
+        }
+    });
+
+    // ===== ADMIN PANEL FUNCTIONS (for external admin panel) =====
+    // These functions can be called from an admin panel to update settings
+    window.NxEranAdmin = {
+        // Update ad network configuration
+        updateAdNetworkConfig: function(network, config) {
+            if (AD_NETWORKS[network]) {
+                Object.assign(AD_NETWORKS[network], config);
+                const saved = localStorage.getItem('nxeran_adNetworkConfig') || '{}';
+                const parsed = JSON.parse(saved);
+                parsed[network] = config;
+                localStorage.setItem('nxeran_adNetworkConfig', JSON.stringify(parsed));
+                updateAllAdProgress();
+                showNotification(`Updated ${network} configuration`);
+            }
+        },
+        
+        // Force daily reset for all users
+        forceDailyReset: function() {
+            localStorage.setItem('nxeran_forceReset', 'true');
+            performDailyReset();
+            showNotification('All users ad progress has been reset');
+        },
+        
+        // Toggle RichAds
+        toggleRichAds: function(enabled) {
+            adminSettings.richadsEnabled = enabled;
+            localStorage.setItem('nxeran_adminSettings', JSON.stringify(adminSettings));
+            initRichAds();
+        },
+        
+        // Set RichAds per page
+        setRichAdsPerPage: function(count) {
+            adminSettings.richadsPerPage = count;
+            localStorage.setItem('nxeran_adminSettings', JSON.stringify(adminSettings));
+        },
+        
+        // Get all user data (for admin panel)
+        getAllUserData: function() {
+            return JSON.parse(localStorage.getItem('nxeran_adminData') || '{}');
+        },
+        
+        // Ban/Unban user
+        setUserStatus: function(userId, status) {
+            const adminData = JSON.parse(localStorage.getItem('nxeran_adminData') || '{}');
+            if (adminData.users) {
+                const user = adminData.users.find(u => u.id == userId);
+                if (user) {
+                    user.status = status;
+                    localStorage.setItem('nxeran_adminData', JSON.stringify(adminData));
+                }
+            }
+        }
+    };
+
+    console.log('🚀 NX ERAN Loaded Successfully!');
+    console.log('📱 Bot: @' + CONFIG.botUsername);
+    console.log('💰 Currency: ' + CONFIG.currency);
+    console.log('📺 Ad Networks:', Object.keys(AD_NETWORKS).join(', '));
+    console.log('👑 Admin: ' + CONFIG.adminUsername);
+    console.log('🔧 Admin API available at window.NxEranAdmin');
+</script>
+</body>
+</html>
