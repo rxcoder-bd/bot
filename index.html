@@ -1,0 +1,2414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>NX Earn</title>
+    
+    <!-- Font Awesome 6 (Pro Style) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- GigaPub SDK -->
+    <script src="https://ad.gigapub.tech/script?id=1476"></script>
+    
+    <!-- RichAds SDK (Company Revenue) -->
+    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+    <script>
+        // RichAds Initialize - App 1
+        window.TelegramAdsController = new TelegramAdsController();
+        window.TelegramAdsController.initialize({
+            pubId: "985872",
+            appId: "3639",
+        });
+        
+        // RichAds Initialize - App 2
+        window.TelegramAdsController2 = new TelegramAdsController();
+        window.TelegramAdsController2.initialize({
+            pubId: "985872",
+            appId: "3640",
+        });
+    </script>
+
+    <style>
+        /* ============================================================
+           ROOT VARIABLES - Light Theme with Blue & Green
+           ============================================================ */
+        :root {
+            --primary: #2563EB;
+            --primary-light: #60A5FA;
+            --primary-dark: #1D4ED8;
+            --secondary: #059669;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --info: #3B82F6;
+            
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #F1F5F9;
+            --bg-card: rgba(255, 255, 255, 0.8);
+            --bg-glass: rgba(255, 255, 255, 0.6);
+            
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+            
+            --border-glass: rgba(255, 255, 255, 0.3);
+            --border-card: rgba(0, 0, 0, 0.06);
+            
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-lg: 24px;
+            
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Dark Mode */
+        .dark-mode {
+            --bg-primary: #0A0618;
+            --bg-secondary: #120B24;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-glass: rgba(255, 255, 255, 0.06);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-card: rgba(255, 255, 255, 0.06);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        /* ============================================================
+           APP CONTAINER
+           ============================================================ */
+        .app-container {
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 90px;
+            position: relative;
+        }
+
+        /* ============================================================
+           LOADING
+           ============================================================ */
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(37, 99, 235, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loader-text {
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================================
+           GLASS CLASSES
+           ============================================================ */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-card);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ============================================================
+           UTILITY
+           ============================================================ */
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-muted); }
+        .text-secondary { color: var(--text-secondary); }
+        .flex { display: flex; }
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        .flex-between { display: flex; align-items: center; justify-content: space-between; }
+        .flex-col { flex-direction: column; }
+        .gap-8 { gap: 8px; }
+        .gap-12 { gap: 12px; }
+        .gap-16 { gap: 16px; }
+        .mt-8 { margin-top: 8px; }
+        .mt-12 { margin-top: 12px; }
+        .mt-16 { margin-top: 16px; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-12 { margin-bottom: 12px; }
+        .mb-16 { margin-bottom: 16px; }
+        .w-full { width: 100%; }
+        .animate-fade-up { animation: fadeUp 0.4s ease-out; }
+        .animate-fade-scale { animation: fadeScale 0.3s ease-out; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header {
+            padding: 12px 16px 10px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-icon {
+            font-size: 20px;
+        }
+
+        .brand-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .header-balance {
+            background: var(--bg-glass);
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .balance-icon {
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid var(--border-glass);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .user-id {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* ============================================================
+           BOTTOM NAV
+           ============================================================ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 24px);
+            max-width: 400px;
+            padding: 6px 4px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font);
+            position: relative;
+            min-width: 48px;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item span {
+            font-size: 10px;
+            margin-top: 2px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--text-primary);
+        }
+
+        .nav-item.active i {
+            color: var(--primary);
+        }
+
+        .nav-item.active span {
+            color: var(--primary);
+        }
+
+        .nav-indicator {
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .nav-item .badge {
+            position: absolute;
+            top: -2px;
+            right: 2px;
+            background: var(--danger);
+            color: white;
+            font-size: 8px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ============================================================
+           PAGES
+           ============================================================ */
+        .page {
+            display: none;
+            padding: 16px 16px 0;
+            animation: fadeScale 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* ============================================================
+           HOME PAGE
+           ============================================================ */
+        .balance-big {
+            text-align: center;
+            padding: 8px 0 4px;
+        }
+
+        .balance-big .amount {
+            font-size: 38px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .balance-big .currency {
+            font-size: 28px;
+            color: var(--accent);
+            -webkit-text-fill-color: var(--accent);
+            margin-right: 2px;
+        }
+
+        .balance-big .label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .stat-item {
+            background: var(--bg-glass);
+            border-radius: var(--radius-sm);
+            padding: 10px 4px;
+            text-align: center;
+            border: 1px solid var(--border-glass);
+        }
+
+        .stat-item .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .stat-item .stat-value.blue { color: var(--primary); }
+        .stat-item .stat-value.green { color: var(--secondary); }
+        .stat-item .stat-value.gold { color: var(--accent); }
+        .stat-item .stat-value.pink { color: #EC4899; }
+
+        .stat-item .stat-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Quick Actions */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .quick-btn {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            padding: 12px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(37, 99, 235, 0.05);
+            border-color: var(--primary);
+        }
+
+        .quick-btn i {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .quick-btn .label {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .quick-btn.blue i { color: var(--primary); }
+        .quick-btn.green i { color: var(--secondary); }
+        .quick-btn.gold i { color: var(--accent); }
+        .quick-btn.pink i { color: #EC4899; }
+
+        /* Activity */
+        .activity-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-card);
+            gap: 8px;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .activity-item .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .activity-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .activity-item .info .title {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .activity-item .info .time {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .activity-item .amount {
+            font-weight: 600;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .activity-item .amount.green { color: var(--success); }
+        .activity-item .amount.red { color: var(--danger); }
+        .activity-item .amount.gold { color: var(--accent); }
+
+        /* ============================================================
+           TASKS PAGE
+           ============================================================ */
+        .task-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-glass);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glass);
+            margin-bottom: 8px;
+        }
+
+        .task-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .task-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .task-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-info .name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .task-info .details {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .task-info .details span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .task-btn {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .task-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .task-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .task-btn.completed {
+            background: var(--success);
+        }
+
+        /* Ad Network Grid */
+        .ad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .ad-btn {
+            padding: 10px 4px;
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            background: var(--bg-glass);
+            color: var(--text-primary);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            font-size: 11px;
+            font-family: var(--font);
+        }
+
+        .ad-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .ad-btn i {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .ad-btn .limit {
+            font-size: 9px;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .ad-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .ad-btn.giga { border-color: #FF6B35; }
+        .ad-btn.giga i { color: #FF6B35; }
+        .ad-btn.monetag { border-color: #2D9CDB; }
+        .ad-btn.monetag i { color: #2D9CDB; }
+        .ad-btn.adexora { border-color: #27AE60; }
+        .ad-btn.adexora i { color: #27AE60; }
+
+        /* ============================================================
+           WALLET PAGE
+           ============================================================ */
+        .withdraw-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: var(--bg-glass);
+            border-radius: var(--radius-sm);
+            margin-bottom: 6px;
+            cursor: pointer;
+            border: 1px solid var(--border-glass);
+            transition: all 0.2s ease;
+        }
+
+        .withdraw-option:hover {
+            background: rgba(37, 99, 235, 0.05);
+            border-color: var(--primary);
+        }
+
+        .withdraw-option i {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .withdraw-option .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .withdraw-option .info strong {
+            font-size: 14px;
+        }
+
+        .withdraw-option .info span {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .withdraw-option .arrow {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            max-width: 380px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: fadeScale 0.3s ease;
+        }
+
+        .modal .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .modal .modal-close {
+            float: right;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-glass);
+            background: var(--bg-glass);
+            color: var(--text-primary);
+            font-size: 15px;
+            margin-bottom: 10px;
+            font-family: var(--font);
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal .modal-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .modal .modal-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .modal .modal-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 12px;
+            z-index: 999;
+            font-size: 13px;
+            font-weight: 500;
+            max-width: 90%;
+            text-align: center;
+            animation: fadeUp 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ============================================================
+           SPIN WHEEL
+           ============================================================ */
+        .spin-container {
+            position: relative;
+            width: 100%;
+            max-width: 260px;
+            margin: 0 auto 16px;
+        }
+
+        .spin-wheel {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #2563EB 0% 12.5%,
+                #059669 12.5% 25%,
+                #F59E0B 25% 37.5%,
+                #EC4899 37.5% 50%,
+                #2563EB 50% 62.5%,
+                #059669 62.5% 75%,
+                #F59E0B 75% 87.5%,
+                #EC4899 87.5% 100%
+            );
+            border: 3px solid var(--border-glass);
+            box-shadow: var(--shadow-lg);
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        .spin-wheel .pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: var(--accent);
+            filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.5));
+        }
+
+        .spin-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 400px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+            .quick-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .ad-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stat-item .stat-value {
+                font-size: 14px;
+            }
+            .balance-big .amount {
+                font-size: 30px;
+            }
+            .header-balance {
+                font-size: 12px;
+                padding: 3px 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .nav-item {
+                min-width: 36px;
+                padding: 4px 6px;
+            }
+            .nav-item i {
+                font-size: 16px;
+            }
+            .nav-item span {
+                font-size: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOADING SCREEN
+     ============================================================ -->
+<div id="loader" class="loader-container">
+    <div class="loader"></div>
+    <div class="loader-text">Loading NX Earn...</div>
+</div>
+
+<!-- ============================================================
+     APP
+     ============================================================ -->
+<div id="app" class="app-container" style="display:none;">
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-top">
+            <div class="header-brand">
+                <span class="brand-icon">⚡</span>
+                <span class="brand-name gradient-text">NX Earn</span>
+            </div>
+            <div class="header-balance">
+                <i class="fas fa-wallet balance-icon"></i>
+                <span id="headerBalance">Ⓝ0.00</span>
+            </div>
+        </div>
+        <div class="header-user">
+            <div class="avatar" id="headerAvatar">
+                <span id="avatarText">U</span>
+                <img id="avatarImg" style="display:none;" alt="avatar" />
+            </div>
+            <div class="user-info">
+                <span class="user-name" id="userName">User</span>
+                <span class="user-id" id="userId">ID: Loading...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== CONTENT ===== -->
+    <div class="content">
+
+        <!-- ===== HOME PAGE ===== -->
+        <div class="page active" id="page-home">
+            <!-- Balance -->
+            <div class="glass-card">
+                <div class="balance-big">
+                    <div class="label">Total Balance</div>
+                    <div class="amount">
+                        <span class="currency">Ⓝ</span>
+                        <span id="homeBalance">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid" style="margin-top:12px;">
+                <div class="stat-item">
+                    <div class="stat-value green" id="todayEarn">+Ⓝ0.00</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value blue" id="todayAds">0</div>
+                    <div class="stat-label">Ads Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value gold" id="totalAds">0</div>
+                    <div class="stat-label">Total Ads</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value pink" id="referrals">0</div>
+                    <div class="stat-label">Referrals</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="glass-card">
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px;">
+                    <i class="fas fa-bolt" style="color:var(--primary);"></i> Quick Actions
+                </div>
+                <div class="quick-grid">
+                    <div class="quick-btn blue" onclick="navigateTo('tasks')">
+                        <i class="fas fa-play"></i>
+                        <span class="label">Watch Ads</span>
+                    </div>
+                    <div class="quick-btn gold" onclick="openSpin()">
+                        <i class="fas fa-spinner"></i>
+                        <span class="label">Lucky Spin</span>
+                    </div>
+                    <div class="quick-btn green" onclick="navigateTo('wallet')">
+                        <i class="fas fa-wallet"></i>
+                        <span class="label">Wallet</span>
+                    </div>
+                    <div class="quick-btn pink" onclick="navigateTo('refer')">
+                        <i class="fas fa-users"></i>
+                        <span class="label">Refer</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="glass-card">
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px; display:flex; justify-content:space-between;">
+                    <span><i class="fas fa-clock" style="color:var(--primary);"></i> Recent Activity</span>
+                    <span style="font-size:11px; color:var(--text-muted); cursor:pointer;" onclick="navigateTo('wallet')">View All</span>
+                </div>
+                <div id="recentActivity">
+                    <div class="activity-item">
+                        <div class="left">
+                            <div class="icon"><i class="fas fa-info"></i></div>
+                            <div class="info">
+                                <div class="title">No activity yet</div>
+                                <div class="time">Start earning now!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banner Ads (4 per page) -->
+            <div style="margin-top:12px;">
+                <!-- Banner 1: 320x50 - Top -->
+                <div id="banner1" style="margin-bottom:8px;"></div>
+                <!-- Banner 2: 300x250 - Upper Middle -->
+                <div id="banner2" style="margin-bottom:8px;"></div>
+                <!-- Banner 3: 320x50 - Lower Middle -->
+                <div id="banner3" style="margin-bottom:8px;"></div>
+                <!-- Banner 4: 300x250 - Bottom -->
+                <div id="banner4"></div>
+            </div>
+        </div>
+
+        <!-- ===== TASKS PAGE ===== -->
+        <div class="page" id="page-tasks">
+            <h1 class="page-title">📋 Tasks</h1>
+            <p class="page-subtitle">Complete tasks and earn rewards</p>
+
+            <!-- Watch Ads -->
+            <div class="glass-card">
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px;">
+                    <i class="fas fa-play" style="color:var(--primary);"></i> Watch Ads
+                </div>
+                <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">
+                    Each ad gives Ⓝ1 reward. 30 ads per network daily.
+                </p>
+                <div class="ad-grid">
+                    <button class="ad-btn giga" onclick="watchAd('gigapub')" id="gigaBtn">
+                        <i class="fas fa-bolt"></i>
+                        GigaPub
+                        <span class="limit"><span id="gigaRemaining">30</span>/30</span>
+                    </button>
+                    <button class="ad-btn monetag" onclick="watchAd('monetag')" id="monetagBtn">
+                        <i class="fas fa-fire"></i>
+                        Monetag
+                        <span class="limit"><span id="monetagRemaining">30</span>/30</span>
+                    </button>
+                    <button class="ad-btn adexora" onclick="watchAd('adexora')" id="adexoraBtn">
+                        <i class="fas fa-star"></i>
+                        Adexora
+                        <span class="limit"><span id="adexoraRemaining">30</span>/30</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lucky Spin -->
+            <div class="glass-card">
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px;">
+                    <i class="fas fa-spinner" style="color:var(--accent);"></i> Lucky Spin
+                </div>
+                <div class="task-card">
+                    <div class="task-icon" style="background:linear-gradient(135deg, #F59E0B, #EC4899);">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <div class="task-info">
+                        <div class="name">Lucky Spin</div>
+                        <div class="details">
+                            <span><i class="fas fa-coins"></i> Up to Ⓝ3</span>
+                            <span><i class="fas fa-layer-group"></i> <span id="spinRemaining">30</span>/30</span>
+                        </div>
+                    </div>
+                    <button class="task-btn" onclick="openSpin()" style="background:linear-gradient(135deg, #F59E0B, #EC4899);">
+                        Spin
+                    </button>
+                </div>
+            </div>
+
+            <!-- Short Tasks -->
+            <div class="glass-card">
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px;">
+                    <i class="fas fa-tasks" style="color:var(--secondary);"></i> Short Tasks
+                </div>
+                <div id="shortTasks">
+                    <div class="task-card">
+                        <div class="task-icon" style="background:linear-gradient(135deg, var(--primary), var(--secondary));">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="task-info">
+                            <div class="name">No tasks available</div>
+                            <div class="details">Check back later</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banner Ads -->
+            <div style="margin-top:12px;">
+                <div id="banner1-tasks" style="margin-bottom:8px;"></div>
+                <div id="banner2-tasks" style="margin-bottom:8px;"></div>
+                <div id="banner3-tasks" style="margin-bottom:8px;"></div>
+                <div id="banner4-tasks"></div>
+            </div>
+        </div>
+
+        <!-- ===== WALLET PAGE ===== -->
+        <div class="page" id="page-wallet">
+            <h1 class="page-title">💰 Wallet</h1>
+            <p class="page-subtitle">Manage your earnings</p>
+
+            <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);">
+                <div class="stat-item">
+                    <div class="stat-value blue" id="walletBalance">Ⓝ0.00</div>
+                    <div class="stat-label">Balance</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value green" id="walletTotal">Ⓝ0.00</div>
+                    <div class="stat-label">Total Earned</div>
+                </div>
+            </div>
+
+            <!-- Withdraw -->
+            <div class="glass-card">
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px;">
+                    <i class="fas fa-credit-card" style="color:var(--primary);"></i> Withdraw
+                </div>
+                <div class="withdraw-option" onclick="openWithdraw('bkash')">
+                    <i class="fas fa-mobile-alt" style="color:var(--primary);"></i>
+                    <div class="info">
+                        <strong>bKash</strong>
+                        <span>Min: Ⓝ20</span>
+                    </div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+                <div class="withdraw-option" onclick="openWithdraw('nagad')">
+                    <i class="fas fa-university" style="color:var(--secondary);"></i>
+                    <div class="info">
+                        <strong>Nagad</strong>
+                        <span>Min: Ⓝ20</span>
+                    </div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+                <div class="withdraw-option" onclick="openWithdraw('binance')">
+                    <i class="fab fa-bitcoin" style="color:var(--accent);"></i>
+                    <div class="info">
+                        <strong>Binance</strong>
+                        <span>No Fee</span>
+                    </div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+            </div>
+
+            <!-- History -->
+            <div class="glass-card">
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px;">
+                    <i class="fas fa-history" style="color:var(--primary);"></i> Transaction History
+                </div>
+                <div id="transactionHistory">
+                    <div class="activity-item">
+                        <div class="left">
+                            <div class="icon"><i class="fas fa-clock"></i></div>
+                            <div class="info">
+                                <div class="title">No transactions</div>
+                                <div class="time">Start earning to see history</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banner Ads -->
+            <div style="margin-top:12px;">
+                <div id="banner1-wallet" style="margin-bottom:8px;"></div>
+                <div id="banner2-wallet" style="margin-bottom:8px;"></div>
+                <div id="banner3-wallet" style="margin-bottom:8px;"></div>
+                <div id="banner4-wallet"></div>
+            </div>
+        </div>
+
+        <!-- ===== REFER PAGE ===== -->
+        <div class="page" id="page-refer">
+            <h1 class="page-title">👥 Refer & Earn</h1>
+            <p class="page-subtitle">Invite friends and earn 10% of their earnings</p>
+
+            <div class="glass-card">
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px;">
+                    <i class="fas fa-link" style="color:var(--primary);"></i> Your Referral Link
+                </div>
+                <div style="background:var(--bg-glass); border-radius:var(--radius-sm); padding:12px; text-align:center; border:1px solid var(--border-glass); word-break:break-all;">
+                    <div id="referralLink" style="font-size:12px; font-weight:600; color:var(--primary);">Loading...</div>
+                    <button class="task-btn" onclick="copyReferral()" style="margin-top:8px; background:var(--primary);">
+                        <i class="fas fa-copy"></i> Copy Link
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value gold" id="refTotal">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value green" id="refToday">0</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value blue" id="refEarned">Ⓝ0</div>
+                    <div class="stat-label">Earned</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value pink" id="refPending">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px;">
+                    <i class="fas fa-users" style="color:var(--primary);"></i> Your Referrals
+                </div>
+                <div id="referralList">
+                    <div class="activity-item">
+                        <div class="left">
+                            <div class="icon"><i class="fas fa-user"></i></div>
+                            <div class="info">
+                                <div class="title">No referrals yet</div>
+                                <div class="time">Start inviting friends!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banner Ads -->
+            <div style="margin-top:12px;">
+                <div id="banner1-refer" style="margin-bottom:8px;"></div>
+                <div id="banner2-refer" style="margin-bottom:8px;"></div>
+                <div id="banner3-refer" style="margin-bottom:8px;"></div>
+                <div id="banner4-refer"></div>
+            </div>
+        </div>
+
+        <!-- ===== PROFILE PAGE ===== -->
+        <div class="page" id="page-profile">
+            <h1 class="page-title">👤 Profile</h1>
+            <p class="page-subtitle">Your account details</p>
+
+            <div class="glass-card">
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div class="avatar" style="width:56px; height:56px; font-size:24px;">
+                        <span id="profileAvatarText">U</span>
+                        <img id="profileAvatarImg" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;" />
+                    </div>
+                    <div>
+                        <div style="font-size:18px; font-weight:700;" id="profileName">User</div>
+                        <div style="font-size:13px; color:var(--text-secondary);" id="profileUsername">@username</div>
+                        <span style="display:inline-block; padding:2px 12px; border-radius:12px; font-size:10px; font-weight:600; background:linear-gradient(135deg, var(--primary), var(--secondary)); color:white; margin-top:2px;" id="profileBadge">⭐ New Member</span>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; font-size:12px; color:var(--text-secondary); margin-top:12px;">
+                    <div><span style="color:var(--text-muted);">User ID:</span> <span id="profileUserId">Loading...</span></div>
+                    <div><span style="color:var(--text-muted);">Joined:</span> <span id="profileJoined">Loading...</span></div>
+                    <div><span style="color:var(--text-muted);">Level:</span> <span id="profileLevel">Bronze</span></div>
+                    <div><span style="color:var(--text-muted);">Status:</span> <span id="profileStatus" style="color:var(--success);">● Active</span></div>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="glass-card">
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px;">
+                    <i class="fas fa-cog" style="color:var(--primary);"></i> Settings
+                </div>
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-card);">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <i class="fas fa-moon" style="color:var(--text-muted);"></i>
+                        <span style="font-size:13px; font-weight:500;">Dark Mode</span>
+                    </div>
+                    <div class="toggle" id="darkModeToggle" onclick="toggleDarkMode()">
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-card);">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <i class="fas fa-bell" style="color:var(--text-muted);"></i>
+                        <span style="font-size:13px; font-weight:500;">Notifications</span>
+                    </div>
+                    <div class="toggle active" id="notifToggle" onclick="toggleNotification()">
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <i class="fas fa-volume-up" style="color:var(--text-muted);"></i>
+                        <span style="font-size:13px; font-weight:500;">Sound</span>
+                    </div>
+                    <div class="toggle active" id="soundToggle" onclick="toggleSound()">
+                        <div class="toggle-thumb"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align:center; padding:8px; color:var(--text-muted); font-size:11px;">
+                Version 1.0.0 | NX Earn ⚡
+            </div>
+
+            <!-- Banner Ads -->
+            <div style="margin-top:12px;">
+                <div id="banner1-profile" style="margin-bottom:8px;"></div>
+                <div id="banner2-profile" style="margin-bottom:8px;"></div>
+                <div id="banner3-profile" style="margin-bottom:8px;"></div>
+                <div id="banner4-profile"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== BOTTOM NAV ===== -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-page="home" onclick="navigateTo('home')">
+            <i class="fas fa-house-chimney"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-item" data-page="tasks" onclick="navigateTo('tasks')">
+            <i class="fas fa-list-check"></i>
+            <span>Tasks</span>
+        </button>
+        <button class="nav-item" data-page="wallet" onclick="navigateTo('wallet')">
+            <i class="fas fa-wallet"></i>
+            <span>Wallet</span>
+        </button>
+        <button class="nav-item" data-page="refer" onclick="navigateTo('refer')">
+            <i class="fas fa-users"></i>
+            <span>Refer</span>
+            <span class="badge" id="referBadge">0</span>
+        </button>
+        <button class="nav-item" data-page="profile" onclick="navigateTo('profile')">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+</div>
+
+<!-- ============================================================
+     MODALS
+     ============================================================ -->
+
+<!-- Spin Modal -->
+<div class="modal-overlay" id="spinModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('spinModal')">&times;</button>
+        <div class="modal-title">🎡 Lucky Spin</div>
+        <div style="font-size:12px; color:var(--text-secondary); text-align:center; margin-bottom:12px;">
+            Watch a short ad to spin. Rewards: Ⓝ0.5 - Ⓝ3
+        </div>
+        <div class="spin-container">
+            <div class="spin-wheel" id="spinWheel">
+                <div class="pointer"><i class="fas fa-caret-down"></i></div>
+                <div class="spin-center">SPIN</div>
+            </div>
+        </div>
+        <button class="modal-btn" onclick="spinWheel()" id="spinBtn">🎰 Spin Now</button>
+        <div style="text-align:center; margin-top:10px; font-size:12px; color:var(--text-muted);">
+            <span id="spinRemainingModal">30</span> spins remaining today
+        </div>
+    </div>
+</div>
+
+<!-- Withdraw Modal -->
+<div class="modal-overlay" id="withdrawModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('withdrawModal')">&times;</button>
+        <div class="modal-title" id="withdrawTitle">Withdraw</div>
+        <input type="number" id="withdrawAmount" placeholder="Enter amount (Ⓝ)" />
+        <input type="text" id="withdrawAccount" placeholder="Enter account number" />
+        <div style="font-size:11px; color:var(--text-muted); text-align:center; margin-bottom:10px;">
+            Fee: <span id="withdrawFee">Ⓝ0.05</span> | Min: <span id="withdrawMin">Ⓝ20</span>
+        </div>
+        <button class="modal-btn" onclick="submitWithdraw()" style="background:linear-gradient(135deg, var(--secondary), var(--success));">
+            Confirm Withdraw
+        </button>
+    </div>
+</div>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<script>
+// ================================================================
+// CONFIG
+// ================================================================
+const CONFIG = {
+    botToken: '8002896346:AAG96XdUmW6auh_xvmljrj7hQGKymXsqJtg',
+    botUsername: 'NxEarnBot',
+    adminId: '8407948229',
+    currency: 'Ⓝ',
+    rewardUrl: window.location.origin + '/reward.html',
+    gigapubId: '1476',
+    monetagZone: '9388728',
+};
+
+// ================================================================
+// STATE
+// ================================================================
+let userData = {
+    id: null,
+    firstName: 'User',
+    username: 'user',
+    balance: 0,
+    totalEarn: 0,
+    todayEarn: 0,
+    todayAds: 0,
+    totalAds: 0,
+    level: 'Bronze',
+    referrals: [],
+    transactions: [],
+    gigaRemaining: 30,
+    monetagRemaining: 30,
+    adexoraRemaining: 30,
+    spinRemaining: 30,
+    settings: {
+        darkMode: false,
+        notifications: true,
+        sound: true
+    },
+    completedTasks: [],
+    isBanned: false
+};
+
+let isAdRunning = false;
+let currentWithdrawMethod = 'bkash';
+
+// ================================================================
+// INIT
+// ================================================================
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        initApp();
+    }, 1200);
+});
+
+function initApp() {
+    initTelegram();
+    loadUserData();
+    loadSettings();
+    initReferralLink();
+    renderAll();
+    loadBannerAds();
+}
+
+// ================================================================
+// TELEGRAM INIT
+// ================================================================
+function initTelegram() {
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            userData.id = user.id;
+            userData.firstName = user.first_name || 'User';
+            userData.username = user.username || 'user';
+            
+            document.getElementById('userName').textContent = user.first_name || 'User';
+            document.getElementById('userId').textContent = 'ID: ' + user.id;
+            document.getElementById('profileName').textContent = user.first_name || 'User';
+            document.getElementById('profileUsername').textContent = '@' + (user.username || 'user');
+            document.getElementById('profileUserId').textContent = user.id;
+            document.getElementById('profileJoined').textContent = new Date().toLocaleDateString();
+            
+            const initial = (user.first_name || 'U')[0].toUpperCase();
+            document.getElementById('avatarText').textContent = initial;
+            document.getElementById('profileAvatarText').textContent = initial;
+            
+            if (user.photo_url) {
+                const img = document.getElementById('avatarImg');
+                img.src = user.photo_url;
+                img.style.display = 'block';
+                document.getElementById('avatarText').style.display = 'none';
+                
+                const pImg = document.getElementById('profileAvatarImg');
+                pImg.src = user.photo_url;
+                pImg.style.display = 'block';
+                document.getElementById('profileAvatarText').style.display = 'none';
+            }
+        }
+    }
+}
+
+// ================================================================
+// USER DATA
+// ================================================================
+function loadUserData() {
+    const key = 'nxearn_user_' + (userData.id || 'default');
+    const saved = localStorage.getItem(key);
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            Object.assign(userData, parsed);
+        } catch(e) {}
+    }
+    // If no data, create default
+    if (!userData.transactions) userData.transactions = [];
+    if (!userData.referrals) userData.referrals = [];
+    if (!userData.completedTasks) userData.completedTasks = [];
+    if (!userData.settings) userData.settings = { darkMode: false, notifications: true, sound: true };
+    
+    // Check daily reset
+    const today = new Date().toDateString();
+    const lastReset = localStorage.getItem('nxearn_reset_' + (userData.id || 'default'));
+    if (lastReset !== today) {
+        userData.gigaRemaining = 30;
+        userData.monetagRemaining = 30;
+        userData.adexoraRemaining = 30;
+        userData.spinRemaining = 30;
+        userData.todayEarn = 0;
+        userData.todayAds = 0;
+        localStorage.setItem('nxearn_reset_' + (userData.id || 'default'), today);
+        saveUserData();
+    }
+    
+    // Check admin reset
+    if (localStorage.getItem('nxearn_forceReset') === 'true') {
+        userData.gigaRemaining = 30;
+        userData.monetagRemaining = 30;
+        userData.adexoraRemaining = 30;
+        userData.spinRemaining = 30;
+        userData.todayEarn = 0;
+        userData.todayAds = 0;
+        localStorage.removeItem('nxearn_forceReset');
+        saveUserData();
+        showToast('🔄 Daily limits have been reset!');
+    }
+}
+
+function saveUserData() {
+    const key = 'nxearn_user_' + (userData.id || 'default');
+    localStorage.setItem(key, JSON.stringify(userData));
+    syncWithAdmin();
+}
+
+function syncWithAdmin() {
+    const adminData = JSON.parse(localStorage.getItem('nxearn_adminData') || '{}');
+    if (!adminData.users) adminData.users = [];
+    const existing = adminData.users.find(u => u.id == userData.id);
+    if (existing) {
+        existing.balance = userData.balance;
+        existing.totalEarn = userData.totalEarn;
+        existing.todayAds = userData.todayAds;
+        existing.totalAds = userData.totalAds;
+        existing.level = userData.level;
+        existing.name = userData.firstName;
+        existing.username = userData.username;
+    } else if (userData.id) {
+        adminData.users.push({
+            id: userData.id,
+            name: userData.firstName,
+            username: userData.username,
+            balance: userData.balance,
+            totalEarn: userData.totalEarn,
+            todayAds: userData.todayAds,
+            totalAds: userData.totalAds,
+            level: userData.level,
+            status: userData.isBanned ? 'banned' : 'active',
+            joined: new Date().toLocaleDateString()
+        });
+    }
+    localStorage.setItem('nxearn_adminData', JSON.stringify(adminData));
+}
+
+// ================================================================
+// SETTINGS
+// ================================================================
+function loadSettings() {
+    const saved = localStorage.getItem('nxearn_settings');
+    if (saved) {
+        try {
+            const settings = JSON.parse(saved);
+            userData.settings = settings;
+            applySettings();
+        } catch(e) {}
+    }
+}
+
+function applySettings() {
+    if (userData.settings.darkMode) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('darkModeToggle').classList.add('active');
+    } else {
+        document.body.classList.remove('dark-mode');
+        document.getElementById('darkModeToggle').classList.remove('active');
+    }
+    
+    if (userData.settings.notifications) {
+        document.getElementById('notifToggle').classList.add('active');
+    } else {
+        document.getElementById('notifToggle').classList.remove('active');
+    }
+    
+    if (userData.settings.sound) {
+        document.getElementById('soundToggle').classList.add('active');
+    } else {
+        document.getElementById('soundToggle').classList.remove('active');
+    }
+}
+
+function saveSettings() {
+    localStorage.setItem('nxearn_settings', JSON.stringify(userData.settings));
+}
+
+function toggleDarkMode() {
+    document.getElementById('darkModeToggle').classList.toggle('active');
+    userData.settings.darkMode = document.getElementById('darkModeToggle').classList.contains('active');
+    applySettings();
+    saveSettings();
+}
+
+function toggleNotification() {
+    document.getElementById('notifToggle').classList.toggle('active');
+    userData.settings.notifications = document.getElementById('notifToggle').classList.contains('active');
+    saveSettings();
+}
+
+function toggleSound() {
+    document.getElementById('soundToggle').classList.toggle('active');
+    userData.settings.sound = document.getElementById('soundToggle').classList.contains('active');
+    saveSettings();
+}
+
+// ================================================================
+// NAVIGATION
+// ================================================================
+function navigateTo(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+    
+    // Show interstitial ads on navigation
+    showInterstitialAd();
+}
+
+// ================================================================
+// RENDER
+// ================================================================
+function renderAll() {
+    renderHeader();
+    renderHome();
+    renderTasks();
+    renderWallet();
+    renderRefer();
+    renderProfile();
+}
+
+function renderHeader() {
+    document.getElementById('headerBalance').textContent = 'Ⓝ' + userData.balance.toFixed(2);
+}
+
+function renderHome() {
+    document.getElementById('homeBalance').textContent = userData.balance.toFixed(2);
+    document.getElementById('todayEarn').textContent = '+Ⓝ' + userData.todayEarn.toFixed(2);
+    document.getElementById('todayAds').textContent = userData.todayAds;
+    document.getElementById('totalAds').textContent = userData.totalAds;
+    document.getElementById('referrals').textContent = userData.referrals.length;
+    renderRecentActivity();
+}
+
+function renderRecentActivity() {
+    const container = document.getElementById('recentActivity');
+    const txs = userData.transactions || [];
+    if (txs.length === 0) {
+        container.innerHTML = `
+            <div class="activity-item">
+                <div class="left">
+                    <div class="icon"><i class="fas fa-info"></i></div>
+                    <div class="info">
+                        <div class="title">No activity yet</div>
+                        <div class="time">Start earning now!</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    container.innerHTML = txs.slice(0, 5).map(t => `
+        <div class="activity-item">
+            <div class="left">
+                <div class="icon"><i class="fas ${t.icon || 'fa-coins'}"></i></div>
+                <div class="info">
+                    <div class="title">${t.title}</div>
+                    <div class="time">${t.date || 'Just now'}</div>
+                </div>
+            </div>
+            <div class="amount ${t.amount > 0 ? 'green' : 'red'}">${t.amount > 0 ? '+' : ''}Ⓝ${t.amount.toFixed(2)}</div>
+        </div>
+    `).join('');
+}
+
+function renderTasks() {
+    document.getElementById('gigaRemaining').textContent = userData.gigaRemaining;
+    document.getElementById('monetagRemaining').textContent = userData.monetagRemaining;
+    document.getElementById('adexoraRemaining').textContent = userData.adexoraRemaining;
+    document.getElementById('spinRemaining').textContent = userData.spinRemaining;
+    document.getElementById('spinRemainingModal').textContent = userData.spinRemaining;
+    
+    // Short tasks
+    const adminData = JSON.parse(localStorage.getItem('nxearn_adminData') || '{}');
+    const tasks = adminData.tasks || [];
+    const container = document.getElementById('shortTasks');
+    if (tasks.length === 0) {
+        container.innerHTML = `
+            <div class="task-card">
+                <div class="task-icon" style="background:linear-gradient(135deg, var(--primary), var(--secondary));">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div class="task-info">
+                    <div class="name">No tasks available</div>
+                    <div class="details">Check back later</div>
+                </div>
+            </div>
+        `;
+    } else {
+        container.innerHTML = tasks.map(task => {
+            const completed = userData.completedTasks.includes(task.id);
+            return `
+                <div class="task-card">
+                    <div class="task-icon" style="background:linear-gradient(135deg, var(--primary), var(--secondary));">
+                        <i class="fas fa-${task.icon || 'tasks'}"></i>
+                    </div>
+                    <div class="task-info">
+                        <div class="name">${task.name}</div>
+                        <div class="details">
+                            <span><i class="fas fa-coins"></i> ${task.reward}</span>
+                            <span><i class="fas fa-clock"></i> ${task.time || '2 min'}</span>
+                        </div>
+                    </div>
+                    <button class="task-btn ${completed ? 'completed' : ''}" onclick="openTask('${task.id}')" ${completed ? 'disabled' : ''}>
+                        ${completed ? '✅ Completed' : 'Start'}
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+}
+
+function renderWallet() {
+    document.getElementById('walletBalance').textContent = 'Ⓝ' + userData.balance.toFixed(2);
+    document.getElementById('walletTotal').textContent = 'Ⓝ' + userData.totalEarn.toFixed(2);
+    
+    const container = document.getElementById('transactionHistory');
+    const txs = userData.transactions || [];
+    if (txs.length === 0) {
+        container.innerHTML = `
+            <div class="activity-item">
+                <div class="left">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <div class="info">
+                        <div class="title">No transactions</div>
+                        <div class="time">Start earning to see history</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        container.innerHTML = txs.map(t => `
+            <div class="activity-item">
+                <div class="left">
+                    <div class="icon"><i class="fas ${t.icon || 'fa-coins'}"></i></div>
+                    <div class="info">
+                        <div class="title">${t.title}</div>
+                        <div class="time">${t.date || 'Just now'}</div>
+                    </div>
+                </div>
+                <div class="amount ${t.amount > 0 ? 'green' : 'red'}">${t.amount > 0 ? '+' : ''}Ⓝ${t.amount.toFixed(2)}</div>
+            </div>
+        `).join('');
+    }
+}
+
+function renderRefer() {
+    document.getElementById('refTotal').textContent = userData.referrals.length;
+    document.getElementById('refToday').textContent = userData.referrals.filter(r => r.date === new Date().toDateString()).length;
+    document.getElementById('refEarned').textContent = 'Ⓝ' + (userData.referrals.length * 0.1).toFixed(2);
+    document.getElementById('referBadge').textContent = userData.referrals.length > 0 ? userData.referrals.length : '';
+    
+    const container = document.getElementById('referralList');
+    if (userData.referrals.length === 0) {
+        container.innerHTML = `
+            <div class="activity-item">
+                <div class="left">
+                    <div class="icon"><i class="fas fa-user"></i></div>
+                    <div class="info">
+                        <div class="title">No referrals yet</div>
+                        <div class="time">Start inviting friends!</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        container.innerHTML = userData.referrals.map(r => `
+            <div class="activity-item">
+                <div class="left">
+                    <div class="icon"><i class="fas fa-user"></i></div>
+                    <div class="info">
+                        <div class="title">${r.name || 'User'}</div>
+                        <div class="time">${r.date || 'Joined'}</div>
+                    </div>
+                </div>
+                <div class="amount green">+Ⓝ0.10</div>
+            </div>
+        `).join('');
+    }
+}
+
+function renderProfile() {
+    const badges = {
+        'Bronze': '⭐ New Member',
+        'Silver': '🔥 Active User',
+        'Gold': '💎 Premium Member',
+        'Platinum': '👑 Top Earner',
+        'Diamond': '🏆 Elite Member'
+    };
+    document.getElementById('profileBadge').textContent = badges[userData.level] || '⭐ New Member';
+    document.getElementById('profileLevel').textContent = userData.level;
+    document.getElementById('profileStatus').textContent = userData.isBanned ? '● Banned' : '● Active';
+    document.getElementById('profileStatus').style.color = userData.isBanned ? 'var(--danger)' : 'var(--success)';
+}
+
+// ================================================================
+// REFERRAL
+// ================================================================
+function initReferralLink() {
+    const link = `https://t.me/${CONFIG.botUsername}?start=ref${userData.id}`;
+    document.getElementById('referralLink').textContent = link;
+}
+
+function copyReferral() {
+    const link = document.getElementById('referralLink').textContent;
+    navigator.clipboard.writeText(link).then(() => {
+        showToast('✅ Referral link copied!');
+    });
+}
+
+// ================================================================
+// ADS
+// ================================================================
+function watchAd(network) {
+    if (isAdRunning) return;
+    if (userData.isBanned) {
+        showToast('⛔ Your account is banned!');
+        return;
+    }
+    
+    let remaining = 0;
+    let adFn = null;
+    let btnId = '';
+    
+    switch(network) {
+        case 'gigapub':
+            remaining = userData.gigaRemaining;
+            adFn = showGigaPubAd;
+            btnId = 'gigaBtn';
+            break;
+        case 'monetag':
+            remaining = userData.monetagRemaining;
+            adFn = showMonetagAd;
+            btnId = 'monetagBtn';
+            break;
+        case 'adexora':
+            remaining = userData.adexoraRemaining;
+            adFn = showAdexoraAd;
+            btnId = 'adexoraBtn';
+            break;
+        default:
+            return;
+    }
+    
+    if (remaining <= 0) {
+        showToast(`Daily limit reached for ${network}!`);
+        return;
+    }
+    
+    isAdRunning = true;
+    const btn = document.getElementById(btnId);
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
+    
+    adFn().then(() => {
+        const reward = 1;
+        userData.balance += reward;
+        userData.todayEarn += reward;
+        userData.totalEarn += reward;
+        userData.todayAds += 1;
+        userData.totalAds += 1;
+        
+        switch(network) {
+            case 'gigapub': userData.gigaRemaining -= 1; break;
+            case 'monetag': userData.monetagRemaining -= 1; break;
+            case 'adexora': userData.adexoraRemaining -= 1; break;
+        }
+        
+        userData.transactions.unshift({
+            title: `${network} Ad Reward`,
+            amount: reward,
+            date: new Date().toLocaleString(),
+            icon: 'fa-play'
+        });
+        
+        saveUserData();
+        renderAll();
+        isAdRunning = false;
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fas fa-${network === 'gigapub' ? 'bolt' : network === 'monetag' ? 'fire' : 'star'}"></i> ${network.charAt(0).toUpperCase() + network.slice(1)}`;
+        showToast(`+Ⓝ${reward} earned from ${network}!`);
+        
+        // Send notification to admin
+        sendBotMessage(CONFIG.adminId, `📢 User ${userData.firstName} (${userData.id}) watched ${network} ad`);
+    }).catch(() => {
+        isAdRunning = false;
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fas fa-${network === 'gigapub' ? 'bolt' : network === 'monetag' ? 'fire' : 'star'}"></i> ${network.charAt(0).toUpperCase() + network.slice(1)}`;
+        showToast('Ad failed. Please try again.');
+    });
+}
+
+function showGigaPubAd() {
+    return new Promise((resolve, reject) => {
+        try {
+            if (typeof window.showGiga === 'function') {
+                window.showGiga().then(resolve).catch(reject);
+            } else {
+                // Load script
+                const script = document.createElement('script');
+                script.src = `https://ad.gigapub.tech/script?id=${CONFIG.gigapubId}`;
+                script.onload = () => {
+                    window.showGiga().then(resolve).catch(reject);
+                };
+                script.onerror = () => setTimeout(resolve, 3000);
+                document.head.appendChild(script);
+            }
+        } catch(e) {
+            setTimeout(resolve, 3000);
+        }
+    });
+}
+
+function showMonetagAd() {
+    return new Promise((resolve, reject) => {
+        try {
+            const zone = CONFIG.monetagZone;
+            const fnName = 'show_' + zone;
+            if (typeof window[fnName] === 'function') {
+                window[fnName]().then(resolve).catch(reject);
+            } else {
+                const script = document.createElement('script');
+                script.src = '//libtl.com/sdk.js';
+                script.setAttribute('data-zone', zone);
+                script.setAttribute('data-sdk', fnName);
+                script.onload = () => {
+                    if (typeof window[fnName] === 'function') {
+                        window[fnName]().then(resolve).catch(reject);
+                    } else {
+                        setTimeout(resolve, 3000);
+                    }
+                };
+                script.onerror = () => setTimeout(resolve, 3000);
+                document.head.appendChild(script);
+            }
+        } catch(e) {
+            setTimeout(resolve, 3000);
+        }
+    });
+}
+
+function showAdexoraAd() {
+    return new Promise((resolve) => {
+        // Fallback - just resolve after 3 seconds
+        setTimeout(resolve, 3000);
+    });
+}
+
+// ================================================================
+// INTERSTITIAL ADS (Company Revenue - No User Reward)
+// ================================================================
+let interstitialCount = 0;
+
+function showInterstitialAd() {
+    interstitialCount++;
+    if (interstitialCount % 3 !== 0) return;
+    
+    try {
+        // Try Monetag Popup (Company Revenue)
+        const zone = CONFIG.monetagZone;
+        const fnName = 'show_' + zone;
+        if (typeof window[fnName] === 'function') {
+            window[fnName]('pop').catch(() => {});
+        }
+    } catch(e) {}
+}
+
+// ================================================================
+// SPIN WHEEL
+// ================================================================
+function openSpin() {
+    if (userData.spinRemaining <= 0) {
+        showToast('Daily spin limit reached!');
+        return;
+    }
+    if (userData.isBanned) {
+        showToast('⛔ Your account is banned!');
+        return;
+    }
+    document.getElementById('spinModal').classList.add('active');
+}
+
+function spinWheel() {
+    if (userData.spinRemaining <= 0) {
+        showToast('No spins left today!');
+        closeModal('spinModal');
+        return;
+    }
+    
+    const btn = document.getElementById('spinBtn');
+    btn.disabled = true;
+    btn.textContent = '🎰 Spinning...';
+    
+    // Use Monetag ad for spin
+    showMonetagAd().then(() => {
+        const rewards = [
+            { amount: 0.5, weight: 40 },
+            { amount: 0.75, weight: 25 },
+            { amount: 1, weight: 20 },
+            { amount: 2, weight: 10 },
+            { amount: 3, weight: 5 }
+        ];
+        
+        let totalWeight = rewards.reduce((sum, r) => sum + r.weight, 0);
+        let random = Math.random() * totalWeight;
+        let reward = rewards[0];
+        for (let r of rewards) {
+            random -= r.weight;
+            if (random <= 0) {
+                reward = r;
+                break;
+            }
+        }
+        
+        const wheel = document.getElementById('spinWheel');
+        const rotations = 5 + Math.random() * 5;
+        const degrees = rotations * 360;
+        wheel.style.transform = `rotate(${degrees}deg)`;
+        
+        setTimeout(() => {
+            userData.balance += reward.amount;
+            userData.todayEarn += reward.amount;
+            userData.totalEarn += reward.amount;
+            userData.spinRemaining -= 1;
+            
+            userData.transactions.unshift({
+                title: 'Lucky Spin Reward',
+                amount: reward.amount,
+                date: new Date().toLocaleString(),
+                icon: 'fa-gem'
+            });
+            
+            saveUserData();
+            renderAll();
+            btn.disabled = false;
+            btn.textContent = '🎰 Spin Now';
+            closeModal('spinModal');
+            showToast(`🎉 You won Ⓝ${reward.amount.toFixed(2)}!`);
+        }, 4000);
+    }).catch(() => {
+        btn.disabled = false;
+        btn.textContent = '🎰 Spin Now';
+        showToast('Ad failed. Please try again.');
+    });
+}
+
+// ================================================================
+// WITHDRAW
+// ================================================================
+function openWithdraw(method) {
+    if (userData.isBanned) {
+        showToast('⛔ Your account is banned!');
+        return;
+    }
+    if (userData.balance < 20) {
+        showToast('Minimum balance Ⓝ20 required for withdraw!');
+        return;
+    }
+    currentWithdrawMethod = method;
+    const names = {
+        'bkash': 'bKash',
+        'nagad': 'Nagad',
+        'binance': 'Binance'
+    };
+    document.getElementById('withdrawTitle').textContent = 'Withdraw to ' + names[method];
+    document.getElementById('withdrawModal').classList.add('active');
+}
+
+function submitWithdraw() {
+    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    const account = document.getElementById('withdrawAccount').value.trim();
+    
+    if (!amount || amount < 20) {
+        showToast('Minimum withdraw is Ⓝ20');
+        return;
+    }
+    if (amount > userData.balance) {
+        showToast('Insufficient balance!');
+        return;
+    }
+    if (!account) {
+        showToast('Please enter account number');
+        return;
+    }
+    
+    userData.balance -= amount;
+    
+    // Add to history
+    userData.transactions.unshift({
+        title: `Withdraw to ${currentWithdrawMethod}`,
+        amount: -amount,
+        date: new Date().toLocaleString(),
+        icon: 'fa-arrow-up'
+    });
+    
+    // Add to admin withdrawals
+    const adminData = JSON.parse(localStorage.getItem('nxearn_adminData') || '{}');
+    if (!adminData.withdrawals) adminData.withdrawals = [];
+    adminData.withdrawals.push({
+        id: Date.now(),
+        userId: userData.id,
+        userName: userData.firstName,
+        amount: amount,
+        method: currentWithdrawMethod,
+        account: account,
+        status: 'pending',
+        date: new Date().toLocaleString()
+    });
+    localStorage.setItem('nxearn_adminData', JSON.stringify(adminData));
+    
+    saveUserData();
+    renderAll();
+    closeModal('withdrawModal');
+    document.getElementById('withdrawAmount').value = '';
+    document.getElementById('withdrawAccount').value = '';
+    showToast(`✅ Withdrawal of Ⓝ${amount.toFixed(2)} submitted!`);
+    
+    // Notify admin
+    sendBotMessage(CONFIG.adminId, `💸 New withdraw request from ${userData.firstName} (${userData.id}) - Amount: Ⓝ${amount} - Method: ${currentWithdrawMethod}`);
+}
+
+// ================================================================
+// TASKS
+// ================================================================
+function openTask(taskId) {
+    if (userData.isBanned) {
+        showToast('⛔ Your account is banned!');
+        return;
+    }
+    if (userData.completedTasks.includes(taskId)) {
+        showToast('You already completed this task!');
+        return;
+    }
+    
+    const adminData = JSON.parse(localStorage.getItem('nxearn_adminData') || '{}');
+    const task = (adminData.tasks || []).find(t => t.id == taskId);
+    if (!task) {
+        showToast('Task not found!');
+        return;
+    }
+    
+    // Extract reward amount
+    const rewardAmount = parseFloat(task.reward.replace('Ⓝ', '')) || 5;
+    
+    userData.balance += rewardAmount;
+    userData.totalEarn += rewardAmount;
+    userData.todayEarn += rewardAmount;
+    userData.completedTasks.push(taskId);
+    
+    userData.transactions.unshift({
+        title: `Task Reward: ${task.name}`,
+        amount: rewardAmount,
+        date: new Date().toLocaleString(),
+        icon: 'fa-check'
+    });
+    
+    saveUserData();
+    renderAll();
+    showToast(`✅ Task completed! +Ⓝ${rewardAmount} earned!`);
+    
+    // Send notification to admin
+    sendBotMessage(CONFIG.adminId, `✅ User ${userData.firstName} (${userData.id}) completed task: ${task.name}`);
+}
+
+// ================================================================
+// BANNER ADS
+// ================================================================
+function loadBannerAds() {
+    const bannerPositions = [
+        { id: 'banner1', page: 'home' },
+        { id: 'banner2', page: 'home' },
+        { id: 'banner3', page: 'home' },
+        { id: 'banner4', page: 'home' },
+        { id: 'banner1-tasks', page: 'tasks' },
+        { id: 'banner2-tasks', page: 'tasks' },
+        { id: 'banner3-tasks', page: 'tasks' },
+        { id: 'banner4-tasks', page: 'tasks' },
+        { id: 'banner1-wallet', page: 'wallet' },
+        { id: 'banner2-wallet', page: 'wallet' },
+        { id: 'banner3-wallet', page: 'wallet' },
+        { id: 'banner4-wallet', page: 'wallet' },
+        { id: 'banner1-refer', page: 'refer' },
+        { id: 'banner2-refer', page: 'refer' },
+        { id: 'banner3-refer', page: 'refer' },
+        { id: 'banner4-refer', page: 'refer' },
+        { id: 'banner1-profile', page: 'profile' },
+        { id: 'banner2-profile', page: 'profile' },
+        { id: 'banner3-profile', page: 'profile' },
+        { id: 'banner4-profile', page: 'profile' },
+    ];
+    
+    bannerPositions.forEach(pos => {
+        const container = document.getElementById(pos.id);
+        if (container) {
+            container.innerHTML = `
+                <div style="background:var(--bg-glass); border-radius:var(--radius-sm); padding:8px; text-align:center; border:1px solid var(--border-glass); min-height:50px; display:flex; align-items:center; justify-content:center;">
+                    <span style="color:var(--text-muted); font-size:11px;">
+                        <i class="fas fa-ad"></i> Advertisement
+                    </span>
+                </div>
+            `;
+        }
+    });
+}
+
+// ================================================================
+// BOT MESSAGE
+// ================================================================
+function sendBotMessage(chatId, message) {
+    try {
+        const url = `https://api.telegram.org/bot${CONFIG.botToken}/sendMessage`;
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: message,
+                parse_mode: 'HTML'
+            })
+        }).catch(() => {});
+    } catch(e) {}
+}
+
+// ================================================================
+// MODAL
+// ================================================================
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+// ================================================================
+// TOAST
+// ================================================================
+function showToast(message) {
+    if (!userData.settings.notifications) return;
+    
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// ================================================================
+// KEYBOARD SHORTCUTS
+// ================================================================
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(el => {
+            el.classList.remove('active');
+        });
+    }
+});
+
+console.log('⚡ NX Earn Loaded Successfully!');
+console.log('📱 Bot: @' + CONFIG.botUsername);
+console.log('👤 User ID:', userData.id);
+</script>
+
+</body>
+</html>
