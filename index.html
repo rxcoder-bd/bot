@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nxeran - Earning Web App</title>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Ad Networks SDKs -->
+    <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" async></script>
+    <script src="https://ad.gigapub.tech/script?id=YOUR_GIGA_PROJECT_ID"></script>
+    <script src="https://adexora.com/cdn/ads.js?id=486"></script>
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --secondary: #a855f7;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 40%);
+        }
+
+        /* App Container */
+        .app-container {
+            max-width: 480px;
+            width: 100%;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-glass);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-details h3 {
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .user-details span {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--bg-glass);
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid var(--border-glass);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .icon-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* Main Content Views */
+        .view-section {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+            flex: 1;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards & UI elements */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .balance-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-box .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .stat-box .value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent), #d97706);
+            color: white;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        /* Ad Network Grid */
+        .network-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .network-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .network-info h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .network-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .network-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .network-btn:disabled {
+            background: var(--bg-glass);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-glass);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 11px;
+            font-weight: 600;
+            width: 20%;
+        }
+
+        .nav-item i {
+            font-size: 18px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            padding: 20px;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 400px;
+            padding: 24px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            z-index: 2000;
+            transition: var(--transition);
+        }
+
+        /* Miscellaneous utilities */
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-muted); }
+        .withdraw-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-glass);
+        }
+        .withdraw-item .title { font-weight: 600; font-size: 13px; }
+        .withdraw-item .sub { font-size: 11px; color: var(--text-muted); }
+        .amount.completed { color: var(--success); }
+        .amount.pending { color: var(--accent); }
+        .amount.rejected { color: var(--danger); }
+        .ad-placeholder {
+            width: 100%;
+            height: 50px;
+            background: var(--bg-glass);
+            border: 1px dashed var(--border-glass);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Header -->
+    <header>
+        <div class="user-info">
+            <div class="avatar" id="userAvatar">N</div>
+            <div class="user-details">
+                <h3 id="userName">User</h3>
+                <span id="userLevel">Bronze 🥉</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn" onclick="openModal('settingsModal')"><i class="fas fa-gear"></i></button>
+            <button class="icon-btn" onclick="openModal('notificationsModal')"><i class="fas fa-bell"></i></button>
+        </div>
+    </header>
+
+    <!-- VIEWS CONTAINER -->
+
+    <!-- Home View -->
+    <div id="homeView" class="view-section active">
+        <!-- Balance Card -->
+        <div class="glass-card balance-card">
+            <div class="balance-title">Main Balance</div>
+            <div class="balance-amount">Ⓝ <span id="mainBalance">0.00</span></div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="label">Today Earn</div>
+                    <div class="value">Ⓝ <span id="todayEarn">0.00</span></div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Total Earn</div>
+                    <div class="value">Ⓝ <span id="totalEarn">0.00</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="richAd1"></div>
+
+        <!-- Ad Networks Section -->
+        <div class="glass-card" style="padding: 16px;">
+            <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 12px;"><i class="fas fa-play-circle" style="color:var(--primary);"></i> Watch & Earn Ads</h3>
+            <div class="network-grid">
+                <!-- GigaPub -->
+                <div class="network-card">
+                    <div class="network-info">
+                        <h4>GigaPub Ads</h4>
+                        <p>Reward: Ⓝ0.50 | <span id="gigaTimer">Ready</span></p>
+                    </div>
+                    <button class="network-btn" id="gigaBtn" onclick="watchAd('giga')">Watch</button>
+                </div>
+                <!-- Monetag -->
+                <div class="network-card">
+                    <div class="network-info">
+                        <h4>Monetag Ads</h4>
+                        <p>Reward: Ⓝ0.40 | <span id="monetagTimer">Ready</span></p>
+                    </div>
+                    <button class="network-btn" id="monetagBtn" onclick="watchAd('monetag')">Watch</button>
+                </div>
+                <!-- Adexora -->
+                <div class="network-card">
+                    <div class="network-info">
+                        <h4>Adexora Ads</h4>
+                        <p>Reward: Ⓝ0.45 | <span id="adexoraTimer">Ready</span></p>
+                    </div>
+                    <button class="network-btn" id="adexoraBtn" onclick="watchAd('adexora')">Watch</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="richAd2"></div>
+
+        <!-- Quick Links / Actions -->
+        <div class="glass-card" style="padding: 16px;">
+            <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 12px;"><i class="fas fa-bolt" style="color:var(--accent);"></i> Quick Actions</h3>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;" id="officialLinks">
+                <!-- Populated via script -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Earn / Tasks View -->
+    <div id="earnView" class="view-section">
+        <div class="glass-card">
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;"><i class="fas fa-tasks" style="color:var(--secondary);"></i> Short Tasks</h3>
+            <div id="shortTasksContainer">
+                <!-- Populated via script -->
+            </div>
+        </div>
+        <div class="glass-card">
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;"><i class="fas fa-trophy" style="color:var(--accent);"></i> Daily Achievements</h3>
+            <div id="achievementsContainer">
+                <!-- Populated via script -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet View -->
+    <div id="walletView" class="view-section">
+        <div class="glass-card balance-card">
+            <div class="balance-title">Available for Withdraw</div>
+            <div class="balance-amount">Ⓝ <span id="walletBalance">0.00</span></div>
+            <button class="btn btn-primary" onclick="openModal('withdrawModal')"><i class="fas fa-wallet"></i> Withdraw Funds</button>
+        </div>
+
+        <div class="glass-card">
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;"><i class="fas fa-history"></i> Withdraw History</h3>
+            <div id="withdrawHistoryContainer">
+                <!-- Populated via script -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Referrals View -->
+    <div id="referralView" class="view-section">
+        <div class="glass-card text-center">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">Invite Friends & Earn</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Get Ⓝ2.00 for every active referral plus 10% commission!</p>
+            <div style="background: var(--bg-glass); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass); margin-bottom: 12px; font-size: 13px; word-break: break-all;" id="referralLinkText">
+                https://t.me/nxeran_bot?start=ref_000
+            </div>
+            <button class="btn btn-primary" onclick="copyReferralLink()"><i class="fas fa-copy"></i> Copy Referral Link</button>
+        </div>
+        <div class="glass-card">
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">My Referrals</h3>
+            <div style="font-size: 13px; color: var(--text-muted);">Total Referrals: <span id="totalReferralsCount" style="color: var(--text-main); font-weight: 700;">0</span></div>
+        </div>
+    </div>
+
+    <!-- Profile View -->
+    <div id="profileView" class="view-section">
+        <div class="glass-card text-center">
+            <div class="avatar" style="width: 70px; height: 70px; margin: 0 auto 12px; font-size: 28px;" id="profileAvatar">N</div>
+            <h3 id="profileName" style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">User</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;" id="profileUserId">ID: 0000000</p>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="label">Rank</div>
+                    <div class="value" id="profileRank">#--</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Level</div>
+                    <div class="value" id="profileLevelName">Bronze</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 12px;">Leaderboard Top 5</h3>
+            <div id="leaderboardPreview">
+                <!-- Populated via script -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <button class="nav-item active" onclick="switchView('homeView', this)"><i class="fas fa-house"></i><span>Home</span></button>
+        <button class="nav-item" onclick="switchView('earnView', this)"><i class="fas fa-layer-group"></i><span>Tasks</span></button>
+        <button class="nav-item" onclick="switchView('walletView', this)"><i class="fas fa-wallet"></i><span>Wallet</span></button>
+        <button class="nav-item" onclick="switchView('referralView', this)"><i class="fas fa-users"></i><span>Ref</span></button>
+        <button class="nav-item" onclick="switchView('profileView', this)"><i class="fas fa-user"></i><span>Profile</span></button>
+    </nav>
+</div>
+
+<!-- Modals -->
+
+<!-- Withdraw Modal -->
+<div class="modal" id="withdrawModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Withdraw Funds</h3>
+            <button class="icon-btn" onclick="closeModal('withdrawModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="form-group">
+            <label>Payment Method</label>
+            <select class="form-control" id="withdrawMethod">
+                <option value="bkash">bKash</option>
+                <option value="nagad">Nagad</option>
+                <option value="binance">Binance (USDT)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Account Number / Wallet ID</label>
+            <input type="text" class="form-control" id="withdrawAccount" placeholder="Enter account details">
+        </div>
+        <div class="form-group">
+            <label>Amount (Ⓝ)</label>
+            <input type="number" class="form-control" id="withdrawAmount" placeholder="Enter amount">
+        </div>
+        <button class="btn btn-primary" onclick="submitWithdraw()">Submit Request</button>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal" id="settingsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Settings</h3>
+            <button class="icon-btn" onclick="closeModal('settingsModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-glass);">
+            <span>Sound Effects & Haptics</span>
+            <input type="checkbox" id="settingSound" checked onchange="toggleSetting('sound', this.checked)">
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0;">
+            <span>Dark Theme</span>
+            <input type="checkbox" id="settingTheme" checked disabled>
+        </div>
+    </div>
+</div>
+
+<!-- Notifications Modal -->
+<div class="modal" id="notificationsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Notifications</h3>
+            <button class="icon-btn" onclick="closeModal('notificationsModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted);">No new notifications right now. Stay tuned for updates!</p>
+    </div>
+</div>
+
+<!-- JavaScript Logic -->
+<script>
+    // Configuration & Core State
+    const CONFIG = {
+        botToken: 'YOUR_BOT_TOKEN_HERE',
+        minWithdraw: 5.00
+    };
+
+    let userData = {
+        id: 12345678,
+        name: 'Nxeran User',
+        balance: 0.00,
+        todayEarn: 0.00,
+        totalEarn: 0.00,
+        totalAds: 0,
+        level: 'Bronze',
+        rank: 1,
+        completedTasks: [],
+        referrals: [],
+        withdrawHistory: [],
+        transactions: [],
+        settings: { sound: true },
+        giga: { timerEnd: null },
+        monetag: { timerEnd: null },
+        adexora: { timerEnd: null },
+        isBanned: false
+    };
+
+    let adminData = {
+        tasks: [
+            { id: 't1', title: 'Join Official Telegram Channel', reward: 0.50, link: 'https://t.me/' },
+            { id: 't2', title: 'Subscribe YouTube Channel', reward: 1.00, link: 'https://youtube.com/' }
+        ],
+        links: {
+            channel: 'https://t.me/',
+            group: 'https://t.me/',
+            support: 'https://t.me/',
+            bot: 'https://t.me/'
+        },
+        users: []
+    };
+
+    // Initialize App
+    window.addEventListener('DOMContentLoaded', () => {
+        loadUserData();
+        checkDailyReset();
+        initTelegramWebApp();
+        updateUI();
+        initRichAds();
+        startTimerLoop();
+        renderTasks();
+        renderAchievements();
+        renderOfficialLinks();
+        renderLeaderboard();
+        renderWithdrawHistory();
+    });
+
+    function initTelegramWebApp() {
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                const user = tg.initDataUnsafe.user;
+                userData.id = user.id;
+                userData.name = user.first_name || 'User';
+                saveUserData();
+            }
+        }
+    }
+
+    function loadUserData() {
+        const saved = localStorage.getItem('nxeran_userData');
+        if (saved) {
+            try { userData = JSON.parse(saved); } catch(e) {}
+        }
+    }
+
+    function saveUserData() {
+        localStorage.setItem('nxeran_userData', JSON.stringify(userData));
+    }
+
+    function switchView(viewId, btnElement) {
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(viewId).classList.add('active');
+        if (btnElement) btnElement.classList.add('active');
+    }
+
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    function updateUI() {
+        document.getElementById('mainBalance').textContent = userData.balance.toFixed(2);
+        document.getElementById('walletBalance').textContent = userData.balance.toFixed(2);
+        document.getElementById('todayEarn').textContent = userData.todayEarn.toFixed(2);
+        document.getElementById('totalEarn').textContent = userData.totalEarn.toFixed(2);
+        document.getElementById('userName').textContent = userData.name;
+        document.getElementById('profileName').textContent = userData.name;
+        document.getElementById('profileUserId').textContent = 'ID: ' + userData.id;
+        document.getElementById('userAvatar').textContent = userData.name.charAt(0).toUpperCase();
+        document.getElementById('profileAvatar').textContent = userData.name.charAt(0).toUpperCase();
+        document.getElementById('userLevel').textContent = userData.level + ' ' + getLevelEmoji(userData.level);
+        document.getElementById('profileLevelName').textContent = userData.level;
+        document.getElementById('profileRank').textContent = '#' + (userData.rank || 1);
+        document.getElementById('totalReferralsCount').textContent = (userData.referrals || []).length;
+        document.getElementById('referralLinkText').textContent = `https://t.me/nxeran_bot?start=ref_${userData.id}`;
+    }
+
+    function getLevelEmoji(level) {
+        if (level === 'Gold') return '🥇';
+        if (level === 'Silver') return '🥈';
+        return '🥉';
+    }
+
+    // Watch Ad Implementation (Giga, Monetag, Adexora)
+    function watchAd(network) {
+        if (userData.isBanned) {
+            showToast('⛔ Account banned!');
+            return;
+        }
+
+        const netData = userData[network];
+        if (netData && netData.timerEnd && Date.now() < netData.timerEnd) {
+            showToast('⏳ Please wait for the cooldown timer!');
+            return;
+        }
+
+        const rewards = { giga: 0.50, monetag: 0.40, adexora: 0.45 };
+        const rewardAmount = rewards[network] || 0.40;
+
+        // Trigger network-specific SDK
+        let adPromise = Promise.resolve();
+        if (network === 'giga' && typeof window.showGiga === 'function') {
+            adPromise = window.showGiga();
+        } else if (network === 'adexora' && typeof window.showAdexora === 'function') {
+            adPromise = window.showAdexora();
+        }
+
+        adPromise.then(() => {
+            grantAdReward(network, rewardAmount);
+        }).catch(e => {
+            // Fallback reward grant for simulation/safety
+            grantAdReward(network, rewardAmount);
+        });
+    }
+
+    function grantAdReward(network, amount) {
+        userData.balance += amount;
+        userData.todayEarn += amount;
+        userData.totalEarn += amount;
+        userData.totalAds += 1;
+
+        // Set 60s cooldown timer
+        userData[network].timerEnd = Date.now() + 60000;
+
+        userData.transactions.unshift({
+            title: `${network.toUpperCase()} Ad Reward`,
+            amount: amount,
+            date: new Date().toLocaleString(),
+            icon: 'fa-play'
+        });
+
+        saveUserData();
+        updateUI();
+        showToast(`🎉 Reward granted: +Ⓝ${amount.toFixed(2)}`);
+    }
+
+    // Withdraw Functions
+    function submitWithdraw() {
+        const method = document.getElementById('withdrawMethod').value;
+        const account = document.getElementById('withdrawAccount').value.trim();
+        const amount = parseFloat(document.getElementById('withdrawAmount').value);
+
+        if (!account) {
+            showToast('⚠️ Enter a valid account number!');
+            return;
+        }
+        if (isNaN(amount) || amount < CONFIG.minWithdraw) {
+            showToast(`⚠️ Minimum withdrawal is Ⓝ${CONFIG.minWithdraw}`);
+            return;
+        }
+        if (amount > userData.balance) {
+            showToast('⚠️ Insufficient balance!');
+            return;
+        }
+
+        userData.balance -= amount;
+        userData.withdrawHistory.unshift({
+            method: method,
+            account: account,
+            amount: amount,
+            date: new Date().toLocaleDateString(),
+            status: 'pending'
+        });
+
+        saveUserData();
+        updateUI();
+        renderWithdrawHistory();
+        closeModal('withdrawModal');
+        showToast('✅ Withdrawal request submitted successfully!');
+    }
+
+    function renderWithdrawHistory() {
+        const container = document.getElementById('withdrawHistoryContainer');
+        const history = userData.withdrawHistory || [];
+        if (history.length === 0) {
+            container.innerHTML = '<div class="text-center text-muted" style="padding:12px 0; font-size:13px;">No withdraw history</div>';
+            return;
+        }
+        container.innerHTML = history.map(w => {
+            let statusClass = 'pending';
+            let statusText = 'Pending';
+            if (w.status === 'completed') {
+                statusClass = 'completed';
+                statusText = 'Completed';
+            } else if (w.status === 'rejected') {
+                statusClass = 'rejected';
+                statusText = 'Rejected';
+            }
+            return `
+                <div class="withdraw-item">
+                    <div class="info">
+                        <div class="title">${w.method.toUpperCase()} (${w.account})</div>
+                        <div class="sub">${w.date}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="amount ${statusClass}">Ⓝ${w.amount.toFixed(2)}</div>
+                        <div style="font-size:10px; font-weight:600;" class="${statusClass}">${statusText}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Tasks & Achievements
+    function renderTasks() {
+        const container = document.getElementById('shortTasksContainer');
+        const tasks = adminData.tasks || [];
+        if (tasks.length === 0) {
+            container.innerHTML = '<div class="text-center text-muted" style="padding: 12px 0; font-size:13px;">No short tasks available right now.</div>';
+            return;
+        }
+        container.innerHTML = tasks.map(t => {
+            const isDone = (userData.completedTasks || []).includes(t.id);
+            return `
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:var(--bg-glass); border-radius:var(--radius-sm); border:1px solid var(--border-glass); margin-bottom:8px;">
+                    <div>
+                        <div style="font-weight:600; font-size:13px;">${t.title}</div>
+                        <div style="font-size:11px; color:var(--text-muted);">Reward: Ⓝ${t.reward}</div>
+                    </div>
+                    <button class="btn" ${isDone ? 'disabled' : ''} onclick="completeTask('${t.id}', ${t.reward}, '${t.link}')" style="padding:6px 14px; border:none; border-radius:var(--radius-sm); background:${isDone ? 'var(--success)' : 'linear-gradient(135deg, var(--primary), var(--secondary))'}; color:white; font-weight:600; font-size:12px; cursor:${isDone ? 'not-allowed' : 'pointer'};">
+                        ${isDone ? '✅ Done' : 'Start'}
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function completeTask(taskId, reward, link) {
+        if (userData.isBanned) {
+            showToast('⛔ Your account is banned!');
+            return;
+        }
+        userData.completedTasks = userData.completedTasks || [];
+        if (userData.completedTasks.includes(taskId)) return;
+
+        window.open(link, '_blank');
+        
+        userData.completedTasks.push(taskId);
+        userData.balance += reward;
+        userData.todayEarn += reward;
+        userData.totalEarn += reward;
+        
+        userData.transactions.unshift({
+            title: 'Task Reward',
+            amount: reward,
+            date: new Date().toLocaleString(),
+            icon: 'fa-tasks'
+        });
+
+        saveUserData();
+        updateUI();
+        renderTasks();
+        showToast(`🎉 Task completed! +Ⓝ${reward}`);
+    }
+
+    function renderAchievements() {
+        const container = document.getElementById('achievementsContainer');
+        const achievements = [
+            { title: 'First Steps', desc: 'Watch your first ad', progress: Math.min(userData.totalAds, 1), target: 1, reward: 0.5 },
+            { title: 'Active Earner', desc: 'Watch 50 ads', progress: Math.min(userData.totalAds, 50), target: 50, reward: 2 },
+            { title: 'Social Butterfly', desc: 'Refer 5 friends', progress: Math.min((userData.referrals || []).length, 5), target: 5, reward: 5 }
+        ];
+
+        container.innerHTML = achievements.map(a => `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                <div>
+                    <div style="font-weight:600; font-size:13px;">${a.title}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">${a.desc} (${a.progress}/${a.target})</div>
+                </div>
+                <div style="font-size:12px; color:var(--accent); font-weight:600;">+Ⓝ${a.reward}</div>
+            </div>
+        `).join('');
+    }
+
+    function renderOfficialLinks() {
+        const container = document.getElementById('officialLinks');
+        const links = adminData.links || { channel: 'https://t.me/', group: 'https://t.me/', support: 'https://t.me/', bot: 'https://t.me/' };
+        
+        container.innerHTML = `
+            <div class="quick-btn" onclick="window.open('${links.channel}', '_blank')" style="text-align:center; cursor:pointer;">
+                <i class="fas fa-bullhorn" style="color:var(--info); font-size:20px; margin-bottom:4px;"></i>
+                <div style="font-size:11px; font-weight:600;">Channel</div>
+            </div>
+            <div class="quick-btn" onclick="window.open('${links.group}', '_blank')" style="text-align:center; cursor:pointer;">
+                <i class="fas fa-users" style="color:var(--success); font-size:20px; margin-bottom:4px;"></i>
+                <div style="font-size:11px; font-weight:600;">Group</div>
+            </div>
+            <div class="quick-btn" onclick="window.open('${links.support}', '_blank')" style="text-align:center; cursor:pointer;">
+                <i class="fas fa-headset" style="color:var(--secondary); font-size:20px; margin-bottom:4px;"></i>
+                <div style="font-size:11px; font-weight:600;">Support</div>
+            </div>
+            <div class="quick-btn" onclick="window.open('${links.bot}', '_blank')" style="text-align:center; cursor:pointer;">
+                <i class="fas fa-robot" style="color:var(--accent); font-size:20px; margin-bottom:4px;"></i>
+                <div style="font-size:11px; font-weight:600;">Bot</div>
+            </div>
+        `;
+    }
+
+    function renderLeaderboard() {
+        const container = document.getElementById('leaderboardPreview');
+        const users = adminData.users || [];
+        users.sort((a, b) => (b.totalEarn || 0) - (a.totalEarn || 0));
+
+        const top = users.slice(0, 5);
+        if (top.length === 0) {
+            container.innerHTML = '<div class="text-center text-muted" style="padding: 12px 0; font-size:13px;">No users on leaderboard yet</div>';
+            return;
+        }
+
+        container.innerHTML = top.map((u, index) => {
+            const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+            return `
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-glass);">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:15px; width:20px; text-align:center;">${medals[index] || (index + 1)}</span>
+                        <div>
+                            <div style="font-weight:600; font-size:13px;">${u.name || 'User'}</div>
+                            <div style="font-size:10px; color:var(--text-muted);">${getLevelEmoji(u.level)} ${u.level || 'Bronze'}</div>
+                        </div>
+                    </div>
+                    <div style="font-size:13px; font-weight:700; color:var(--accent);">Ⓝ${(u.totalEarn || 0).toFixed(2)}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function initRichAds() {
+        for (let i = 1; i <= 2; i++) {
+            const container = document.getElementById('richAd' + i);
+            if (container) {
+                container.innerHTML = `<div class="ad-placeholder">📢 Advertisement Banner</div>`;
+            }
+        }
+    }
+
+    function checkTimers() {
+        const networks = ['giga', 'monetag', 'adexora'];
+        networks.forEach(net => {
+            const data = userData[net];
+            if (data && data.timerEnd && Date.now() >= data.timerEnd) {
+                data.timerEnd = null;
+                saveUserData();
+            }
+        });
+    }
+
+    function startTimerLoop() {
+        setInterval(() => {
+            checkTimers();
+            const networks = ['giga', 'monetag', 'adexora'];
+            networks.forEach(net => {
+                const data = userData[net];
+                const timerEl = document.getElementById(net + 'Timer');
+                const btnEl = document.getElementById(net + 'Btn');
+                
+                if (data && data.timerEnd && Date.now() < data.timerEnd) {
+                    const remaining = Math.max(0, Math.ceil((data.timerEnd - Date.now()) / 1000));
+                    if (timerEl) timerEl.textContent = `${remaining}s`;
+                    if (btnEl) btnEl.disabled = true;
+                } else {
+                    if (timerEl) timerEl.textContent = 'Ready';
+                    if (btnEl) btnEl.disabled = false;
+                }
+            });
+        }, 1000);
+    }
+
+    function checkDailyReset() {
+        const lastReset = localStorage.getItem('nxeran_lastResetDate');
+        const today = new Date().toDateString();
+        if (lastReset !== today) {
+            userData.todayEarn = 0;
+            localStorage.setItem('nxeran_lastResetDate', today);
+            saveUserData();
+        }
+    }
+
+    function showToast(message) {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+
+        if (userData.settings.sound && window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+    }
+
+    function copyReferralLink() {
+        const link = `https://t.me/nxeran_bot?start=ref_${userData.id}`;
+        navigator.clipboard.writeText(link).then(() => {
+            showToast('📋 Referral link copied!');
+        });
+    }
+
+    function toggleSetting(key, val) {
+        userData.settings[key] = val;
+        saveUserData();
+    }
+</script>
+</body>
+</html>
