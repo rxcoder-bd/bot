@@ -127,7 +127,7 @@
         .status-rejected { background: rgba(255, 59, 48, 0.1); color: var(--danger); }
 
         /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: 65px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1000; box-shadow: 0 -4px 12px rgba(0,0,0,0.03); }
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: 65px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-space-around; align-items: center; z-index: 1000; box-shadow: 0 -4px 12px rgba(0,0,0,0.03); }
         .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; height: 100%; color: var(--text-sub); text-decoration: none; font-size: 10px; font-weight: 500; gap: 3px; cursor: pointer; transition: color 0.2s ease; }
         .nav-item svg { width: 22px; height: 22px; transition: transform 0.2s ease; }
         .nav-item.active { color: var(--primary); font-weight: 600; }
@@ -411,7 +411,6 @@
 </div>
 
 <script>
-    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
         apiKey: "YOUR_API_KEY",
         authDomain: "YOUR_AUTH_DOMAIN",
@@ -422,25 +421,23 @@
         appId: "YOUR_APP_ID"
     };
 
-    // Safe Init
     let db, auth;
     try {
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         db = firebase.database();
         auth = firebase.auth();
     } catch(err) {
-        console.error("Firebase Error:", err);
+        console.error("Firebase Initialization Error:", err);
     }
 
-    // Global State
     let tgUser = null;
     let currentUserData = null;
     let appSettings = null;
     let selectedWithdrawMethod = 'bKash';
     let adSdkLoaded = false;
     let timerInterval = null;
+    let isProcessingAction = false;
 
-    // Toast
     window.showToast = function(msg, type = 'info') {
         const container = document.getElementById('toast-container');
         if(!container) return;
@@ -451,7 +448,6 @@
         setTimeout(() => toast.remove(), 3500);
     };
 
-    // Switch Tab Global Function
     window.switchTab = function(tabId, el) {
         document.querySelectorAll('.view').forEach(v => {
             v.classList.remove('active');
@@ -474,19 +470,16 @@
         }
     };
 
-    // Select Method
     window.selectMethod = function(method, element) {
         selectedWithdrawMethod = method;
         document.querySelectorAll('.method-card').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
     };
 
-    // Modal Controls
     window.closeModal = function(id) { 
         document.getElementById(id).classList.remove('active'); 
     };
 
-    // Date String GMT+6
     function getBDDateStr() {
         const d = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Dhaka"}));
         const year = d.getFullYear();
@@ -495,7 +488,6 @@
         return `${year}-${month}-${day}`;
     }
 
-    // Initialize Application
     document.addEventListener('DOMContentLoaded', async () => {
         try {
             if(window.Telegram && window.Telegram.WebApp) {
@@ -509,14 +501,13 @@
                 await auth.signInAnonymously();
                 listenSettings();
             } else {
-                window.showToast('ফায়ারবেস কনফিগারেশন মিসিং!', 'error');
+                window.showToast('ফায়ারবেস সেটআপ মিসিং!', 'error');
             }
         } catch (err) {
             console.error(err);
-            window.showToast('অউথেনটিকেশন সমস্যা হয়েছে!', 'error');
+            window.showToast('অথেনটিকেশন ত্রুটি!', 'error');
         }
 
-        // Attach Form Handlers
         document.getElementById('withdraw-form').addEventListener('submit', handleWithdraw);
         document.getElementById('btn-watch-ad').addEventListener('click', handleAdWatch);
         document.getElementById('btn-daily-checkin').addEventListener('click', handleCheckin);
@@ -531,7 +522,6 @@
         renderIncomeChart();
     });
 
-    // Telegram User Init
     function initTelegramUser() {
         const tg = window.Telegram?.WebApp;
         if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -550,7 +540,6 @@
         }
     }
 
-    // Settings Listener
     function listenSettings() {
         db.ref('settings').on('value', (snapshot) => {
             appSettings = snapshot.val();
@@ -573,7 +562,6 @@
         });
     }
 
-    // Load Monetag SDK
     function loadAdSdk(sdkUrl, zoneId) {
         if (document.getElementById('monetag-sdk')) return;
         const script = document.createElement('script');
@@ -585,7 +573,6 @@
         document.head.appendChild(script);
     }
 
-    // Sync User Data
     function syncUserData() {
         const userRef = db.ref(`users/${tgUser.id}`);
         userRef.on('value', (snapshot) => {
@@ -615,11 +602,14 @@
                 if (startParam && startParam !== String(tgUser.id)) {
                     db.ref(`users/${startParam}`).once('value', (refSnap) => {
                         if (refSnap.exists()) {
-                            const bonus = appSettings.referralBonus || 5;
-                            db.ref(`users/${startParam}`).update({
-                                balance: firebase.database.ServerValue.increment(bonus),
-                                totalEarned: firebase.database.ServerValue.increment(bonus),
-                                referralEarned: firebase.database.ServerValue.increment(bonus)
+                            const bonus = appSettings?.referralBonus || 5;
+                            db.ref(`users/${startParam}`).transaction(userData => {
+                                if(userData) {
+                                    userData.balance = (userData.balance || 0) + bonus;
+                                    userData.totalEarned = (userData.totalEarned || 0) + bonus;
+                                    userData.referralEarned = (userData.referralEarned || 0) + bonus;
+                                }
+                                return userData;
                             });
                         }
                     });
@@ -643,7 +633,6 @@
         });
     }
 
-    // UI Update
     function updateUI() {
         if (!currentUserData || !appSettings) return;
 
@@ -699,7 +688,6 @@
         loadReferralStats();
     }
 
-    // Reset Countdown
     function startResetTimer() {
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => {
@@ -721,8 +709,8 @@
         }, 1000);
     }
 
-    // Handle Ad Watch
     function handleAdWatch() {
+        if (isProcessingAction) return;
         if (!appSettings || !appSettings.adZoneId) {
             window.showToast('বিজ্ঞাপন সেটিং পাওয়া যায়নি!', 'error');
             return;
@@ -733,15 +721,20 @@
             return;
         }
 
+        isProcessingAction = true;
         const showFnName = `show_${appSettings.adZoneId}`;
+        
         if (typeof window[showFnName] === 'function') {
-            try {
-                window[showFnName]().then(() => rewardUserForAd()).catch(() => rewardUserForAd());
-            } catch (e) {
+            window[showFnName]().then(() => {
                 rewardUserForAd();
-            }
+            }).catch(() => {
+                rewardUserForAd();
+            }).finally(() => {
+                isProcessingAction = false;
+            });
         } else {
             rewardUserForAd();
+            isProcessingAction = false;
         }
     }
 
@@ -749,28 +742,31 @@
         const earning = parseFloat(appSettings.perAdEarning || 0.50);
         const today = getBDDateStr();
 
-        const updates = {};
-        updates[`users/${tgUser.id}/balance`] = firebase.database.ServerValue.increment(earning);
-        updates[`users/${tgUser.id}/totalEarned`] = firebase.database.ServerValue.increment(earning);
-        updates[`users/${tgUser.id}/todayAds`] = firebase.database.ServerValue.increment(1);
-        updates[`users/${tgUser.id}/totalAds`] = firebase.database.ServerValue.increment(1);
-        updates[`users/${tgUser.id}/lastAdDate`] = today;
-
-        const txRef = db.ref('transactions').push();
-        updates[`transactions/${txRef.key}`] = {
-            userId: tgUser.id,
-            type: 'ad_watch',
-            amount: earning,
-            timestamp: firebase.database.ServerValue.TIMESTAMP,
-            note: 'বিজ্ঞাপন দেখার রিওয়ার্ড'
-        };
-
-        db.ref().update(updates).then(() => {
-            window.showToast(`অভিনন্দন! ৳${earning.toFixed(2)} যোগ করা হয়েছে`, 'success');
+        db.ref(`users/${tgUser.id}`).transaction((user) => {
+            if (user) {
+                if ((user.todayAds || 0) < (appSettings.dailyLimit || 10)) {
+                    user.balance = (user.balance || 0) + earning;
+                    user.totalEarned = (user.totalEarned || 0) + earning;
+                    user.todayAds = (user.todayAds || 0) + 1;
+                    user.totalAds = (user.totalAds || 0) + 1;
+                    user.lastAdDate = today;
+                }
+            }
+            return user;
+        }, (error, committed) => {
+            if (committed) {
+                db.ref('transactions').push({
+                    userId: tgUser.id,
+                    type: 'ad_watch',
+                    amount: earning,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    note: 'বিজ্ঞাপন দেখার রিওয়ার্ড'
+                });
+                window.showToast(`অভিনন্দন! ৳${earning.toFixed(2)} যোগ করা হয়েছে`, 'success');
+            }
         });
     }
 
-    // Checkin Handler
     function handleCheckin() {
         const today = getBDDateStr();
         if (currentUserData.lastCheckIn === today) {
@@ -779,26 +775,29 @@
         }
 
         const bonus = 1.00;
-        const updates = {};
-        updates[`users/${tgUser.id}/balance`] = firebase.database.ServerValue.increment(bonus);
-        updates[`users/${tgUser.id}/totalEarned`] = firebase.database.ServerValue.increment(bonus);
-        updates[`users/${tgUser.id}/lastCheckIn`] = today;
-
-        const txRef = db.ref('transactions').push();
-        updates[`transactions/${txRef.key}`] = {
-            userId: tgUser.id,
-            type: 'checkin',
-            amount: bonus,
-            timestamp: firebase.database.ServerValue.TIMESTAMP,
-            note: 'দৈনিক চেক-ইন বোনাস'
-        };
-
-        db.ref().update(updates).then(() => {
-            window.showToast(`দৈনিক বোনাস ৳${bonus.toFixed(2)} পাওয়া গেছে!`, 'success');
+        db.ref(`users/${tgUser.id}`).transaction((user) => {
+            if (user) {
+                if (user.lastCheckIn !== today) {
+                    user.balance = (user.balance || 0) + bonus;
+                    user.totalEarned = (user.totalEarned || 0) + bonus;
+                    user.lastCheckIn = today;
+                }
+            }
+            return user;
+        }, (error, committed) => {
+            if (committed) {
+                db.ref('transactions').push({
+                    userId: tgUser.id,
+                    type: 'checkin',
+                    amount: bonus,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    note: 'দৈনিক চেক-ইন বোনাস'
+                });
+                window.showToast(`দৈনিক বোনাস ৳${bonus.toFixed(2)} পাওয়া গেছে!`, 'success');
+            }
         });
     }
 
-    // Spin Handler
     function handleSpin() {
         if ((currentUserData.spinCount || 0) >= 1) {
             window.showToast('আজকের স্পিন শেষ!', 'error');
@@ -811,58 +810,64 @@
 
         setTimeout(() => {
             const reward = parseFloat((Math.random() * 1.9 + 0.1).toFixed(2));
-            const updates = {};
-            updates[`users/${tgUser.id}/balance`] = firebase.database.ServerValue.increment(reward);
-            updates[`users/${tgUser.id}/totalEarned`] = firebase.database.ServerValue.increment(reward);
-            updates[`users/${tgUser.id}/spinCount`] = 1;
-
-            db.ref().update(updates).then(() => {
-                window.showToast(`স্পিন থেকে পেয়েছেন ৳${reward}!`, 'success');
-                window.closeModal('spin-modal');
+            db.ref(`users/${tgUser.id}`).transaction((user) => {
+                if (user) {
+                    if ((user.spinCount || 0) < 1) {
+                        user.balance = (user.balance || 0) + reward;
+                        user.totalEarned = (user.totalEarned || 0) + reward;
+                        user.spinCount = 1;
+                    }
+                }
+                return user;
+            }, (error, committed) => {
+                if (committed) {
+                    window.showToast(`স্পিন থেকে পেয়েছেন ৳${reward}!`, 'success');
+                    window.closeModal('spin-modal');
+                }
             });
         }, 3000);
     }
 
-    // Withdraw Handler
     async function handleWithdraw(e) {
         e.preventDefault();
         const account = document.getElementById('withdraw-account').value.trim();
         const amount = parseFloat(document.getElementById('withdraw-amount').value);
         const minVal = parseFloat(appSettings.minWithdraw || 50);
 
-        if (!account || !amount) { window.showToast('তথ্য সঠিকভাবে পূরণ করুন', 'error'); return; }
+        if (!account || isNaN(amount)) { window.showToast('তথ্য সঠিকভাবে পূরণ করুন', 'error'); return; }
         if (amount < minVal) { window.showToast(`সর্বনিম্ন উত্তোলন ৳${minVal}`, 'error'); return; }
         if (amount > currentUserData.balance) { window.showToast('পর্যাপ্ত ব্যালেন্স নেই!', 'error'); return; }
 
         const btn = document.getElementById('btn-withdraw-submit');
         btn.disabled = true;
 
-        try {
-            const updates = {};
-            updates[`users/${tgUser.id}/balance`] = firebase.database.ServerValue.increment(-amount);
-
-            const wRef = db.ref('withdrawals').push();
-            updates[`withdrawals/${wRef.key}`] = {
-                userId: tgUser.id,
-                userName: currentUserData.name,
-                amount: amount,
-                method: selectedWithdrawMethod,
-                account: account,
-                status: 'pending',
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            };
-
-            await db.ref().update(updates);
-            window.showToast('আবেদন জমা হয়েছে!', 'success');
-            document.getElementById('withdraw-form').reset();
-        } catch (err) {
-            window.showToast('উত্তোলন ব্যর্থ হয়েছে!', 'error');
-        } finally {
+        db.ref(`users/${tgUser.id}`).transaction((user) => {
+            if (user && user.balance >= amount) {
+                user.balance -= amount;
+                return user;
+            }
+            return;
+        }, (error, committed) => {
+            if (committed) {
+                db.ref('withdrawals').push({
+                    userId: tgUser.id,
+                    userName: currentUserData.name,
+                    amount: amount,
+                    method: selectedWithdrawMethod,
+                    account: account,
+                    status: 'pending',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                }).then(() => {
+                    window.showToast('আবেদন জমা হয়েছে!', 'success');
+                    document.getElementById('withdraw-form').reset();
+                });
+            } else {
+                window.showToast('উত্তোলন ব্যর্থ হয়েছে!', 'error');
+            }
             btn.disabled = false;
-        }
+        });
     }
 
-    // Render Lists
     function loadWithdrawHistory() {
         db.ref('withdrawals').orderByChild('userId').equalTo(tgUser.id).on('value', (snap) => {
             const container = document.getElementById('withdraw-history-list');
@@ -924,7 +929,7 @@
     function copyRefLink() {
         const input = document.getElementById('ref-link-input');
         input.select();
-        document.execCommand('copy');
+        navigator.clipboard.writeText(input.value);
         window.showToast('লিংক কপি করা হয়েছে!', 'success');
     }
 
