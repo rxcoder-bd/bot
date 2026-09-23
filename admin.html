@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ads Earn BD - Admin Panel</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDK (Compat v9) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --primary: #6C47FF;
+            --bg: #F4F6F9;
+            --card-bg: #FFFFFF;
+            --text-main: #212529;
+            --text-sub: #6C757D;
+            --border: #DEE2E6;
+            --success: #198754;
+            --danger: #DC3545;
+            --warning: #FFC107;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', 'Poppins', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; }
+
+        /* Lock Screen */
+        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .auth-card { background: var(--card-bg); padding: 32px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }
+
+        /* Layout */
+        .sidebar { width: 240px; background: var(--card-bg); border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; }
+        .sidebar h2 { font-size: 18px; color: var(--primary); margin-bottom: 24px; text-align: center; }
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; }
+        .menu-btn { background: transparent; border: none; padding: 12px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--text-sub); cursor: pointer; text-align: left; display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
+        .menu-btn.active, .menu-btn:hover { background: rgba(108,71,255,0.08); color: var(--primary); }
+
+        .main-content { flex: 1; padding: 24px; overflow-y: auto; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+
+        /* Grid & Cards */
+        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--card-bg); border-radius: 14px; padding: 20px; border: 1px solid var(--border); }
+        .stat-card h5 { font-size: 12px; color: var(--text-sub); text-transform: uppercase; }
+        .stat-card h2 { font-size: 24px; font-family: 'Poppins'; color: var(--text-main); margin-top: 4px; }
+
+        /* Tables */
+        .table-container { background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        th, td { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+        th { background: #FAFAFA; color: var(--text-sub); font-weight: 600; }
+
+        /* Forms */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        .form-control { width: 100%; height: 42px; border: 1px solid var(--border); border-radius: 8px; padding: 0 12px; font-size: 14px; outline: none; }
+        .btn { padding: 8px 16px; border-radius: 8px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+
+        .view-panel { display: none; }
+        .view-panel.active { display: block; }
+        
+        /* Switch Toggle */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+    </style>
+</head>
+<body>
+
+<!-- Lock Screen -->
+<div id="auth-overlay">
+    <div class="auth-card">
+        <h3 style="margin-bottom:12px;">এডমিন ভেরিফিকেশন</h3>
+        <p style="font-size:12px; color:var(--text-sub); margin-bottom:16px;">আপনার টেলিগ্রাম ইউজার আইডি দিন</p>
+        <div class="form-group">
+            <input type="number" id="admin-id-input" class="form-control" placeholder="যেমন: 12345678">
+        </div>
+        <button onclick="verifyAdminAccess()" class="btn btn-primary" style="width:100%; justify-content:center; height:42px;">লগইন করুন</button>
+    </div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>AdsEarn BD</h2>
+    <div class="nav-menu">
+        <button class="menu-btn active" onclick="switchAdminTab('dashboard')">ড্যাশবোর্ড</button>
+        <button class="menu-btn" onclick="switchAdminTab('users')">ইউজার সমুহ</button>
+        <button class="menu-btn" onclick="switchAdminTab('withdrawals')">উত্তোলন লিস্ট</button>
+        <button class="menu-btn" onclick="switchAdminTab('settings')">সেটিংস</button>
+    </div>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-content">
+    <div class="header-bar">
+        <h3 id="panel-title">ড্যাশবোর্ড</h3>
+        <span id="admin-status" style="font-size:12px; background:rgba(0,200,83,0.1); color:var(--success); padding:4px 10px; border-radius:12px; font-weight:600;">এডমিন কানেক্টেড</span>
+    </div>
+
+    <!-- Tab 1: Dashboard -->
+    <div id="admin-dashboard" class="view-panel active">
+        <div class="grid-stats">
+            <div class="stat-card">
+                <h5>মোট ব্যবহারকারী</h5>
+                <h2 id="dash-total-users">0</h2>
+            </div>
+            <div class="stat-card">
+                <h5>আজকের সক্রিয় ইউজার</h5>
+                <h2 id="dash-active-users">0</h2>
+            </div>
+            <div class="stat-card">
+                <h5>মোট দেখা বিজ্ঞাপন</h5>
+                <h2 id="dash-total-ads">0</h2>
+            </div>
+            <div class="stat-card">
+                <h5>পেন্ডিং উইথড্র</h5>
+                <h2 id="dash-pending-withdraw">0</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Users -->
+    <div id="admin-users" class="view-panel">
+        <div style="margin-bottom:16px;">
+            <input type="text" id="user-search" class="form-control" placeholder="আইডি বা নাম দিয়ে খুঁজুন..." oninput="filterUsers()" style="max-width:300px;">
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ইউজার</th>
+                        <th>টেলিগ্রাম আইডি</th>
+                        <th>ব্যালেন্স</th>
+                        <th>আজকের Ads</th>
+                        <th>স্ট্যাটাস</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab 3: Withdrawals -->
+    <div id="admin-withdrawals" class="view-panel">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>নাম</th>
+                        <th>পরিমাণ</th>
+                        <th>পদ্ধতি</th>
+                        <th>একাউন্ট</th>
+                        <th>সময়</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="withdrawals-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab 4: Settings -->
+    <div id="admin-settings" class="view-panel">
+        <div style="max-width:600px; background:var(--card-bg); padding:24px; border-radius:14px; border:1px solid var(--border);">
+            <form id="settings-form" onsubmit="saveSettings(event)">
+                <div class="form-group">
+                    <label>Monetag Zone ID</label>
+                    <input type="text" id="cfg-adZoneId" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Ad SDK URL</label>
+                    <input type="text" id="cfg-adSdkUrl" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>প্রতি বিজ্ঞাপনে আয় (টাকা)</label>
+                    <input type="number" step="0.01" id="cfg-perAdEarning" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>দৈনিক বিজ্ঞাপন সীমা</label>
+                    <input type="number" id="cfg-dailyLimit" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>সর্বনিম্ন উত্তোলন (টাকা)</label>
+                    <input type="number" id="cfg-minWithdraw" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>রেফারেল বোনাস (টাকা)</label>
+                    <input type="number" id="cfg-referralBonus" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>বট ইউজারনেম (অ্যাকাউন্ট লিংক জেনারেটের জন্য)</label>
+                    <input type="text" id="cfg-botUsername" class="form-control" required>
+                </div>
+                <div class="form-group" style="display:flex; align-items:center; justify-content:space-between;">
+                    <label style="margin:0;">মেইন্টেন্যান্স মোড</label>
+                    <label class="switch">
+                        <input type="checkbox" id="cfg-maintenance">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:12px;">সেটিংস সেভ করুন</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- FIREBASE CONFIGURATION ---
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        databaseURL: "YOUR_DATABASE_URL",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let allUsersCache = {};
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkAutoInit();
+        if (sessionStorage.getItem('admin_authenticated') === 'true') {
+            document.getElementById('auth-overlay').style.display = 'none';
+            initAdminPanel();
+        }
+    });
+
+    // Auto Init Default Settings in Firebase
+    function checkAutoInit() {
+        const settingsRef = db.ref('settings');
+        settingsRef.once('value', (snap) => {
+            if (!snap.exists()) {
+                settingsRef.set({
+                    adZoneId: "10144078",
+                    adSdkUrl: "//libtl.com/sdk.js",
+                    perAdEarning: 0.50,
+                    dailyLimit: 10,
+                    minWithdraw: 50,
+                    referralBonus: 5,
+                    maintenance: false,
+                    appName: "AdEarn BD",
+                    botUsername: "AdsEarnBDBot",
+                    adminId: null
+                });
+            }
+        });
+    }
+
+    // Admin Authentication Verification
+    async function verifyAdminAccess() {
+        const inputId = document.getElementById('admin-id-input').value.trim();
+        if (!inputId) return;
+
+        const snap = await db.ref('settings/adminId').once('value');
+        const existingAdminId = snap.val();
+
+        if (!existingAdminId) {
+            // First time registration
+            await db.ref('settings/adminId').set(inputId);
+            grantAccess();
+        } else if (String(existingAdminId) === inputId) {
+            grantAccess();
+        } else {
+            alert('ভুল এডমিন আইডি!');
+        }
+    }
+
+    function grantAccess() {
+        sessionStorage.setItem('admin_authenticated', 'true');
+        document.getElementById('auth-overlay').style.display = 'none';
+        initAdminPanel();
+    }
+
+    // Switch Tabs
+    function switchAdminTab(tab) {
+        document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(`admin-${tab}`).classList.add('active');
+        event.currentTarget.classList.add('active');
+        document.getElementById('panel-title').innerText = event.currentTarget.innerText;
+    }
+
+    // Init Data Listeners
+    function initAdminPanel() {
+        loadDashboardStats();
+        loadUsersTable();
+        loadWithdrawalsTable();
+        loadSettingsForm();
+    }
+
+    // Dashboard Stats
+    function loadDashboardStats() {
+        db.ref('users').on('value', (snap) => {
+            const data = snap.val() || {};
+            const totalUsers = Object.keys(data).length;
+            let totalAds = 0;
+            let activeToday = 0;
+
+            const today = new Date().toISOString().split('T')[0];
+
+            Object.values(data).forEach(u => {
+                totalAds += (u.totalAds || 0);
+                if (u.lastAdDate === today) activeToday++;
+            });
+
+            document.getElementById('dash-total-users').innerText = totalUsers;
+            document.getElementById('dash-active-users').innerText = activeToday;
+            document.getElementById('dash-total-ads').innerText = totalAds;
+        });
+
+        db.ref('withdrawals').orderByChild('status').equalTo('pending').on('value', (snap) => {
+            document.getElementById('dash-pending-withdraw').innerText = snap.exists() ? snap.numChildren() : 0;
+        });
+    }
+
+    // Users Management
+    function loadUsersTable() {
+        db.ref('users').on('value', (snap) => {
+            allUsersCache = snap.val() || {};
+            renderUsersTable(allUsersCache);
+        });
+    }
+
+    function renderUsersTable(usersObj) {
+        const tbody = document.getElementById('users-table-body');
+        let html = '';
+
+        Object.entries(usersObj).forEach(([id, u]) => {
+            html += `<tr>
+                <td><strong>${u.name || 'N/A'}</strong></td>
+                <td>${id}</td>
+                <td>৳${(u.balance || 0).toFixed(2)}</td>
+                <td>${u.todayAds || 0}</td>
+                <td><span style="color:${u.isBanned ? 'red' : 'green'}">${u.isBanned ? 'ব্যানড' : 'সক্রিয়'}</span></td>
+                <td>
+                    <button class="btn btn-danger" onclick="toggleBan('${id}', ${!!u.isBanned})">${u.isBanned ? 'আনব্যান' : 'ব্যান'}</button>
+                    <button class="btn btn-primary" onclick="modifyBalance('${id}')">ব্যালেন্স</button>
+                </td>
+            </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    function filterUsers() {
+        const q = document.getElementById('user-search').value.toLowerCase();
+        const filtered = {};
+        Object.entries(allUsersCache).forEach(([id, u]) => {
+            if (id.includes(q) || (u.name && u.name.toLowerCase().includes(q))) {
+                filtered[id] = u;
+            }
+        });
+        renderUsersTable(filtered);
+    }
+
+    async function toggleBan(userId, currentStatus) {
+        await db.ref(`users/${userId}/isBanned`).set(!currentStatus);
+    }
+
+    async function modifyBalance(userId) {
+        const amt = prompt("নতুন যোগ/বিয়োগ করার পরিমাণ দিন (যেমন: +50 বা -20):");
+        if (!amt) return;
+        const val = parseFloat(amt);
+        if (isNaN(val)) return;
+
+        await db.ref(`users/${userId}/balance`).transaction(curr => (curr || 0) + val);
+    }
+
+    // Withdrawal Actions
+    function loadWithdrawalsTable() {
+        db.ref('withdrawals').orderByChild('status').equalTo('pending').on('value', (snap) => {
+            const tbody = document.getElementById('withdrawals-table-body');
+            if (!snap.exists()) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">কোন পেন্ডিং আবেদন নেই</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            snap.forEach(child => {
+                const w = child.val();
+                const key = child.key;
+                html += `<tr>
+                    <td>${w.userName || 'N/A'}</td>
+                    <td>৳${w.amount}</td>
+                    <td>${w.method}</td>
+                    <td>${w.account}</td>
+                    <td>${new Date(w.timestamp).toLocaleTimeString()}</td>
+                    <td>
+                        <button class="btn btn-success" onclick="approveWithdraw('${key}')">অনুমোদন</button>
+                        <button class="btn btn-danger" onclick="rejectWithdraw('${key}', '${w.userId}', ${w.amount})">বাতিল</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        });
+    }
+
+    async function approveWithdraw(key) {
+        await db.ref(`withdrawals/${key}`).update({ status: 'approved' });
+    }
+
+    async function rejectWithdraw(key, userId, amount) {
+        const updates = {};
+        updates[`withdrawals/${key}/status`] = 'rejected';
+        updates[`users/${userId}/balance`] = firebase.database.ServerValue.increment(amount);
+        await db.ref().update(updates);
+    }
+
+    // Settings Panel
+    function loadSettingsForm() {
+        db.ref('settings').on('value', (snap) => {
+            const cfg = snap.val() || {};
+            document.getElementById('cfg-adZoneId').value = cfg.adZoneId || '';
+            document.getElementById('cfg-adSdkUrl').value = cfg.adSdkUrl || '';
+            document.getElementById('cfg-perAdEarning').value = cfg.perAdEarning || '';
+            document.getElementById('cfg-dailyLimit').value = cfg.dailyLimit || '';
+            document.getElementById('cfg-minWithdraw').value = cfg.minWithdraw || '';
+            document.getElementById('cfg-referralBonus').value = cfg.referralBonus || '';
+            document.getElementById('cfg-botUsername').value = cfg.botUsername || '';
+            document.getElementById('cfg-maintenance').checked = !!cfg.maintenance;
+        });
+    }
+
+    async function saveSettings(e) {
+        e.preventDefault();
+        const updates = {
+            adZoneId: document.getElementById('cfg-adZoneId').value.trim(),
+            adSdkUrl: document.getElementById('cfg-adSdkUrl').value.trim(),
+            perAdEarning: parseFloat(document.getElementById('cfg-perAdEarning').value),
+            dailyLimit: parseInt(document.getElementById('cfg-dailyLimit').value),
+            minWithdraw: parseFloat(document.getElementById('cfg-minWithdraw').value),
+            referralBonus: parseFloat(document.getElementById('cfg-referralBonus').value),
+            botUsername: document.getElementById('cfg-botUsername').value.trim(),
+            maintenance: document.getElementById('cfg-maintenance').checked
+        };
+
+        await db.ref('settings').update(updates);
+        alert('সেটিংস সফলভাবে আপডেট হয়েছে!');
+    }
+</script>
+</body>
+</html>
