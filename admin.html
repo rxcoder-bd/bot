@@ -213,7 +213,6 @@
 </div>
 
 <script>
-    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
         apiKey: "YOUR_API_KEY",
         authDomain: "YOUR_AUTH_DOMAIN",
@@ -229,21 +228,17 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         db = firebase.database();
     } catch(err) {
-        console.error("Firebase Init Failed:", err);
+        console.error("Firebase Initialization Error:", err);
     }
 
     let allUsersCache = {};
+    let isAuthorized = false;
 
     document.addEventListener('DOMContentLoaded', () => {
         checkAutoInit();
-        if (sessionStorage.getItem('admin_authenticated') === 'true') {
-            document.getElementById('auth-overlay').style.display = 'none';
-            initAdminPanel();
-        }
         document.getElementById('settings-form').addEventListener('submit', saveSettings);
     });
 
-    // Auto Setup Default Settings
     function checkAutoInit() {
         if(!db) return;
         const settingsRef = db.ref('settings');
@@ -265,32 +260,35 @@
         });
     }
 
-    // Verify Admin
     window.verifyAdminAccess = async function() {
         const inputId = document.getElementById('admin-id-input').value.trim();
         if (!inputId) return;
 
-        const snap = await db.ref('settings/adminId').once('value');
-        const existingAdminId = snap.val();
+        try {
+            const snap = await db.ref('settings/adminId').once('value');
+            const existingAdminId = snap.val();
 
-        if (!existingAdminId) {
-            await db.ref('settings/adminId').set(inputId);
-            grantAccess();
-        } else if (String(existingAdminId) === inputId) {
-            grantAccess();
-        } else {
-            alert('ভুল এডমিন আইডি!');
+            if (!existingAdminId) {
+                await db.ref('settings/adminId').set(inputId);
+                grantAccess();
+            } else if (String(existingAdminId) === inputId) {
+                grantAccess();
+            } else {
+                alert('ভুল এডমিন আইডি!');
+            }
+        } catch(err) {
+            alert('অথেনটিকেশন ত্রুটি!');
         }
     };
 
     function grantAccess() {
-        sessionStorage.setItem('admin_authenticated', 'true');
+        isAuthorized = true;
         document.getElementById('auth-overlay').style.display = 'none';
         initAdminPanel();
     }
 
-    // Switch Admin Tabs
     window.switchAdminTab = function(tab, btn) {
+        if (!isAuthorized) return;
         document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
         
@@ -299,7 +297,6 @@
         if(btn) btn.classList.add('active');
     };
 
-    // Init Data
     function initAdminPanel() {
         loadDashboardStats();
         loadUsersTable();
@@ -312,7 +309,8 @@
             const data = snap.val() || {};
             const totalUsers = Object.keys(data).length;
             let totalAds = 0, activeToday = 0;
-            const today = new Date().toISOString().split('T')[0];
+            const d = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Dhaka"}));
+            const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
             Object.values(data).forEach(u => {
                 totalAds += (u.totalAds || 0);
@@ -368,11 +366,13 @@
     };
 
     window.toggleBan = async function(userId, currentStatus) {
+        if(!isAuthorized) return;
         await db.ref(`users/${userId}/isBanned`).set(!currentStatus);
     };
 
     window.modifyBalance = async function(userId) {
-        const amt = prompt("নতুন পরিমাণ লিখুন (+50 বা -20):");
+        if(!isAuthorized) return;
+        const amt = prompt("যোগ বা বিয়োগ করতে পরিমাণ লিখুন (যেমন: +50 বা -20):");
         if (!amt) return;
         const val = parseFloat(amt);
         if (isNaN(val)) return;
@@ -409,14 +409,16 @@
     }
 
     window.approveWithdraw = async function(key) {
+        if(!isAuthorized) return;
         await db.ref(`withdrawals/${key}`).update({ status: 'approved' });
     };
 
     window.rejectWithdraw = async function(key, userId, amount) {
+        if(!isAuthorized) return;
         const updates = {};
         updates[`withdrawals/${key}/status`] = 'rejected';
-        updates[`users/${userId}/balance`] = firebase.database.ServerValue.increment(amount);
         await db.ref().update(updates);
+        await db.ref(`users/${userId}/balance`).transaction(curr => (curr || 0) + amount);
     };
 
     function loadSettingsForm() {
@@ -435,6 +437,8 @@
 
     async function saveSettings(e) {
         e.preventDefault();
+        if(!isAuthorized) return;
+
         const updates = {
             adZoneId: document.getElementById('cfg-adZoneId').value.trim(),
             adSdkUrl: document.getElementById('cfg-adSdkUrl').value.trim(),
