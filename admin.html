@@ -21,7 +21,6 @@
             --border: #DEE2E6;
             --success: #198754;
             --danger: #DC3545;
-            --warning: #FFC107;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', 'Poppins', sans-serif; }
@@ -35,25 +34,25 @@
         .sidebar { width: 240px; background: var(--card-bg); border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; }
         .sidebar h2 { font-size: 18px; color: var(--primary); margin-bottom: 24px; text-align: center; }
         .nav-menu { display: flex; flex-direction: column; gap: 8px; }
-        .menu-btn { background: transparent; border: none; padding: 12px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--text-sub); cursor: pointer; text-align: left; display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
+        .menu-btn { background: transparent; border: none; padding: 12px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--text-sub); cursor: pointer; text-align: left; transition: all 0.2s; }
         .menu-btn.active, .menu-btn:hover { background: rgba(108,71,255,0.08); color: var(--primary); }
 
         .main-content { flex: 1; padding: 24px; overflow-y: auto; }
         .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 
-        /* Grid & Cards */
+        /* Stats */
         .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .stat-card { background: var(--card-bg); border-radius: 14px; padding: 20px; border: 1px solid var(--border); }
-        .stat-card h5 { font-size: 12px; color: var(--text-sub); text-transform: uppercase; }
-        .stat-card h2 { font-size: 24px; font-family: 'Poppins'; color: var(--text-main); margin-top: 4px; }
+        .stat-card h5 { font-size: 12px; color: var(--text-sub); }
+        .stat-card h2 { font-size: 24px; font-family: 'Poppins'; margin-top: 4px; }
 
         /* Tables */
         .table-container { background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
         th, td { padding: 14px 16px; border-bottom: 1px solid var(--border); }
-        th { background: #FAFAFA; color: var(--text-sub); font-weight: 600; }
+        th { background: #FAFAFA; color: var(--text-sub); }
 
-        /* Forms */
+        /* Forms & Buttons */
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
         .form-control { width: 100%; height: 42px; border: 1px solid var(--border); border-radius: 8px; padding: 0 12px; font-size: 14px; outline: none; }
@@ -63,9 +62,8 @@
         .btn-danger { background: var(--danger); color: #fff; }
 
         .view-panel { display: none; }
-        .view-panel.active { display: block; }
+        .view-panel.active { display: block !important; }
         
-        /* Switch Toggle */
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
@@ -84,7 +82,7 @@
         <div class="form-group">
             <input type="number" id="admin-id-input" class="form-control" placeholder="যেমন: 12345678">
         </div>
-        <button onclick="verifyAdminAccess()" class="btn btn-primary" style="width:100%; justify-content:center; height:42px;">লগইন করুন</button>
+        <button onclick="window.verifyAdminAccess()" class="btn btn-primary" style="width:100%; justify-content:center; height:42px;">লগইন করুন</button>
     </div>
 </div>
 
@@ -92,10 +90,10 @@
 <div class="sidebar">
     <h2>AdsEarn BD</h2>
     <div class="nav-menu">
-        <button class="menu-btn active" onclick="switchAdminTab('dashboard')">ড্যাশবোর্ড</button>
-        <button class="menu-btn" onclick="switchAdminTab('users')">ইউজার সমুহ</button>
-        <button class="menu-btn" onclick="switchAdminTab('withdrawals')">উত্তোলন লিস্ট</button>
-        <button class="menu-btn" onclick="switchAdminTab('settings')">সেটিংস</button>
+        <button class="menu-btn active" onclick="window.switchAdminTab('dashboard', this)">ড্যাশবোর্ড</button>
+        <button class="menu-btn" onclick="window.switchAdminTab('users', this)">ইউজার সমুহ</button>
+        <button class="menu-btn" onclick="window.switchAdminTab('withdrawals', this)">উত্তোলন লিস্ট</button>
+        <button class="menu-btn" onclick="window.switchAdminTab('settings', this)">সেটিংস</button>
     </div>
 </div>
 
@@ -131,7 +129,7 @@
     <!-- Tab 2: Users -->
     <div id="admin-users" class="view-panel">
         <div style="margin-bottom:16px;">
-            <input type="text" id="user-search" class="form-control" placeholder="আইডি বা নাম দিয়ে খুঁজুন..." oninput="filterUsers()" style="max-width:300px;">
+            <input type="text" id="user-search" class="form-control" placeholder="আইডি বা নাম দিয়ে খুঁজুন..." oninput="window.filterUsers()" style="max-width:300px;">
         </div>
         <div class="table-container">
             <table>
@@ -172,7 +170,7 @@
     <!-- Tab 4: Settings -->
     <div id="admin-settings" class="view-panel">
         <div style="max-width:600px; background:var(--card-bg); padding:24px; border-radius:14px; border:1px solid var(--border);">
-            <form id="settings-form" onsubmit="saveSettings(event)">
+            <form id="settings-form">
                 <div class="form-group">
                     <label>Monetag Zone ID</label>
                     <input type="text" id="cfg-adZoneId" class="form-control" required>
@@ -226,8 +224,14 @@
         appId: "YOUR_APP_ID"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    let db;
+    try {
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+    } catch(err) {
+        console.error("Firebase Init Failed:", err);
+    }
+
     let allUsersCache = {};
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -236,10 +240,12 @@
             document.getElementById('auth-overlay').style.display = 'none';
             initAdminPanel();
         }
+        document.getElementById('settings-form').addEventListener('submit', saveSettings);
     });
 
-    // Auto Init Default Settings in Firebase
+    // Auto Setup Default Settings
     function checkAutoInit() {
+        if(!db) return;
         const settingsRef = db.ref('settings');
         settingsRef.once('value', (snap) => {
             if (!snap.exists()) {
@@ -259,8 +265,8 @@
         });
     }
 
-    // Admin Authentication Verification
-    async function verifyAdminAccess() {
+    // Verify Admin
+    window.verifyAdminAccess = async function() {
         const inputId = document.getElementById('admin-id-input').value.trim();
         if (!inputId) return;
 
@@ -268,7 +274,6 @@
         const existingAdminId = snap.val();
 
         if (!existingAdminId) {
-            // First time registration
             await db.ref('settings/adminId').set(inputId);
             grantAccess();
         } else if (String(existingAdminId) === inputId) {
@@ -276,7 +281,7 @@
         } else {
             alert('ভুল এডমিন আইডি!');
         }
-    }
+    };
 
     function grantAccess() {
         sessionStorage.setItem('admin_authenticated', 'true');
@@ -284,16 +289,17 @@
         initAdminPanel();
     }
 
-    // Switch Tabs
-    function switchAdminTab(tab) {
+    // Switch Admin Tabs
+    window.switchAdminTab = function(tab, btn) {
         document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(`admin-${tab}`).classList.add('active');
-        event.currentTarget.classList.add('active');
-        document.getElementById('panel-title').innerText = event.currentTarget.innerText;
-    }
+        
+        const target = document.getElementById(`admin-${tab}`);
+        if(target) target.classList.add('active');
+        if(btn) btn.classList.add('active');
+    };
 
-    // Init Data Listeners
+    // Init Data
     function initAdminPanel() {
         loadDashboardStats();
         loadUsersTable();
@@ -301,14 +307,11 @@
         loadSettingsForm();
     }
 
-    // Dashboard Stats
     function loadDashboardStats() {
         db.ref('users').on('value', (snap) => {
             const data = snap.val() || {};
             const totalUsers = Object.keys(data).length;
-            let totalAds = 0;
-            let activeToday = 0;
-
+            let totalAds = 0, activeToday = 0;
             const today = new Date().toISOString().split('T')[0];
 
             Object.values(data).forEach(u => {
@@ -326,7 +329,6 @@
         });
     }
 
-    // Users Management
     function loadUsersTable() {
         db.ref('users').on('value', (snap) => {
             allUsersCache = snap.val() || {};
@@ -346,15 +348,15 @@
                 <td>${u.todayAds || 0}</td>
                 <td><span style="color:${u.isBanned ? 'red' : 'green'}">${u.isBanned ? 'ব্যানড' : 'সক্রিয়'}</span></td>
                 <td>
-                    <button class="btn btn-danger" onclick="toggleBan('${id}', ${!!u.isBanned})">${u.isBanned ? 'আনব্যান' : 'ব্যান'}</button>
-                    <button class="btn btn-primary" onclick="modifyBalance('${id}')">ব্যালেন্স</button>
+                    <button class="btn btn-danger" onclick="window.toggleBan('${id}', ${!!u.isBanned})">${u.isBanned ? 'আনব্যান' : 'ব্যান'}</button>
+                    <button class="btn btn-primary" onclick="window.modifyBalance('${id}')">ব্যালেন্স</button>
                 </td>
             </tr>`;
         });
         tbody.innerHTML = html;
     }
 
-    function filterUsers() {
+    window.filterUsers = function() {
         const q = document.getElementById('user-search').value.toLowerCase();
         const filtered = {};
         Object.entries(allUsersCache).forEach(([id, u]) => {
@@ -363,22 +365,21 @@
             }
         });
         renderUsersTable(filtered);
-    }
+    };
 
-    async function toggleBan(userId, currentStatus) {
+    window.toggleBan = async function(userId, currentStatus) {
         await db.ref(`users/${userId}/isBanned`).set(!currentStatus);
-    }
+    };
 
-    async function modifyBalance(userId) {
-        const amt = prompt("নতুন যোগ/বিয়োগ করার পরিমাণ দিন (যেমন: +50 বা -20):");
+    window.modifyBalance = async function(userId) {
+        const amt = prompt("নতুন পরিমাণ লিখুন (+50 বা -20):");
         if (!amt) return;
         const val = parseFloat(amt);
         if (isNaN(val)) return;
 
         await db.ref(`users/${userId}/balance`).transaction(curr => (curr || 0) + val);
-    }
+    };
 
-    // Withdrawal Actions
     function loadWithdrawalsTable() {
         db.ref('withdrawals').orderByChild('status').equalTo('pending').on('value', (snap) => {
             const tbody = document.getElementById('withdrawals-table-body');
@@ -398,8 +399,8 @@
                     <td>${w.account}</td>
                     <td>${new Date(w.timestamp).toLocaleTimeString()}</td>
                     <td>
-                        <button class="btn btn-success" onclick="approveWithdraw('${key}')">অনুমোদন</button>
-                        <button class="btn btn-danger" onclick="rejectWithdraw('${key}', '${w.userId}', ${w.amount})">বাতিল</button>
+                        <button class="btn btn-success" onclick="window.approveWithdraw('${key}')">অনুমোদন</button>
+                        <button class="btn btn-danger" onclick="window.rejectWithdraw('${key}', '${w.userId}', ${w.amount})">বাতিল</button>
                     </td>
                 </tr>`;
             });
@@ -407,18 +408,17 @@
         });
     }
 
-    async function approveWithdraw(key) {
+    window.approveWithdraw = async function(key) {
         await db.ref(`withdrawals/${key}`).update({ status: 'approved' });
-    }
+    };
 
-    async function rejectWithdraw(key, userId, amount) {
+    window.rejectWithdraw = async function(key, userId, amount) {
         const updates = {};
         updates[`withdrawals/${key}/status`] = 'rejected';
         updates[`users/${userId}/balance`] = firebase.database.ServerValue.increment(amount);
         await db.ref().update(updates);
-    }
+    };
 
-    // Settings Panel
     function loadSettingsForm() {
         db.ref('settings').on('value', (snap) => {
             const cfg = snap.val() || {};
